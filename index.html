@@ -221,7 +221,7 @@ html{height:100%;height:-webkit-fill-available}body{min-height:100%;min-height:-
 .finput,.fdate{width:100%;padding:13px 14px;border:1.5px solid var(--sand);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;background:white;outline:none;color:var(--dark)}
 .finput:focus,.fdate:focus{border-color:var(--coral)}
 .vgrid{display:flex;gap:7px;flex-wrap:wrap}
-.vchip{padding:9px 16px;border-radius:20px;border:2px solid var(--sand);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:white;color:var(--muted);transition:all 0.1s}
+.vchip{padding:9px 16px;border-radius:20px;border:2px solid var(--sand);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:white;color:#1A1208;transition:all 0.1s;min-width:80px;text-align:center}
 .vchip.on[data-v=andaluma]{background:var(--coral);color:white;border-color:var(--coral)}
 .vchip.on[data-v=vae]{background:var(--teal);color:white;border-color:var(--teal)}
 .vchip.on[data-v=baraca]{background:var(--amber);color:white;border-color:var(--amber)}
@@ -718,17 +718,32 @@ function submitAdd(){
 
 function openMenu(id){
   var t=S.tasks[id];if(!t)return;
+  var isAndre = t.owner==='andre';
+  var newOwner = isAndre ? 'daniella' : 'andre';
   var acts=[
     {ic:'↩',l:'Roll to next day',bg:'rgba(201,138,16,0.1)',col:'var(--amber)',fn:'rollTask("'+id+'");closeModal()'},
     {ic:'✂',l:'Split task',bg:'rgba(10,122,136,0.1)',col:'var(--teal)',fn:'openSplit("'+id+'")'},
     {ic:'✏',l:'Edit',bg:'var(--sand)',col:'var(--dark)',fn:'openEdit("'+id+'")'},
     {ic:'→',l:'Move to Someday',bg:'var(--sand)',col:'var(--muted)',fn:'updTask("'+id+'",{date:null});closeModal()'},
+    {ic:isAndre?'👩':'👨',l:isAndre?'Move to Daniella':'Move to André',bg:isAndre?'rgba(184,51,104,0.1)':'rgba(224,79,40,0.1)',col:isAndre?'var(--berry)':'var(--coral)',fn:'updTask("'+id+'",{owner:"'+newOwner+'"});closeModal()'},
     {ic:'🗑',l:'Delete',bg:'rgba(192,57,43,0.08)',col:'#C0392B',fn:'doDelete("'+id+'")'},
   ];
-  openModal('<div class="mhandle"></div>'+
+  var menuHtml = '<div class="mhandle"></div>'+
     '<div style="font-family:Playfair Display,serif;font-size:17px;margin-bottom:3px">'+e(t.title)+'</div>'+
-    '<div style="font-size:11px;color:var(--muted);margin-bottom:20px">'+vLabel(t.venture)+(t.date?' · '+t.date:'')+'</div>'+
-    '<div class="alist">'+acts.map(function(a){return'<div class="aitem'+(a.col==='#C0392B'?' danger':'')+'" onclick="'+a.fn+'"><div class="aicon" style="background:'+a.bg+';color:'+a.col+'">'+a.ic+'</div>'+a.l+'</div>';}).join('')+'</div>');
+    '<div style="font-size:11px;color:var(--muted);margin-bottom:20px">'+vLabel(t.venture)+(t.date?' &middot; '+t.date:'')+'</div>'+
+    '<div class="alist">';
+  acts.forEach(function(a,i){
+    menuHtml += '<div class="aitem'+(a.col==='#C0392B'?' danger':'')+'" data-mi="'+i+'"><div class="aicon" style="background:'+a.bg+';color:'+a.col+'">'+a.ic+'</div>'+a.l+'</div>';
+  });
+  menuHtml += '</div>';
+  openModal(menuHtml);
+  // Bind clicks after render
+  document.querySelectorAll('.aitem[data-mi]').forEach(function(el){
+    el.addEventListener('click', function(){
+      var idx = parseInt(this.getAttribute('data-mi'));
+      eval(acts[idx].fn);
+    });
+  });
 }
 
 function doDelete(id){var t=S.tasks[id];if(t&&confirm('Delete "'+t.title+'"?')){delTask(id);closeModal();}}
