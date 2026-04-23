@@ -270,6 +270,12 @@ html{height:100%;height:-webkit-fill-available}body{min-height:100%;min-height:-
   .su-card { background: #F7F2E8 !important; }
   .su-ta, .su-in { background: #FFFFFF !important; color: #1A1208 !important; }
 }
+
+.pdot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);transition:all 0.15s}
+.pdot.filled{background:#E04F28;border-color:#E04F28}
+.pkey{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.08);border:none;color:white;font-size:24px;font-family:"DM Sans",sans-serif;font-weight:500;cursor:pointer;transition:background 0.1s}
+.pkey:active{background:rgba(255,255,255,0.2)}
+.pkey-del{font-size:20px}
 </style>
 <meta name="theme-color" content="#E04F28">
 <script>
@@ -295,6 +301,44 @@ window.addEventListener("load", function() {
 <body>
 <div id="root">
 
+
+<!-- PIN LOGIN -->
+<div id="pin-screen" style="display:none;min-height:100vh;background:#1A1208;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:80px;margin-bottom:24px">
+    <div style="background:#E04F28;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-family:Georgia,serif;font-weight:700;font-size:12px">An</div>
+    <div style="background:#B83368;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-family:Georgia,serif;font-weight:700;font-size:12px">Da</div>
+    <div style="background:#0A7A88;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-family:Georgia,serif;font-weight:700;font-size:12px">Lu</div>
+    <div style="background:#C98A10;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:white;font-family:Georgia,serif;font-weight:700;font-size:12px">Ma</div>
+  </div>
+  <div style="font-family:Georgia,serif;font-size:28px;color:white;margin-bottom:8px;letter-spacing:0.06em">An·Da·Lu·Ma</div>
+  <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:40px">Enter your PIN to continue</div>
+  
+  <!-- PIN dots -->
+  <div id="pin-dots" style="display:flex;gap:14px;margin-bottom:32px">
+    <div class="pdot"></div>
+    <div class="pdot"></div>
+    <div class="pdot"></div>
+    <div class="pdot"></div>
+  </div>
+  
+  <div id="pin-error" style="color:#E04F28;font-size:13px;margin-bottom:16px;min-height:20px;text-align:center"></div>
+  
+  <!-- Number pad -->
+  <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px">
+    <button class="pkey" onclick="pinKey(1)">1</button>
+    <button class="pkey" onclick="pinKey(2)">2</button>
+    <button class="pkey" onclick="pinKey(3)">3</button>
+    <button class="pkey" onclick="pinKey(4)">4</button>
+    <button class="pkey" onclick="pinKey(5)">5</button>
+    <button class="pkey" onclick="pinKey(6)">6</button>
+    <button class="pkey" onclick="pinKey(7)">7</button>
+    <button class="pkey" onclick="pinKey(8)">8</button>
+    <button class="pkey" onclick="pinKey(9)">9</button>
+    <div></div>
+    <button class="pkey" onclick="pinKey(0)">0</button>
+    <button class="pkey pkey-del" onclick="pinDel()">⌫</button>
+  </div>
+</div>
 <!-- SETUP -->
 <div id="setup" style="display:flex;flex-direction:column">
   <div class="su-hero">
@@ -388,7 +432,7 @@ function doSetup(){
     var cfg=JSON.parse(raw);
     lss('andaluma-fb',JSON.stringify(cfg));
     if(gcid)lss('andaluma-gcal',gcid);
-    startFB(cfg);
+    initApp();
   }catch(e){alert('Invalid JSON — copy the full config object from Firebase.');}
 }
 
