@@ -222,15 +222,16 @@ html{height:100%;height:-webkit-fill-available}body{min-height:100%;min-height:-
 .finput:focus,.fdate:focus{border-color:var(--coral)}
 .vgrid{display:flex;gap:7px;flex-wrap:wrap}
 .vchip{padding:9px 16px;border-radius:20px;border:2px solid var(--sand);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:white;color:#1A1208;transition:all 0.1s;min-width:80px;text-align:center}
-.vchip.on[data-v=andaluma]{background:var(--coral);color:white;border-color:var(--coral)}
-.vchip.on[data-v=vae]{background:var(--teal);color:white;border-color:var(--teal)}
-.vchip.on[data-v=baraca]{background:var(--amber);color:white;border-color:var(--amber)}
-.vchip.on[data-v=personal]{background:var(--berry);color:white;border-color:var(--berry)}
+.vchip.on[data-v=andaluma]{background:#E04F28 !important;color:#FFFFFF !important;border-color:#E04F28}
+.vchip.on[data-v=vae]{background:#0A7A88 !important;color:#FFFFFF !important;border-color:#0A7A88}
+.vchip.on[data-v=baraca]{background:#C98A10 !important;color:#FFFFFF !important;border-color:#C98A10}
+.vchip.on[data-v=personal]{background:#B83368 !important;color:#FFFFFF !important;border-color:#B83368}
 .ochips{display:flex;gap:7px}
 .ochip{flex:1;padding:10px 4px;border-radius:10px;border:1.5px solid var(--sand);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:white;color:var(--muted);text-align:center;transition:all 0.1s}
-.ochip[data-o=andre].on{background:var(--coral);color:white;border-color:var(--coral)}
-.ochip[data-o=daniella].on{background:var(--berry);color:white;border-color:var(--berry)}
-.ochip[data-o=both].on{background:var(--teal);color:white;border-color:var(--teal)}
+.ochip[data-o=andre].on{background:#E04F28 !important;color:#FFFFFF !important;border-color:#E04F28}
+.ochip[data-o=daniella].on{background:#B83368 !important;color:#FFFFFF !important;border-color:#B83368}
+.ochip[data-o=both].on{background:#0A7A88 !important;color:#FFFFFF !important;border-color:#0A7A88}
+.ochip{color:#1A1208 !important}
 .imic{display:flex;gap:8px}
 .imic .finput{flex:1}
 .micbtn{width:48px;border-radius:10px;background:var(--berry);color:white;border:none;cursor:pointer;font-size:17px;flex-shrink:0}
@@ -640,6 +641,20 @@ function renderDay(){
     h+='</div>';
   }
   document.getElementById('day-view').innerHTML=h;
+  // Event delegation for task interactions
+  document.getElementById('day-view').addEventListener('click', function(ev){
+    var cb = ev.target.closest('.task-cb');
+    var more = ev.target.closest('.task-more');
+    if(cb){
+      var ti = cb.closest('.ti');
+      var parts = ti.getAttribute('data-rid').split('|');
+      var id = parts[0], rd = parts[1]||'';
+      cycleStatus(id, rd);
+    }
+    if(more){
+      openMenu(more.getAttribute('data-id'));
+    }
+  }, {once:true});
 }
 
 function setOwner(o){S.owner=o;renderOwner();renderWeek();renderDay();}
