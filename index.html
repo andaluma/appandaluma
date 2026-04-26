@@ -475,26 +475,42 @@ var db=null,offline=false,gcalToken=null,mst={};
 var VCOL={andaluma:'#E04F28',vae:'#0A7A88',baraca:'#C98A10',personal:'#B83368','andaluma2':'#E04F28'};
 
 function init(){
-  try {
-    var cfg=ls('andaluma-fb');
-    if(!cfg){ document.getElementById('setup').style.display='flex'; return; }
-    if(cfg==='offline'){offline=true;loadLocal();boot();return;}
-    try{
-      var parsed=JSON.parse(cfg);
-      startFB(parsed);
-    }catch(e){offline=true;loadLocal();boot();}
-  } catch(e) {
-    offline=true;loadLocal();boot();
+  // STEP 1: Check PIN first, always
+  if(ls('andaluma-auth') !== 'ok'){
+    // Show PIN screen
+    document.getElementById('pin-screen').style.display='flex';
+    document.getElementById('setup').style.display='none';
+    document.getElementById('app').style.display='none';
+    return;
   }
+  // STEP 2: PIN passed, connect to Firebase (hardcoded config)
+  afterPin();
 }
 
-// Always boot within 3 seconds no matter what
-var _bootTimer = setTimeout(function(){
-  if(document.getElementById('app').style.display==='none' &&
-     document.getElementById('setup').style.display==='none'){
-    offline=true;loadLocal();boot();
-  }
-}, 3000);
+function afterPin(){
+  var fbConfig = {
+    apiKey:'AIzaSyAeYXakpwzgmbl0_Spf2phpBlXjYe_9STA',
+    authDomain:'andaluma-planner.firebaseapp.com',
+    databaseURL:'https://andaluma-planner-default-rtdb.firebaseio.com',
+    projectId:'andaluma-planner',
+    storageBucket:'andaluma-planner.firebasestorage.app',
+    messagingSenderId:'87759928843',
+    appId:'1:87759928843:web:052df60638080d9ad9110e'
+  };
+  lss('andaluma-fb', JSON.stringify(fbConfig));
+  loadLocal();
+  boot();
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(fbConfig);
+    db = firebase.database();
+    db.ref('tasks').on('value',function(snap){
+      S.tasks=snap.val()||{};
+      lss('andaluma-tasks',JSON.stringify(S.tasks));
+      renderAll();
+    });
+    loadMoneyData();
+  }catch(ex){ db=null; }
+}
 
 document.addEventListener('DOMContentLoaded', function(){ init(); });
 
