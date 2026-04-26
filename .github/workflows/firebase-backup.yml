@@ -15,32 +15,41 @@ jobs:
       - name: Download Firebase data
         run: |
           DATE=$(date +%Y-%m-%d)
-          
-          # Fetch all three nodes from Firebase
-          EXPENSES=$(curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/expenses.json")
-          TRIPS=$(curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/trips.json")
-          TASKS=$(curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/tasks.json")
-          
-          # Combine into one backup file
-          python3 -c "
-          import json, sys
-          expenses = json.loads('''$EXPENSES''')
-          trips = json.loads('''$TRIPS''')
-          tasks = json.loads('''$TASKS''')
+
+          # Fetch all three nodes from Firebase and save to temp files
+          curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/expenses.json" > /tmp/expenses.json
+          curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/trips.json" > /tmp/trips.json
+          curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/tasks.json" > /tmp/tasks.json
+
+          # Combine into one backup file using Python
+          python3 - << 'PYEOF'
+          import json, datetime
+
+          with open('/tmp/expenses.json') as f:
+              expenses = json.load(f)
+          with open('/tmp/trips.json') as f:
+              trips = json.load(f)
+          with open('/tmp/tasks.json') as f:
+              tasks = json.load(f)
+
+          date = datetime.date.today().isoformat()
           backup = {
-            'exportDate': '$DATE',
-            'source': 'GitHub Actions auto-backup',
-            'expenses': expenses,
-            'trips': trips,
-            'tasks': tasks,
+              'exportDate': date,
+              'source': 'GitHub Actions auto-backup',
+              'expenses': expenses,
+              'trips': trips,
+              'tasks': tasks,
           }
-          print(json.dumps(backup, indent=2))
-          " > backups/andaluma-backup-$DATE.json
-          
-          echo "Backup saved: andaluma-backup-$DATE.json"
-          echo "Expenses: $(python3 -c "import json; d=json.load(open('backups/andaluma-backup-$DATE.json')); print(len(d.get('expenses',{})))")"
-          echo "Trips: $(python3 -c "import json; d=json.load(open('backups/andaluma-backup-$DATE.json')); print(len(d.get('trips',{})))")"
-          echo "Tasks: $(python3 -c "import json; d=json.load(open('backups/andaluma-backup-$DATE.json')); print(len(d.get('tasks',{})))")"
+
+          filename = 'backups/andaluma-backup-' + date + '.json'
+          with open(filename, 'w') as f:
+              json.dump(backup, f, indent=2)
+
+          print('Backup saved: ' + filename)
+          print('Expenses: ' + str(len(expenses or {})))
+          print('Trips: ' + str(len(trips or {})))
+          print('Tasks: ' + str(len(tasks or {})))
+          PYEOF
 
       - name: Commit backup
         run: |
