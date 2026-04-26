@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -84,6 +84,7 @@ html{height:100%;height:-webkit-fill-available}body{min-height:100%;min-height:-
 .hdr-tile{display:flex;align-items:center;justify-content:center;height:24px;border-radius:3px;font-family:'Playfair Display',serif;font-size:8px;font-weight:700;color:white;letter-spacing:0.04em}
 .hdr-right{display:flex;align-items:center;gap:10px}
 .hdr-sync{font-size:10px;opacity:0.4}
+.gear-btn{background:none;border:none;cursor:pointer;font-size:18px;padding:2px 4px;opacity:0.6;line-height:1}
 .btn-gcal{
   background:rgba(10,122,136,0.3);border:1px solid rgba(10,122,136,0.5);
   color:white;border-radius:6px;padding:5px 10px;
@@ -217,6 +218,15 @@ html{height:100%;height:-webkit-fill-available}body{min-height:100%;min-height:-
 .trip-chip.add{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.3);border:1px dashed rgba(255,255,255,0.15)}
 .money-day-hdr{display:flex;justify-content:space-between;align-items:baseline;padding:14px 20px 8px;border-bottom:1px solid var(--sand)}
 .money-day-title{font-family:'Playfair Display',serif;font-size:20px}
+.mday-strip{display:flex;gap:4px;padding:8px 10px;background:var(--dark);overflow-x:auto;border-top:1px solid rgba(255,255,255,0.04);scrollbar-width:none}
+.mday-strip::-webkit-scrollbar{display:none}
+.mday-item{display:flex;flex-direction:column;align-items:center;min-width:38px;padding:6px 2px;border-radius:8px;cursor:pointer;flex-shrink:0;transition:background 0.1s}
+.mday-item.tod:not(.sel){background:rgba(255,255,255,0.07)}
+.mday-item.sel{background:var(--amber)}
+.mday-dn{font-size:9px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.3)}
+.mday-item.sel .mday-dn,.mday-item.tod .mday-dn{color:rgba(255,255,255,0.7)}
+.mday-num{font-size:16px;font-weight:700;line-height:1.2;margin:2px 0;color:rgba(255,255,255,0.5)}
+.mday-item.sel .mday-num,.mday-item.tod .mday-num{color:white}
 .budget-bar-wrap{padding:10px 20px 0}
 .budget-bar-bg{height:5px;background:var(--sand);border-radius:3px;overflow:hidden}
 .budget-bar-fill{height:100%;border-radius:3px;transition:width 0.3s}
@@ -257,7 +267,7 @@ html{height:100%;height:-webkit-fill-available}body{min-height:100%;min-height:-
 
 /* ── MODAL ── */
 #modal-overlay{position:fixed;inset:0;background:rgba(26,18,8,0.6);display:flex;flex-direction:column;justify-content:flex-end;z-index:100}
-.msheet{background:var(--cream);border-radius:22px 22px 0 0;padding:20px 22px;padding-bottom:max(32px,env(safe-area-inset-bottom,32px));max-height:92vh;overflow-y:auto}
+.msheet{background:var(--cream);border-radius:22px 22px 0 0;padding:20px 22px;padding-bottom:max(32px,env(safe-area-inset-bottom,32px));max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .mhandle{width:40px;height:4px;background:var(--sand);border-radius:2px;margin:0 auto 20px}
 .mtitle{font-family:'Playfair Display',serif;font-size:21px;margin-bottom:20px}
 .fg{margin-bottom:18px}
@@ -763,7 +773,7 @@ function renderHdr(){
     '<div class="hdr-tile" style="background:var(--teal)">Lu</div>'+
     '<div class="hdr-tile" style="background:var(--amber)">Ma</div>'+
     '</div>'+
-    '<div class="hdr-right">'+gcalBtn+'<div class="hdr-sync">'+sync+'</div></div>'+
+    '<div class="hdr-right">'+gcalBtn+'<div class="hdr-sync">'+sync+'</div><button class="gear-btn" onclick="openSettings()">&#9881;&#65039;</button></div>'+
     '</div>'+
     '<div class="tz-bar">'+tz+'</div>';
 }
@@ -805,7 +815,7 @@ function renderTaskItem(t){
   return'<div class="ti '+st+(t.rolled?' rolled':'')+'" data-v="'+e(v)+'">'+
     '<div class="ti-accent"></div>'+
     '<div class="ti-inner">'+
-    '<div class="ti-cb" onclick="'+cbc+'">'+cb+'</div>'+
+    '<button class="ti-cb" onclick="'+cbc+'">'+cb+'</button>'+
     '<div class="ti-body"><div class="ti-title">'+e(t.title)+'</div><div class="ti-tags">'+tags+'</div></div>'+
     '<button class="ti-more" onclick="openMenu(\''+e(t.id)+'\')">⋯</button>'+
     '</div></div>';
@@ -836,20 +846,6 @@ function renderDay(){
     h+='</div>';
   }
   document.getElementById('day-view').innerHTML=h;
-  // Event delegation for task interactions
-  document.getElementById('day-view').addEventListener('click', function(ev){
-    var cb = ev.target.closest('.task-cb');
-    var more = ev.target.closest('.task-more');
-    if(cb){
-      var ti = cb.closest('.ti');
-      var parts = ti.getAttribute('data-rid').split('|');
-      var id = parts[0], rd = parts[1]||'';
-      cycleStatus(id, rd);
-    }
-    if(more){
-      openMenu(more.getAttribute('data-id'));
-    }
-  }, {once:true});
 }
 
 function setOwner(o){S.owner=o;renderOwner();renderWeek();renderDay();}
@@ -1086,7 +1082,15 @@ function renderMoney(){
 function renderTripBar(){
   var el = document.getElementById('money-trip-bar');
   if(!el) return;
-  var trips = Object.values(MS.trips).sort(function(a,b){ return (b.startDate||'') > (a.startDate||'') ? -1 : 1; });
+  var today = td();
+  var trips = Object.values(MS.trips);
+  // Sort: active trip first, then reverse chronological by startDate
+  trips.sort(function(a,b){
+    var aActive = a.id === MS.activeTripId, bActive = b.id === MS.activeTripId;
+    if(aActive && !bActive) return -1;
+    if(!aActive && bActive) return 1;
+    return (b.startDate||'') > (a.startDate||'') ? 1 : -1;
+  });
   var html = '<div class="trip-bar">';
   trips.forEach(function(t){
     var on = t.id === MS.activeTripId;
@@ -1094,14 +1098,20 @@ function renderTripBar(){
   });
   html += '<button class="trip-chip add" onclick="openAddTrip()">+ Trip</button>';
   html += '</div>';
-  // Backup/Export section
-  html += '<div class="ins-section">'+
-    '<div class="ins-title">Data & Backup</div>'+
-    '<button class="btn-pri" onclick="exportBackup()" style="margin-bottom:10px">⬇ Download backup JSON</button>'+
-    '<div style="font-size:11px;color:var(--muted);line-height:1.6">Your data is also automatically backed up in Firebase and in GitHub.</div>'+
-    '</div>';
-
   el.innerHTML = html;
+}
+
+function autoSelectTrip(){
+  var today = td();
+  var trips = Object.values(MS.trips);
+  // Find trip where today falls within startDate..endDate
+  var current = trips.find(function(t){
+    return t.startDate && t.startDate <= today && (!t.endDate || t.endDate >= today);
+  });
+  if(current){ MS.activeTripId = current.id; return; }
+  // Otherwise pick most recent trip
+  trips.sort(function(a,b){ return (b.startDate||'') > (a.startDate||'') ? 1 : -1; });
+  if(trips.length) MS.activeTripId = trips[0].id;
 }
 
 function exportBackup(){
@@ -1120,6 +1130,15 @@ function exportBackup(){
   URL.revokeObjectURL(url);
 }
 
+function openSettings(){
+  openModal('<div class="mhandle"></div><div class="mtitle">Settings</div>'+
+    '<div class="alist">'+
+    '<div class="aitem" onclick="exportBackup()"><div class="aicon" style="background:rgba(10,122,136,0.08);color:#0A7A88">⬇️</div>Download backup JSON</div>'+
+    '</div>'+
+    '<div style="font-size:11px;color:var(--muted);line-height:1.6;margin-top:12px">Your data is automatically backed up in Firebase.</div>'
+  );
+}
+
 function setActiveTrip(id){ MS.activeTripId = id; renderMoney(); }
 
 function renderMoneyDayBar(){
@@ -1131,24 +1150,40 @@ function renderMoneyDayBar(){
   var spent = dayExps.reduce(function(s,ex){ return s + (ex.eurAmount||0); }, 0);
   var pct = Math.min(100, Math.round(spent/budget*100));
   var color = pct > 100 ? '#C0392B' : pct > 80 ? '#C98A10' : '#2D5C3A';
+  var today = td();
+  // Build 14-day strip (today + 13 days back)
+  var days = [];
+  for(var i=13; i>=0; i--) days.push(addDays(today, -i));
+  var stripH = '<div class="mday-strip" id="mday-strip-inner">';
+  days.forEach(function(d){
+    var sel = d===MS.moneyDate, tod = d===today;
+    var dn = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][new Date(d+'T12:00:00').getDay()];
+    var num = new Date(d+'T12:00:00').getDate();
+    stripH += '<div class="mday-item'+(sel?' sel':'')+(tod&&!sel?' tod':'')+'" onclick="selMoneyDate(\''+d+'\')">'+
+      '<div class="mday-dn">'+dn+'</div>'+
+      '<div class="mday-num">'+num+'</div>'+
+      '</div>';
+  });
+  stripH += '</div>';
   var d = new Date(MS.moneyDate+'T12:00:00');
-  var label = d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
-  el.innerHTML = '<div class="money-day-hdr">'+
-    '<div class="money-day-title">'+e(label)+'</div>'+
-    '<div style="display:flex;gap:8px;align-items:center">'+
-    '<button onclick="shiftMoneyDate(-1)" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px">‹</button>'+
-    '<button onclick="shiftMoneyDate(1)" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px">›</button>'+
-    '</div></div>'+
+  var label = d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'});
+  el.innerHTML = stripH+
+    '<div class="money-day-hdr"><div class="money-day-title">'+e(label)+'</div></div>'+
     '<div class="budget-bar-wrap">'+
     '<div class="budget-bar-bg"><div class="budget-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
     '<div class="budget-bar-lbl"><span>€'+spent.toFixed(0)+' spent</span><span>€'+budget+'/day budget</span></div>'+
     '</div>';
+  // Scroll selected day into view
+  setTimeout(function(){
+    var strip = document.getElementById('mday-strip-inner');
+    if(!strip) return;
+    var sel = strip.querySelector('.sel');
+    if(sel) sel.scrollIntoView({inline:'center', block:'nearest'});
+  }, 0);
 }
 
-function shiftMoneyDate(dir){
-  var d = new Date(MS.moneyDate+'T12:00:00');
-  d.setDate(d.getDate()+dir);
-  MS.moneyDate = d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+function selMoneyDate(d){
+  MS.moneyDate = d;
   renderMoneyDayBar();
   renderMoneyContent();
 }
@@ -1211,38 +1246,17 @@ function renderMoneyContent(){
     }
   }
 
-  // Backup/Export section
-  html += '<div class="ins-section">'+
-    '<div class="ins-title">Data & Backup</div>'+
-    '<button class="btn-pri" onclick="exportBackup()" style="margin-bottom:10px">⬇ Download backup JSON</button>'+
-    '<div style="font-size:11px;color:var(--muted);line-height:1.6">Your data is also automatically backed up in Firebase and in GitHub.</div>'+
-    '</div>';
-
   el.innerHTML = html;
-}
-
-function exportBackup(){
-  var data = {
-    exportDate: new Date().toISOString(),
-    tasks: S.tasks,
-    trips: MS.trips,
-    expenses: MS.expenses,
-  };
-  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'andaluma-backup-' + td() + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 // ── ADD EXPENSE ─────────────────────────────────────────
 var emst = {};
 function openAddExpense(){
+  var activeTrip = MS.activeTripId ? MS.trips[MS.activeTripId] : null;
+  var defCur = (activeTrip && activeTrip.currency) ? activeTrip.currency : 'EUR';
   emst = {
     title:'', category:'Food', owner: S.owner==='both'?'both':S.owner,
-    currency:'EUR', amount:'', note:'', date:MS.moneyDate,
+    currency:defCur, amount:'', note:'', date:MS.moneyDate,
     tripId: MS.activeTripId||'', preTrip:false,
   };
   drawAddExpense();
@@ -1254,7 +1268,15 @@ function drawAddExpense(){
     var on = c===m.category;
     return '<option value="'+e(c)+'"'+(on?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
-  var currOpts = CURRENCIES.map(function(c){
+  var activeTrip = MS.activeTripId ? MS.trips[MS.activeTripId] : null;
+  var tripCur = activeTrip && activeTrip.currency ? activeTrip.currency : null;
+  var pinned = [];
+  if(tripCur) pinned.push(tripCur);
+  if(pinned.indexOf('USD')<0) pinned.push('USD');
+  if(pinned.indexOf('EUR')<0) pinned.push('EUR');
+  var rest = CURRENCIES.filter(function(c){ return pinned.indexOf(c)<0; }).sort();
+  var orderedCurs = pinned.concat(rest);
+  var currOpts = orderedCurs.map(function(c){
     return '<option'+(c===m.currency?' selected':'')+'>'+c+'</option>';
   }).join('');
   var trips = Object.values(MS.trips);
@@ -1318,25 +1340,43 @@ function submitExpense(){
 
 // ── EXCHANGE RATES ───────────────────────────────────────
 var rateCache = {};
+// Hardcoded fallback rates (EUR per 1 unit of currency) — used only if API fails
+var RATE_FALLBACK = {
+  USD:0.92, GBP:1.17, JPY:0.0061, KRW:0.00067, TWD:0.029, CNY:0.13,
+  AED:0.25, VND:0.000037, MXN:0.053, CAD:0.68, PEN:0.24, AUD:0.60,
+  CHF:1.04, SGD:0.69, THB:0.026, IDR:0.000058, MYR:0.20, PHP:0.016,
+  INR:0.011, BRL:0.18, COP:0.00023, CLP:0.00098, TRY:0.027, NOK:0.086,
+  SEK:0.088, DKK:0.134, NZD:0.55, ZAR:0.049, HKD:0.118, SAR:0.245,
+  QAR:0.252, KWD:2.99, BHD:2.65, MNT:0.00027, RUB:0.0099, GEL:0.34,
+};
 function fetchRate(currency, cb){
   if(currency==='EUR'){ cb(1); return; }
   if(rateCache[currency]){ cb(rateCache[currency]); return; }
   fetch('https://api.frankfurter.app/latest?from='+currency+'&to=EUR')
     .then(function(r){ return r.json(); })
     .then(function(data){
-      var rate = data.rates && data.rates.EUR ? data.rates.EUR : 1;
-      rateCache[currency] = rate;
-      cb(rate);
+      var rate = data.rates && data.rates.EUR ? data.rates.EUR : null;
+      if(rate && rate > 0){
+        rateCache[currency] = rate;
+        cb(rate);
+      } else {
+        cb(RATE_FALLBACK[currency] || 1);
+      }
     })
-    .catch(function(){ cb(1); });
+    .catch(function(){ cb(RATE_FALLBACK[currency] || 1); });
 }
 
 // ── TRIP MANAGEMENT ─────────────────────────────────────
 function openAddTrip(){
+  var currOpts = CURRENCIES.map(function(c){
+    return '<option'+(c==='EUR'?' selected':'')+'>'+c+'</option>';
+  }).join('');
   openModal(
     '<div class="mhandle"></div><div class="mtitle">New trip</div>'+
     '<div class="fg"><label class="flbl">Destination</label>'+
     '<input type="text" class="finput" id="trip-name" placeholder="e.g. South Korea"></div>'+
+    '<div class="fg"><label class="flbl">Local currency</label>'+
+    '<select class="finput" id="trip-currency">'+currOpts+'</select></div>'+
     '<div class="fg"><label class="flbl">Daily budget (EUR)</label>'+
     '<input type="number" class="finput" id="trip-budget" placeholder="80" value="80"></div>'+
     '<div class="fg"><label class="flbl">Start date</label>'+
@@ -1354,6 +1394,7 @@ function submitTrip(){
   MS.trips[id] = {
     id: id,
     name: name.trim(),
+    currency: (document.getElementById('trip-currency')||{}).value||'EUR',
     dailyBudget: parseFloat((document.getElementById('trip-budget')||{}).value||80),
     startDate: (document.getElementById('trip-start')||{}).value||td(),
     endDate: (document.getElementById('trip-end')||{}).value||null,
@@ -1372,12 +1413,100 @@ function openExpMenu(id){
     '<div style="font-family:Playfair Display,serif;font-size:17px;margin-bottom:3px">'+e(ex.title||ex.category)+'</div>'+
     '<div style="font-size:11px;color:var(--muted);margin-bottom:20px">'+e(ex.category)+' · €'+(ex.eurAmount||0).toFixed(2)+'</div>'+
     '<div class="alist">'+
+    '<div class="aitem" onclick="openEditExpense(\''+id+'\')"><div class="aicon" style="background:rgba(10,122,136,0.08);color:#0A7A88">✏️</div>Edit</div>'+
     '<div class="aitem danger" onclick="delExp(\''+id+'\')"><div class="aicon" style="background:rgba(192,57,43,0.08);color:#C0392B">🗑</div>Delete</div>'+
     '</div>');
 }
 
 function delExp(id){
   if(confirm('Delete this expense?')){ delete MS.expenses[id]; persistMoney(); closeModal(); renderMoney(); }
+}
+
+var eedst = {};
+function openEditExpense(id){
+  var ex = MS.expenses[id]; if(!ex) return;
+  eedst = {
+    id: id,
+    title: ex.title||'',
+    category: ex.category||'Food',
+    owner: ex.owner||'both',
+    currency: ex.originalCurrency||'EUR',
+    amount: ex.originalAmount||'',
+    note: ex.notes||'',
+    date: ex.date||MS.moneyDate,
+    tripId: ex.tripId||'',
+    preTrip: !ex.date,
+  };
+  drawEditExpense();
+}
+
+function drawEditExpense(){
+  var m = eedst;
+  var catOpts = Object.keys(CATS).map(function(c){
+    return '<option value="'+e(c)+'"'+(c===m.category?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
+  }).join('');
+  var activeTrip = MS.activeTripId ? MS.trips[MS.activeTripId] : null;
+  var tripCur = activeTrip && activeTrip.currency ? activeTrip.currency : null;
+  var pinned = [];
+  if(tripCur) pinned.push(tripCur);
+  if(pinned.indexOf('USD')<0) pinned.push('USD');
+  if(pinned.indexOf('EUR')<0) pinned.push('EUR');
+  var rest = CURRENCIES.filter(function(c){ return pinned.indexOf(c)<0; }).sort();
+  var currOpts = pinned.concat(rest).map(function(c){
+    return '<option'+(c===m.currency?' selected':'')+'>'+c+'</option>';
+  }).join('');
+  var trips = Object.values(MS.trips);
+  var tripOpts = '<option value="">No trip</option>'+trips.map(function(t){
+    return '<option value="'+e(t.id)+'"'+(t.id===m.tripId?' selected':'')+'>'+e(t.name)+'</option>';
+  }).join('');
+  var os = [{id:'andre',l:'André'},{id:'daniella',l:'Daniella'},{id:'both',l:'Both'}];
+  var och = os.map(function(o){
+    return '<div class="ochip'+(m.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="eedst.owner=\''+o.id+'\';drawEditExpense()">'+o.l+'</div>';
+  }).join('');
+  openModal(
+    '<div class="mhandle"></div><div class="mtitle">Edit expense</div>'+
+    '<div class="fg"><label class="flbl">Amount</label>'+
+    '<div style="display:flex;gap:8px">'+
+    '<select class="finput" style="width:90px;flex-shrink:0" onchange="eedst.currency=this.value">'+currOpts+'</select>'+
+    '<input type="number" class="finput" id="eed-amt" placeholder="0.00" value="'+e(String(m.amount))+'" oninput="eedst.amount=this.value" style="flex:1">'+
+    '</div></div>'+
+    '<div class="fg"><label class="flbl">What for</label>'+
+    '<input type="text" class="finput" id="eed-title" value="'+e(m.title)+'" placeholder="Description (optional)" oninput="eedst.title=this.value"></div>'+
+    '<div class="fg"><label class="flbl">Category</label>'+
+    '<select class="finput" onchange="eedst.category=this.value">'+catOpts+'</select></div>'+
+    '<div class="fg"><label class="flbl">Paid by</label><div class="ochips">'+och+'</div></div>'+
+    '<div class="fg"><label class="flbl">Trip</label>'+
+    '<select class="finput" onchange="eedst.tripId=this.value">'+tripOpts+'</select>'+
+    '<label class="sdcheck"><input type="checkbox" '+(m.preTrip?'checked':'')+' onchange="eedst.preTrip=this.checked;drawEditExpense()"> Pre-trip expense (no specific day)</label></div>'+
+    (!m.preTrip ? '<div class="fg"><label class="flbl">Date</label><input type="date" class="fdate" value="'+e(m.date||'')+'" onchange="eedst.date=this.value"></div>' : '')+
+    '<button class="btn-pri" onclick="submitEditExpense()">Save changes</button>'
+  );
+}
+
+function submitEditExpense(){
+  var id = eedst.id;
+  var ex = MS.expenses[id]; if(!ex) return;
+  var amt = parseFloat((document.getElementById('eed-amt')||{}).value||eedst.amount||0);
+  if(!amt){ alert('Enter an amount.'); return; }
+  var title = (document.getElementById('eed-title')||{}).value||eedst.title||'';
+  fetchRate(eedst.currency, function(rate){
+    var eurAmt = eedst.currency==='EUR' ? amt : amt * rate;
+    Object.assign(MS.expenses[id], {
+      title: title.trim(),
+      category: eedst.category,
+      owner: eedst.owner,
+      originalAmount: amt,
+      originalCurrency: eedst.currency,
+      eurAmount: Math.round(eurAmt*100)/100,
+      lockedRate: rate,
+      date: eedst.preTrip ? null : (eedst.date||MS.moneyDate),
+      tripId: eedst.tripId||null,
+      notes: eedst.note||'',
+    });
+    persistMoney();
+    closeModal();
+    renderMoney();
+  });
 }
 
 // ── INSIGHTS ────────────────────────────────────────────
@@ -1435,10 +1564,10 @@ function renderInsights(){
   catSorted.slice(0,8).forEach(function(c){
     var cat = CATS[c]||CATS['Others'];
     var pct = catTotal > 0 ? Math.round(byCat[c]/catTotal*100) : 0;
-    html += '<div class="ins-row">'+
+    html += '<div class="ins-row" style="cursor:pointer" onclick="showCatDrilldown(\''+e(c)+'\')">'+
       '<div class="ins-row-label"><div class="ins-dot" style="background:'+cat.color+'"></div>'+e(c)+'</div>'+
       '<div class="ins-bar-wrap"><div class="ins-bar" style="width:'+pct+'%;background:'+cat.color+'"></div></div>'+
-      '<div class="ins-val">€'+Math.round(byCat[c])+'</div>'+
+      '<div class="ins-val">€'+Math.round(byCat[c])+'<span style="color:var(--muted);font-weight:400;font-size:10px;margin-left:4px">›</span></div>'+
     '</div>';
   });
   html += '</div>';
@@ -1473,30 +1602,33 @@ function renderInsights(){
     html += '</div>';
   }
 
-  // Backup/Export section
-  html += '<div class="ins-section">'+
-    '<div class="ins-title">Data & Backup</div>'+
-    '<button class="btn-pri" onclick="exportBackup()" style="margin-bottom:10px">⬇ Download backup JSON</button>'+
-    '<div style="font-size:11px;color:var(--muted);line-height:1.6">Your data is also automatically backed up in Firebase and in GitHub.</div>'+
-    '</div>';
-
   el.innerHTML = html;
 }
 
-function exportBackup(){
-  var data = {
-    exportDate: new Date().toISOString(),
-    tasks: S.tasks,
-    trips: MS.trips,
-    expenses: MS.expenses,
-  };
-  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'andaluma-backup-' + td() + '.json';
-  a.click();
-  URL.revokeObjectURL(url);
+function showCatDrilldown(category){
+  var cat = CATS[category]||CATS['Others'];
+  var exps = Object.values(MS.expenses).filter(function(ex){
+    return ex.category === category && ex.eurAmount > 0;
+  }).sort(function(a,b){ return (b.date||'')>(a.date||'') ? 1 : -1; });
+  var total = exps.reduce(function(s,ex){ return s+(ex.eurAmount||0); }, 0);
+  var rows = exps.map(function(ex){
+    var dateLabel = ex.date ? new Date(ex.date+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : 'Pre-trip';
+    var trip = ex.tripId && MS.trips[ex.tripId] ? MS.trips[ex.tripId].name : '';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--sand)">'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="font-size:13px;font-weight:500">'+e(ex.title||category)+'</div>'+
+        '<div style="font-size:10px;color:var(--muted);margin-top:2px">'+dateLabel+(trip?' \xb7 '+e(trip):'')+'</div>'+
+      '</div>'+
+      '<div style="font-size:14px;font-weight:700;color:'+cat.color+'">€'+(ex.eurAmount||0).toFixed(2)+'</div>'+
+    '</div>';
+  }).join('');
+  openModal('<div class="mhandle"></div>'+
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">'+
+    '<div style="width:36px;height:36px;border-radius:8px;background:'+cat.color+'22;display:flex;align-items:center;justify-content:center;font-size:18px">'+cat.icon+'</div>'+
+    '<div><div class="mtitle" style="margin-bottom:0">'+e(category)+'</div>'+
+    '<div style="font-size:11px;color:var(--muted)">'+exps.length+' expenses \xb7 €'+Math.round(total)+' total</div></div></div>'+
+    '<div style="margin-top:16px">'+rows+'</div>'
+  );
 }
 
 // Hook loadMoneyData into boot
@@ -1504,12 +1636,10 @@ var _origBoot = boot;
 boot = function(){
   _origBoot();
   loadMoneyData();
-  // Set South Korea as default active trip if exists
+  // Auto-select active trip by date after data loads
   setTimeout(function(){
-    var trips = Object.values(MS.trips);
-    var korea = trips.find(function(t){ return t.name && t.name.toLowerCase().indexOf('korea') >= 0; });
-    if(korea && !MS.activeTripId) MS.activeTripId = korea.id;
-  }, 1000);
+    if(!MS.activeTripId) autoSelectTrip();
+  }, 1200);
 };
 
 function startVoice(){openAdd('');setTimeout(voiceForInput,300);}
