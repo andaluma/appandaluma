@@ -1271,6 +1271,7 @@ function openAddExpense(){
     title:'', category:'Food', owner: S.owner==='both'?'both':S.owner,
     currency:defCur, amount:'', note:'', date:MS.moneyDate,
     tripId: MS.activeTripId||'', preTrip:false,
+    checkIn: MS.moneyDate||'', checkOut:'',
   };
   drawAddExpense();
 }
@@ -1309,12 +1310,31 @@ function drawAddExpense(){
     '<div class="fg"><label class="flbl">What for</label>'+
     '<input type="text" class="finput" id="exp-title" value="'+e(m.title)+'" placeholder="Description (optional)" oninput="emst.title=this.value"></div>'+
     '<div class="fg"><label class="flbl">Category</label>'+
-    '<select class="finput" onchange="emst.category=this.value">'+catOpts+'</select></div>'+
+    '<select class="finput" onchange="emst.category=this.value;drawAddExpense()">'+catOpts+'</select></div>'+
     '<div class="fg"><label class="flbl">Paid by</label><div class="ochips">'+och+'</div></div>'+
     '<div class="fg"><label class="flbl">Trip</label>'+
     '<select class="finput" onchange="emst.tripId=this.value">'+tripOpts+'</select>'+
     '<label class="sdcheck"><input type="checkbox" '+(m.preTrip?'checked':'')+' onchange="emst.preTrip=this.checked;drawAddExpense()"> Pre-trip expense (no specific day)</label></div>'+
-    (!m.preTrip ? '<div class="fg"><label class="flbl">Date</label><input type="date" class="fdate" value="'+e(m.date)+'" onchange="emst.date=this.value"></div>' : '')+
+    (function(){
+      if(m.preTrip) return '';
+      if(m.category==='Accommodation'){
+        var nights=0, perNightNote='';
+        if(m.checkIn && m.checkOut && m.checkOut>m.checkIn){
+          nights=Math.round((new Date(m.checkOut)-new Date(m.checkIn))/86400000);
+          if(nights>0 && parseFloat(m.amount)>0){
+            var pn=(parseFloat(m.amount)/nights).toFixed(2);
+            perNightNote=' · '+m.currency+' '+pn+'/night';
+          }
+        }
+        return '<div class="fg"><label class="flbl">Check-in date</label>'+
+          '<input type="date" class="fdate" value="'+e(m.checkIn||'')+'" onchange="emst.checkIn=this.value;drawAddExpense()"></div>'+
+          '<div class="fg"><label class="flbl">Check-out date</label>'+
+          '<input type="date" class="fdate" value="'+e(m.checkOut||'')+'" onchange="emst.checkOut=this.value;drawAddExpense()">'+
+          (nights>0?'<div style="font-size:12px;color:var(--amber);margin-top:5px;font-weight:600">'+nights+' night'+(nights===1?'':'s')+perNightNote+'</div>':'')+
+          '</div>';
+      }
+      return '<div class="fg"><label class="flbl">Date</label><input type="date" class="fdate" value="'+e(m.date)+'" onchange="emst.date=this.value"></div>';
+    })()+
     '<button class="btn-pri" onclick="submitExpense()">Add expense</button>'
   );
   setTimeout(function(){ var el=document.getElementById('exp-amt'); if(el) el.focus(); }, 80);
@@ -1324,7 +1344,36 @@ function submitExpense(){
   var amt = parseFloat((document.getElementById('exp-amt')||{}).value||emst.amount||0);
   if(!amt){ alert('Enter an amount.'); return; }
   var title = (document.getElementById('exp-title')||{}).value||emst.title||'';
-  // Get live exchange rate then save
+
+  if(emst.category==='Accommodation' && !emst.preTrip){
+    if(!emst.checkIn || !emst.checkOut || emst.checkOut<=emst.checkIn){
+      alert('Enter valid check-in and check-out dates.'); return;
+    }
+    var nights = Math.round((new Date(emst.checkOut)-new Date(emst.checkIn))/86400000);
+    if(nights<1){ alert('Check-out must be after check-in.'); return; }
+    fetchRate(emst.currency, function(rate){
+      var perNight = amt/nights;
+      var eurPerNight = Math.round((emst.currency==='EUR' ? perNight : perNight*rate)*100)/100;
+      var perNightOrig = Math.round(perNight*100)/100;
+      for(var i=0;i<nights;i++){
+        var day=new Date(emst.checkIn); day.setDate(day.getDate()+i);
+        var dateStr=day.toISOString().slice(0,10);
+        var id=muid();
+        MS.expenses[id]={
+          id:id, title:(title.trim()||'Accommodation'),
+          category:'Accommodation', owner:emst.owner,
+          originalAmount:perNightOrig, originalCurrency:emst.currency,
+          eurAmount:eurPerNight, lockedRate:rate,
+          date:dateStr, tripId:emst.tripId||null,
+          notes:emst.note||'', createdAt:Date.now()+i,
+          venture:'personal', type:'expense',
+        };
+      }
+      persistMoney(); closeModal(); renderMoney(); renderInsights();
+    });
+    return;
+  }
+
   fetchRate(emst.currency, function(rate){
     var eurAmt = emst.currency==='EUR' ? amt : amt * rate;
     var id = muid();
