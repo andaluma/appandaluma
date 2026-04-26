@@ -1,0 +1,51 @@
+name: Weekly Firebase Backup
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight UTC
+  workflow_dispatch:       # Allow manual trigger from GitHub UI
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download Firebase data
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          
+          # Fetch all three nodes from Firebase
+          EXPENSES=$(curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/expenses.json")
+          TRIPS=$(curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/trips.json")
+          TASKS=$(curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/tasks.json")
+          
+          # Combine into one backup file
+          python3 -c "
+          import json, sys
+          expenses = json.loads('''$EXPENSES''')
+          trips = json.loads('''$TRIPS''')
+          tasks = json.loads('''$TASKS''')
+          backup = {
+            'exportDate': '$DATE',
+            'source': 'GitHub Actions auto-backup',
+            'expenses': expenses,
+            'trips': trips,
+            'tasks': tasks,
+          }
+          print(json.dumps(backup, indent=2))
+          " > backups/andaluma-backup-$DATE.json
+          
+          echo "Backup saved: andaluma-backup-$DATE.json"
+          echo "Expenses: $(python3 -c "import json; d=json.load(open('backups/andaluma-backup-$DATE.json')); print(len(d.get('expenses',{})))")"
+          echo "Trips: $(python3 -c "import json; d=json.load(open('backups/andaluma-backup-$DATE.json')); print(len(d.get('trips',{})))")"
+          echo "Tasks: $(python3 -c "import json; d=json.load(open('backups/andaluma-backup-$DATE.json')); print(len(d.get('tasks',{})))")"
+
+      - name: Commit backup
+        run: |
+          git config user.name "Andaluma Backup Bot"
+          git config user.email "backup@andaluma.com"
+          git add backups/
+          git diff --staged --quiet || git commit -m "🗄️ Auto backup $(date +%Y-%m-%d)"
+          git push
