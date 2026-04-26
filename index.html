@@ -128,7 +128,7 @@ html{height:100%;height:-webkit-fill-available}body{min-height:100%;min-height:-
 .wk-vdot{width:5px;height:5px;border-radius:50%}
 
 /* ── DAY VIEW ── */
-#day-view{flex:1;overflow-y:auto;padding-bottom:110px;background:#F7F2E8 !important;-webkit-overflow-scrolling:touch;min-height:0}
+#day-view{flex:1;overflow-y:auto;padding-bottom:80px;background:#F7F2E8 !important;-webkit-overflow-scrolling:touch;min-height:0}
 .day-hdr{padding:18px 20px 10px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1.5px solid var(--sand)}
 .day-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700}
 .day-meta{font-size:11px;color:var(--muted)}
@@ -203,8 +203,52 @@ html{height:100%;height:-webkit-fill-available}body{min-height:100%;min-height:-
 .someday-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--forest)}
 .someday-toggle{font-size:12px;color:var(--forest);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700}
 
+/* ── BOTTOM NAV ── */
+.nav-btn{flex:1;background:none;border:none;color:rgba(255,255,255,0.35);padding:10px 4px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'DM Sans',sans-serif;transition:color 0.12s}
+.nav-btn.on{color:#FFFFFF}
+.nav-btn.on .nav-icon{color:var(--coral)}
+.nav-icon{font-size:18px;line-height:1}
+.nav-lbl{font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+
+/* ── MONEY MODULE ── */
+.trip-bar{display:flex;gap:6px;padding:10px 14px;background:var(--dark);overflow-x:auto;border-top:1px solid rgba(255,255,255,0.05)}
+.trip-chip{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);border:none;border-radius:16px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.trip-chip.on{background:var(--amber);color:white}
+.trip-chip.add{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.3);border:1px dashed rgba(255,255,255,0.15)}
+.money-day-hdr{display:flex;justify-content:space-between;align-items:baseline;padding:14px 20px 8px;border-bottom:1px solid var(--sand)}
+.money-day-title{font-family:'Playfair Display',serif;font-size:20px}
+.budget-bar-wrap{padding:10px 20px 0}
+.budget-bar-bg{height:5px;background:var(--sand);border-radius:3px;overflow:hidden}
+.budget-bar-fill{height:100%;border-radius:3px;transition:width 0.3s}
+.budget-bar-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px;font-weight:600}
+.exp-list{padding:12px 16px 0;display:flex;flex-direction:column;gap:7px}
+.exp-item{background:white;border-radius:9px;display:flex;align-items:center;gap:10px;padding:11px 13px;box-shadow:0 1px 3px rgba(26,18,8,0.06)}
+.exp-cat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.exp-body{flex:1;min-width:0}
+.exp-title{font-size:13px;font-weight:600;line-height:1.3}
+.exp-meta{font-size:10px;color:var(--muted);margin-top:2px}
+.exp-amt{text-align:right;flex-shrink:0}
+.exp-eur{font-size:14px;font-weight:700}
+.exp-orig{font-size:10px;color:var(--muted);margin-top:1px}
+.exp-more{background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;padding:2px;flex-shrink:0}
+
+/* ── INSIGHTS ── */
+.ins-section{padding:16px 20px;border-bottom:1px solid var(--sand)}
+.ins-title{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:14px}
+.ins-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+.ins-row:last-child{border-bottom:none}
+.ins-row-label{display:flex;align-items:center;gap:8px;font-size:13px}
+.ins-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ins-bar-wrap{flex:1;margin:0 10px;height:4px;background:var(--sand);border-radius:2px}
+.ins-bar{height:100%;border-radius:2px}
+.ins-val{font-size:13px;font-weight:700;min-width:50px;text-align:right}
+.ins-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+.ins-stat{background:white;border-radius:10px;padding:14px;box-shadow:0 1px 3px rgba(26,18,8,0.06)}
+.ins-stat-val{font-size:22px;font-weight:700;font-family:'Playfair Display',serif}
+.ins-stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px;font-weight:600}
+
 /* ── FAB ── */
-#fab-wrap{position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));right:20px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:50}
+#fab-wrap{position:fixed;bottom:max(70px,calc(env(safe-area-inset-bottom,0px) + 70px));right:20px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:50}
 #fab-mic{width:46px;height:46px;border-radius:50%;background:var(--berry);color:white;font-size:17px;border:none;cursor:pointer;box-shadow:0 3px 12px rgba(184,51,104,0.4);display:flex;align-items:center;justify-content:center}
 #fab-mic.listening{animation:pulse 0.7s infinite}
 #fab{width:58px;height:58px;border-radius:50%;background:var(--coral);color:white;font-size:32px;border:none;cursor:pointer;box-shadow:0 4px 18px rgba(224,79,40,0.45);display:flex;align-items:center;justify-content:center;font-weight:300;line-height:1}
@@ -374,14 +418,42 @@ window.addEventListener("load", function() {
 </div>
 
 <!-- APP -->
-<div id="app" style="display:none;flex-direction:column;flex:1;min-height:0;height:100%">
+<div id="app" style="display:none;flex-direction:column;flex:1;min-height:0;height:100vh">
   <div id="hdr"></div>
-  <div id="owner-wrap"></div>
-  <div id="week-wrap"></div>
-  <div id="day-view"></div>
+
+  <!-- TASKS VIEW -->
+  <div id="tasks-view" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">
+    <div id="owner-wrap"></div>
+    <div id="week-wrap"></div>
+    <div id="day-view" style="flex:1;overflow-y:auto;padding-bottom:80px"></div>
+  </div>
+
+  <!-- MONEY VIEW -->
+  <div id="money-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden">
+    <div id="money-trip-bar"></div>
+    <div id="money-day-bar"></div>
+    <div id="money-content" style="flex:1;overflow-y:auto;padding-bottom:80px;background:var(--cream)"></div>
+  </div>
+
+  <!-- INSIGHTS VIEW -->
+  <div id="insights-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding-bottom:80px;background:var(--cream)"></div>
+
+  <!-- BOTTOM NAV -->
+  <div id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--dark);display:flex;border-top:1px solid rgba(255,255,255,0.08);z-index:60;padding-bottom:env(safe-area-inset-bottom,0)">
+    <button class="nav-btn on" id="nav-tasks" onclick="switchTab('tasks')">
+      <div class="nav-icon">✓</div><div class="nav-lbl">Tasks</div>
+    </button>
+    <button class="nav-btn" id="nav-money" onclick="switchTab('money')">
+      <div class="nav-icon">€</div><div class="nav-lbl">Money</div>
+    </button>
+    <button class="nav-btn" id="nav-insights" onclick="switchTab('insights')">
+      <div class="nav-icon">◑</div><div class="nav-lbl">Insights</div>
+    </button>
+  </div>
+
   <div id="fab-wrap">
     <div id="fab-mic" onclick="startVoice()">🎤</div>
-    <div id="fab" onclick="openAdd()">+</div>
+    <div id="fab" onclick="fabAction()">+</div>
   </div>
 </div>
 
@@ -506,6 +578,42 @@ function cycleStatus(id,recurDate){
     var t=S.tasks[id];if(!t)return;
     updTask(id,{status:{todo:'inprogress',inprogress:'done',done:'todo'}[t.status]||'inprogress'});
   }
+}
+
+function openRoll(id){
+  var t=S.tasks[id]; if(!t) return;
+  // Generate next 14 days as options
+  var days=[];
+  for(var i=1;i<=14;i++){
+    var d=addDays(t.date||S.date,i);
+    var dt=new Date(d+'T12:00:00');
+    var label=dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    days.push({d:d,l:label});
+  }
+  var chips=days.map(function(day){
+    return '<div class="dchip roll-day-chip" data-d="'+day.d+'" style="padding:10px 14px;font-size:13px">'+day.l+'</div>';
+  }).join('');
+  openModal(
+    '<div class="mhandle"></div>'+
+    '<div class="mtitle">Move to which day?</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px">'+chips+'</div>'
+  );
+  setTimeout(function(){
+    document.querySelectorAll('.roll-day-chip').forEach(function(el){
+      el.addEventListener('click',function(){
+        var nd=this.getAttribute('data-d');
+        rollTaskToDate(id,nd);
+        closeModal();
+      });
+    });
+  },50);
+}
+
+function rollTaskToDate(id,newDate){
+  var t=S.tasks[id];if(!t)return;
+  var nid=uid();
+  S.tasks[nid]=Object.assign({},t,{id:nid,date:newDate,status:'todo',rolled:true,rollCount:(t.rollCount||0)+1,createdAt:Date.now()});
+  S.tasks[id].status='done';persist();renderAll();
 }
 
 function rollTask(id){
@@ -736,7 +844,7 @@ function openMenu(id){
   var isAndre = t.owner==='andre';
   var newOwner = isAndre ? 'daniella' : 'andre';
   var acts=[
-    {ic:'↩',l:'Roll to next day',bg:'rgba(201,138,16,0.1)',col:'var(--amber)',fn:'rollTask("'+id+'");closeModal()'},
+    {ic:'↩',l:'Roll to another day',bg:'rgba(201,138,16,0.1)',col:'var(--amber)',fn:'openRoll("'+id+'")'},
     {ic:'✂',l:'Split task',bg:'rgba(10,122,136,0.1)',col:'var(--teal)',fn:'openSplit("'+id+'")'},
     {ic:'✏',l:'Edit',bg:'var(--sand)',col:'var(--dark)',fn:'openEdit("'+id+'")'},
     {ic:'→',l:'Move to Someday',bg:'var(--sand)',col:'var(--muted)',fn:'updTask("'+id+'",{date:null});closeModal()'},
@@ -800,7 +908,523 @@ function doEdit(id){
   updTask(id,{title:title.trim(),date:date||null});closeModal();
 }
 
-var recog=null;
+
+// ── TAB SWITCHING ────────────────────────────────────────
+var currentTab = 'tasks';
+function switchTab(tab) {
+  currentTab = tab;
+  ['tasks','money','insights'].forEach(function(t){
+    var v = document.getElementById(t+'-view');
+    var b = document.getElementById('nav-'+t);
+    if(v){
+      if(t===tab){
+        v.style.display = (t==='insights') ? 'block' : 'flex';
+      } else {
+        v.style.display = 'none';
+      }
+    }
+    if(b) b.className = 'nav-btn' + (t===tab ? ' on' : '');
+  });
+  var fab = document.getElementById('fab');
+  var mic = document.getElementById('fab-mic');
+  if(tab==='tasks'){ fab.style.display='flex'; mic.style.display='flex'; }
+  else if(tab==='money'){ fab.style.display='flex'; mic.style.display='none'; fab.textContent='+'; }
+  else { fab.style.display='none'; mic.style.display='none'; }
+  if(tab==='money') renderMoney();
+  if(tab==='insights') renderInsights();
+}
+
+function fabAction(){
+  if(currentTab==='tasks') openAdd();
+  else if(currentTab==='money') openAddExpense();
+}
+
+// ── MONEY STATE ──────────────────────────────────────────
+var MS = {
+  trips: {},
+  expenses: {},
+  activeTripId: null,
+  moneyDate: td(),
+};
+
+// CATEGORY CONFIG
+var CATS = {
+  'Food':                   {icon:'🍽️', color:'#E04F28'},
+  'Going out':              {icon:'🍷', color:'#B83368'},
+  'Accommodation':          {icon:'🏠', color:'#0A7A88'},
+  'Transport (local)':      {icon:'🚕', color:'#C98A10'},
+  'Long distance travel':   {icon:'✈️', color:'#2D5C3A'},
+  'Shopping':               {icon:'🛍️', color:'#7A6E5A'},
+  'Clothing':               {icon:'👕', color:'#B83368'},
+  'Sightseeing & activities':{icon:'🗺️', color:'#0A7A88'},
+  'Insurance & subscriptions':{icon:'🔒', color:'#C98A10'},
+  'Health & medical':       {icon:'💊', color:'#E04F28'},
+  'Work & business':        {icon:'💼', color:'#2D5C3A'},
+  'Vehicle':                {icon:'🚗', color:'#7A6E5A'},
+  'Family support':         {icon:'❤️', color:'#B83368'},
+  'Others':                 {icon:'•',  color:'#7A6E5A'},
+};
+
+var CURRENCIES = [
+  'EUR','USD','GBP','AED','JPY','KRW','TWD','VND','CNY',
+  'MXN','CAD','PEN','AUD','CHF','SGD','THB','IDR','MYR',
+  'PHP','INR','BRL','COP','CLP','TRY','NOK','SEK','DKK',
+  'NZD','ZAR','HKD','SAR','QAR','KWD','BHD','MNT','RUB','GEL'
+];
+
+// Load money data from Firebase
+function loadMoneyData(){
+  if(db && !offline){
+    db.ref('trips').on('value', function(snap){ MS.trips = snap.val()||{}; renderMoney(); renderInsights(); });
+    db.ref('expenses').on('value', function(snap){ MS.expenses = snap.val()||{}; renderMoney(); renderInsights(); });
+  }
+}
+
+function persistMoney(){
+  if(db && !offline){
+    db.ref('trips').set(MS.trips);
+    db.ref('expenses').set(MS.expenses);
+  }
+}
+
+function muid(){ return 'e'+Date.now().toString(36)+Math.random().toString(36).substr(2,4); }
+
+// ── RENDER MONEY TAB ────────────────────────────────────
+function renderMoney(){
+  renderTripBar();
+  renderMoneyDayBar();
+  renderMoneyContent();
+}
+
+function renderTripBar(){
+  var el = document.getElementById('money-trip-bar');
+  if(!el) return;
+  var trips = Object.values(MS.trips).sort(function(a,b){ return (b.startDate||'') > (a.startDate||'') ? -1 : 1; });
+  var html = '<div class="trip-bar">';
+  trips.forEach(function(t){
+    var on = t.id === MS.activeTripId;
+    html += '<button class="trip-chip'+(on?' on':'')+'" onclick="setActiveTrip(\''+e(t.id)+'\')">'+e(t.name)+'</button>';
+  });
+  html += '<button class="trip-chip add" onclick="openAddTrip()">+ Trip</button>';
+  html += '</div>';
+  // Backup/Export section
+  html += '<div class="ins-section">'+
+    '<div class="ins-title">Data & Backup</div>'+
+    '<button class="btn-pri" onclick="exportBackup()" style="margin-bottom:10px">⬇ Download backup JSON</button>'+
+    '<div style="font-size:11px;color:var(--muted);line-height:1.6">Your data is also automatically backed up in Firebase and in GitHub.</div>'+
+    '</div>';
+
+  el.innerHTML = html;
+}
+
+function exportBackup(){
+  var data = {
+    exportDate: new Date().toISOString(),
+    tasks: S.tasks,
+    trips: MS.trips,
+    expenses: MS.expenses,
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'andaluma-backup-' + td() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function setActiveTrip(id){ MS.activeTripId = id; renderMoney(); }
+
+function renderMoneyDayBar(){
+  var el = document.getElementById('money-day-bar');
+  if(!el) return;
+  var trip = MS.activeTripId ? MS.trips[MS.activeTripId] : null;
+  var budget = trip ? (trip.dailyBudget || 80) : 80;
+  var dayExps = expensesForDay(MS.moneyDate);
+  var spent = dayExps.reduce(function(s,ex){ return s + (ex.eurAmount||0); }, 0);
+  var pct = Math.min(100, Math.round(spent/budget*100));
+  var color = pct > 100 ? '#C0392B' : pct > 80 ? '#C98A10' : '#2D5C3A';
+  var d = new Date(MS.moneyDate+'T12:00:00');
+  var label = d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+  el.innerHTML = '<div class="money-day-hdr">'+
+    '<div class="money-day-title">'+e(label)+'</div>'+
+    '<div style="display:flex;gap:8px;align-items:center">'+
+    '<button onclick="shiftMoneyDate(-1)" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px">‹</button>'+
+    '<button onclick="shiftMoneyDate(1)" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px">›</button>'+
+    '</div></div>'+
+    '<div class="budget-bar-wrap">'+
+    '<div class="budget-bar-bg"><div class="budget-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
+    '<div class="budget-bar-lbl"><span>€'+spent.toFixed(0)+' spent</span><span>€'+budget+'/day budget</span></div>'+
+    '</div>';
+}
+
+function shiftMoneyDate(dir){
+  var d = new Date(MS.moneyDate+'T12:00:00');
+  d.setDate(d.getDate()+dir);
+  MS.moneyDate = d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+  renderMoneyDayBar();
+  renderMoneyContent();
+}
+
+function expensesForDay(date){
+  return Object.values(MS.expenses).filter(function(ex){
+    if(ex.date !== date) return false;
+    if(MS.activeTripId && ex.tripId !== MS.activeTripId) return false;
+    return true;
+  }).sort(function(a,b){ return (a.createdAt||0)-(b.createdAt||0); });
+}
+
+function renderMoneyContent(){
+  var el = document.getElementById('money-content');
+  if(!el) return;
+  var exps = expensesForDay(MS.moneyDate);
+  var html = '<div class="exp-list">';
+  if(!exps.length){
+    html += '<div style="padding:36px 20px;text-align:center"><div style="font-size:28px;margin-bottom:8px">€</div>'+
+      '<div style="font-size:13px;color:var(--muted);line-height:1.6">No expenses today.<br>Tap <strong>+</strong> to add one.</div></div>';
+  } else {
+    exps.forEach(function(ex){
+      var cat = CATS[ex.category] || CATS['Others'];
+      var ownerTag = ex.owner === 'both' ? '👥' : ex.owner === 'daniella' ? 'D' : 'A';
+      html += '<div class="exp-item">'+
+        '<div class="exp-cat-icon" style="background:'+cat.color+'22">'+cat.icon+'</div>'+
+        '<div class="exp-body">'+
+          '<div class="exp-title">'+e(ex.title||ex.category)+'</div>'+
+          '<div class="exp-meta">'+e(ex.category)+' · '+ownerTag+(ex.notes?' · '+e(ex.notes):'')+'</div>'+
+        '</div>'+
+        '<div class="exp-amt">'+
+          '<div class="exp-eur" style="color:'+cat.color+'">€'+((ex.eurAmount||0).toFixed(2))+'</div>'+
+          (ex.originalCurrency !== 'EUR' ? '<div class="exp-orig">'+ex.originalCurrency+' '+((ex.originalAmount||0).toFixed(0))+'</div>' : '')+
+        '</div>'+
+        '<button class="exp-more" onclick="openExpMenu(\''+e(ex.id)+'\')">⋯</button>'+
+      '</div>';
+    });
+  }
+  html += '</div>';
+
+  // Pre-expenses for active trip
+  if(MS.activeTripId){
+    var preExps = Object.values(MS.expenses).filter(function(ex){
+      return ex.tripId === MS.activeTripId && !ex.date;
+    });
+    if(preExps.length){
+      html += '<div style="padding:14px 20px 6px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);font-weight:700">Pre-trip expenses</div>';
+      html += '<div class="exp-list" style="padding-top:0">';
+      preExps.forEach(function(ex){
+        var cat = CATS[ex.category]||CATS['Others'];
+        html += '<div class="exp-item">'+
+          '<div class="exp-cat-icon" style="background:'+cat.color+'22">'+cat.icon+'</div>'+
+          '<div class="exp-body"><div class="exp-title">'+e(ex.title||ex.category)+'</div>'+
+          '<div class="exp-meta">'+e(ex.category)+'</div></div>'+
+          '<div class="exp-amt"><div class="exp-eur" style="color:'+cat.color+'">€'+((ex.eurAmount||0).toFixed(2))+'</div></div>'+
+          '<button class="exp-more" onclick="openExpMenu(\''+e(ex.id)+'\')">⋯</button>'+
+        '</div>';
+      });
+      html += '</div>';
+    }
+  }
+
+  // Backup/Export section
+  html += '<div class="ins-section">'+
+    '<div class="ins-title">Data & Backup</div>'+
+    '<button class="btn-pri" onclick="exportBackup()" style="margin-bottom:10px">⬇ Download backup JSON</button>'+
+    '<div style="font-size:11px;color:var(--muted);line-height:1.6">Your data is also automatically backed up in Firebase and in GitHub.</div>'+
+    '</div>';
+
+  el.innerHTML = html;
+}
+
+function exportBackup(){
+  var data = {
+    exportDate: new Date().toISOString(),
+    tasks: S.tasks,
+    trips: MS.trips,
+    expenses: MS.expenses,
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'andaluma-backup-' + td() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── ADD EXPENSE ─────────────────────────────────────────
+var emst = {};
+function openAddExpense(){
+  emst = {
+    title:'', category:'Food', owner: S.owner==='both'?'both':S.owner,
+    currency:'EUR', amount:'', note:'', date:MS.moneyDate,
+    tripId: MS.activeTripId||'', preTrip:false,
+  };
+  drawAddExpense();
+}
+
+function drawAddExpense(){
+  var m = emst;
+  var catOpts = Object.keys(CATS).map(function(c){
+    var on = c===m.category;
+    return '<option value="'+e(c)+'"'+(on?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
+  }).join('');
+  var currOpts = CURRENCIES.map(function(c){
+    return '<option'+(c===m.currency?' selected':'')+'>'+c+'</option>';
+  }).join('');
+  var trips = Object.values(MS.trips);
+  var tripOpts = '<option value="">No trip</option>'+trips.map(function(t){
+    return '<option value="'+e(t.id)+'"'+(t.id===m.tripId?' selected':'')+'>'+e(t.name)+'</option>';
+  }).join('');
+  var os = [{id:'andre',l:'André'},{id:'daniella',l:'Daniella'},{id:'both',l:'Both'}];
+  var och = os.map(function(o){
+    return '<div class="ochip'+(m.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="emst.owner=\''+o.id+'\';drawAddExpense()">'+o.l+'</div>';
+  }).join('');
+  openModal(
+    '<div class="mhandle"></div><div class="mtitle">Add expense</div>'+
+    '<div class="fg"><label class="flbl">Amount</label>'+
+    '<div style="display:flex;gap:8px">'+
+    '<select class="finput" style="width:90px;flex-shrink:0" onchange="emst.currency=this.value">'+currOpts+'</select>'+
+    '<input type="number" class="finput" id="exp-amt" placeholder="0.00" value="'+e(m.amount)+'" oninput="emst.amount=this.value" style="flex:1">'+
+    '</div></div>'+
+    '<div class="fg"><label class="flbl">What for</label>'+
+    '<input type="text" class="finput" id="exp-title" value="'+e(m.title)+'" placeholder="Description (optional)" oninput="emst.title=this.value"></div>'+
+    '<div class="fg"><label class="flbl">Category</label>'+
+    '<select class="finput" onchange="emst.category=this.value">'+catOpts+'</select></div>'+
+    '<div class="fg"><label class="flbl">Paid by</label><div class="ochips">'+och+'</div></div>'+
+    '<div class="fg"><label class="flbl">Trip</label>'+
+    '<select class="finput" onchange="emst.tripId=this.value">'+tripOpts+'</select>'+
+    '<label class="sdcheck"><input type="checkbox" '+(m.preTrip?'checked':'')+' onchange="emst.preTrip=this.checked;drawAddExpense()"> Pre-trip expense (no specific day)</label></div>'+
+    (!m.preTrip ? '<div class="fg"><label class="flbl">Date</label><input type="date" class="fdate" value="'+e(m.date)+'" onchange="emst.date=this.value"></div>' : '')+
+    '<button class="btn-pri" onclick="submitExpense()">Add expense</button>'
+  );
+  setTimeout(function(){ var el=document.getElementById('exp-amt'); if(el) el.focus(); }, 80);
+}
+
+function submitExpense(){
+  var amt = parseFloat((document.getElementById('exp-amt')||{}).value||emst.amount||0);
+  if(!amt){ alert('Enter an amount.'); return; }
+  var title = (document.getElementById('exp-title')||{}).value||emst.title||'';
+  // Get live exchange rate then save
+  fetchRate(emst.currency, function(rate){
+    var eurAmt = emst.currency==='EUR' ? amt : amt * rate;
+    var id = muid();
+    MS.expenses[id] = {
+      id: id,
+      title: title.trim(),
+      category: emst.category,
+      owner: emst.owner,
+      originalAmount: amt,
+      originalCurrency: emst.currency,
+      eurAmount: Math.round(eurAmt*100)/100,
+      lockedRate: rate,
+      date: emst.preTrip ? null : (emst.date||MS.moneyDate),
+      tripId: emst.tripId||null,
+      notes: emst.note||'',
+      createdAt: Date.now(),
+      venture: 'personal',
+      type: 'expense',
+    };
+    persistMoney();
+    closeModal();
+    renderMoney();
+  });
+}
+
+// ── EXCHANGE RATES ───────────────────────────────────────
+var rateCache = {};
+function fetchRate(currency, cb){
+  if(currency==='EUR'){ cb(1); return; }
+  if(rateCache[currency]){ cb(rateCache[currency]); return; }
+  fetch('https://api.frankfurter.app/latest?from='+currency+'&to=EUR')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var rate = data.rates && data.rates.EUR ? data.rates.EUR : 1;
+      rateCache[currency] = rate;
+      cb(rate);
+    })
+    .catch(function(){ cb(1); });
+}
+
+// ── TRIP MANAGEMENT ─────────────────────────────────────
+function openAddTrip(){
+  openModal(
+    '<div class="mhandle"></div><div class="mtitle">New trip</div>'+
+    '<div class="fg"><label class="flbl">Destination</label>'+
+    '<input type="text" class="finput" id="trip-name" placeholder="e.g. South Korea"></div>'+
+    '<div class="fg"><label class="flbl">Daily budget (EUR)</label>'+
+    '<input type="number" class="finput" id="trip-budget" placeholder="80" value="80"></div>'+
+    '<div class="fg"><label class="flbl">Start date</label>'+
+    '<input type="date" class="fdate" id="trip-start" value="'+td()+'"></div>'+
+    '<div class="fg"><label class="flbl">End date <span style="font-weight:400;font-size:10px">(optional)</span></label>'+
+    '<input type="date" class="fdate" id="trip-end"></div>'+
+    '<button class="btn-pri" onclick="submitTrip()">Create trip</button>'
+  );
+}
+
+function submitTrip(){
+  var name = (document.getElementById('trip-name')||{}).value||'';
+  if(!name.trim()){ alert('Enter a destination.'); return; }
+  var id = muid();
+  MS.trips[id] = {
+    id: id,
+    name: name.trim(),
+    dailyBudget: parseFloat((document.getElementById('trip-budget')||{}).value||80),
+    startDate: (document.getElementById('trip-start')||{}).value||td(),
+    endDate: (document.getElementById('trip-end')||{}).value||null,
+    createdAt: Date.now(),
+  };
+  MS.activeTripId = id;
+  persistMoney();
+  closeModal();
+  renderMoney();
+}
+
+// ── EXP MENU ────────────────────────────────────────────
+function openExpMenu(id){
+  var ex = MS.expenses[id]; if(!ex) return;
+  openModal('<div class="mhandle"></div>'+
+    '<div style="font-family:Playfair Display,serif;font-size:17px;margin-bottom:3px">'+e(ex.title||ex.category)+'</div>'+
+    '<div style="font-size:11px;color:var(--muted);margin-bottom:20px">'+e(ex.category)+' · €'+(ex.eurAmount||0).toFixed(2)+'</div>'+
+    '<div class="alist">'+
+    '<div class="aitem danger" onclick="delExp(\''+id+'\')"><div class="aicon" style="background:rgba(192,57,43,0.08);color:#C0392B">🗑</div>Delete</div>'+
+    '</div>');
+}
+
+function delExp(id){
+  if(confirm('Delete this expense?')){ delete MS.expenses[id]; persistMoney(); closeModal(); renderMoney(); }
+}
+
+// ── INSIGHTS ────────────────────────────────────────────
+function renderInsights(){
+  var el = document.getElementById('insights-view');
+  if(!el) return;
+  var allExps = Object.values(MS.expenses).filter(function(ex){ return ex.eurAmount > 0; });
+
+  // By category
+  var byCat = {};
+  allExps.forEach(function(ex){
+    var c = ex.category||'Others';
+    byCat[c] = (byCat[c]||0) + (ex.eurAmount||0);
+  });
+  var catTotal = Object.values(byCat).reduce(function(s,v){return s+v;},0);
+  var catSorted = Object.keys(byCat).sort(function(a,b){return byCat[b]-byCat[a];});
+
+  // By trip
+  var byTrip = {};
+  allExps.forEach(function(ex){
+    var t = ex.tripId ? (MS.trips[ex.tripId] ? MS.trips[ex.tripId].name : 'Unknown') : 'General';
+    byTrip[t] = (byTrip[t]||0) + (ex.eurAmount||0);
+  });
+  var tripTotal = Object.values(byTrip).reduce(function(s,v){return s+v;},0);
+  var tripSorted = Object.keys(byTrip).sort(function(a,b){return byTrip[b]-byTrip[a];});
+
+  // By month
+  var byMonth = {};
+  allExps.forEach(function(ex){
+    if(!ex.date) return;
+    var m = ex.date.substr(0,7);
+    byMonth[m] = (byMonth[m]||0)+(ex.eurAmount||0);
+  });
+  var monthSorted = Object.keys(byMonth).sort();
+
+  // Overall stats
+  var totalEur = allExps.reduce(function(s,ex){return s+(ex.eurAmount||0);},0);
+  var totalDays = monthSorted.length ? 30 : 1;
+  var avgDaily = totalDays > 0 ? totalEur/Math.max(1,allExps.length) : 0;
+
+  var html = '';
+
+  // Stats
+  html += '<div class="ins-section">'+
+    '<div class="ins-title">Overview</div>'+
+    '<div class="ins-stat-grid">'+
+    '<div class="ins-stat"><div class="ins-stat-val">€'+Math.round(totalEur).toLocaleString()+'</div><div class="ins-stat-lbl">Total tracked</div></div>'+
+    '<div class="ins-stat"><div class="ins-stat-val">'+allExps.length+'</div><div class="ins-stat-lbl">Expenses</div></div>'+
+    '<div class="ins-stat"><div class="ins-stat-val">'+Object.keys(MS.trips).length+'</div><div class="ins-stat-lbl">Trips</div></div>'+
+    '<div class="ins-stat"><div class="ins-stat-val">'+catSorted.length+'</div><div class="ins-stat-lbl">Categories</div></div>'+
+    '</div></div>';
+
+  // By category
+  html += '<div class="ins-section"><div class="ins-title">By category</div>';
+  catSorted.slice(0,8).forEach(function(c){
+    var cat = CATS[c]||CATS['Others'];
+    var pct = catTotal > 0 ? Math.round(byCat[c]/catTotal*100) : 0;
+    html += '<div class="ins-row">'+
+      '<div class="ins-row-label"><div class="ins-dot" style="background:'+cat.color+'"></div>'+e(c)+'</div>'+
+      '<div class="ins-bar-wrap"><div class="ins-bar" style="width:'+pct+'%;background:'+cat.color+'"></div></div>'+
+      '<div class="ins-val">€'+Math.round(byCat[c])+'</div>'+
+    '</div>';
+  });
+  html += '</div>';
+
+  // By trip
+  html += '<div class="ins-section"><div class="ins-title">By destination</div>';
+  var tripColors = [VCOL.coral, VCOL.teal, VCOL.amber, VCOL.berry, '#2D5C3A','#7A6E5A'];
+  tripSorted.forEach(function(t,i){
+    var pct = tripTotal > 0 ? Math.round(byTrip[t]/tripTotal*100) : 0;
+    var col = tripColors[i%tripColors.length]||'#7A6E5A';
+    html += '<div class="ins-row">'+
+      '<div class="ins-row-label"><div class="ins-dot" style="background:'+col+'"></div>'+e(t)+'</div>'+
+      '<div class="ins-bar-wrap"><div class="ins-bar" style="width:'+pct+'%;background:'+col+'"></div></div>'+
+      '<div class="ins-val">€'+Math.round(byTrip[t])+'</div>'+
+    '</div>';
+  });
+  html += '</div>';
+
+  // By month
+  if(monthSorted.length){
+    var maxMonth = Math.max.apply(null, monthSorted.map(function(m){return byMonth[m];}));
+    html += '<div class="ins-section"><div class="ins-title">By month</div>';
+    monthSorted.forEach(function(m){
+      var pct = maxMonth > 0 ? Math.round(byMonth[m]/maxMonth*100) : 0;
+      var label = new Date(m+'-15').toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+      html += '<div class="ins-row">'+
+        '<div class="ins-row-label" style="min-width:60px">'+e(label)+'</div>'+
+        '<div class="ins-bar-wrap"><div class="ins-bar" style="width:'+pct+'%;background:var(--coral)"></div></div>'+
+        '<div class="ins-val">€'+Math.round(byMonth[m])+'</div>'+
+      '</div>';
+    });
+    html += '</div>';
+  }
+
+  // Backup/Export section
+  html += '<div class="ins-section">'+
+    '<div class="ins-title">Data & Backup</div>'+
+    '<button class="btn-pri" onclick="exportBackup()" style="margin-bottom:10px">⬇ Download backup JSON</button>'+
+    '<div style="font-size:11px;color:var(--muted);line-height:1.6">Your data is also automatically backed up in Firebase and in GitHub.</div>'+
+    '</div>';
+
+  el.innerHTML = html;
+}
+
+function exportBackup(){
+  var data = {
+    exportDate: new Date().toISOString(),
+    tasks: S.tasks,
+    trips: MS.trips,
+    expenses: MS.expenses,
+  };
+  var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'andaluma-backup-' + td() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Hook loadMoneyData into boot
+var _origBoot = boot;
+boot = function(){
+  _origBoot();
+  loadMoneyData();
+  // Set South Korea as default active trip if exists
+  setTimeout(function(){
+    var trips = Object.values(MS.trips);
+    var korea = trips.find(function(t){ return t.name && t.name.toLowerCase().indexOf('korea') >= 0; });
+    if(korea && !MS.activeTripId) MS.activeTripId = korea.id;
+  }, 1000);
+};
+
 function startVoice(){openAdd('');setTimeout(voiceForInput,300);}
 function voiceForInput(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
