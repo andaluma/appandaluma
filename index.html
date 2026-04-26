@@ -1431,7 +1431,7 @@ function openExpMenu(id){
 }
 
 function delExp(id){
-  if(confirm('Delete this expense?')){ delete MS.expenses[id]; persistMoney(); closeModal(); renderMoney(); }
+  if(confirm('Delete this expense?')){ delete MS.expenses[id]; persistMoney(); closeModal(); renderMoney(); renderInsights(); }
 }
 
 var eedst = {};
@@ -1517,6 +1517,7 @@ function submitEditExpense(){
     persistMoney();
     closeModal();
     renderMoney();
+    renderInsights();
   });
 }
 
@@ -1616,29 +1617,44 @@ function renderInsights(){
   el.innerHTML = html;
 }
 
-function showCatDrilldown(category){
+var _ddState = {cat:'', sort:'amount-desc'};
+function showCatDrilldown(category, sort){
+  sort = sort || _ddState.sort || 'amount-desc';
+  _ddState = {cat:category, sort:sort};
   var cat = CATS[category]||CATS['Others'];
   var exps = Object.values(MS.expenses).filter(function(ex){
     return ex.category === category && ex.eurAmount > 0;
-  }).sort(function(a,b){ return (b.date||'')>(a.date||'') ? 1 : -1; });
+  });
+  if(sort==='amount-asc') exps.sort(function(a,b){ return (a.eurAmount||0)-(b.eurAmount||0); });
+  else if(sort==='date-desc') exps.sort(function(a,b){ return (b.date||'')>(a.date||'') ? 1 : -1; });
+  else exps.sort(function(a,b){ return (b.eurAmount||0)-(a.eurAmount||0); });
   var total = exps.reduce(function(s,ex){ return s+(ex.eurAmount||0); }, 0);
+  var sortDefs = [{id:'amount-desc',label:'↓ Highest'},{id:'amount-asc',label:'↑ Lowest'},{id:'date-desc',label:'New → Old'}];
+  var chips = sortDefs.map(function(s){
+    var on = s.id===sort;
+    return '<button onclick="showCatDrilldown(\''+e(category)+'\',\''+s.id+'\')" style="padding:5px 11px;border-radius:14px;border:1.5px solid '+(on?cat.color:'var(--sand)')+';background:'+(on?cat.color+'22':'transparent')+';color:'+(on?cat.color:'var(--muted)')+';font-size:11px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap">'+s.label+'</button>';
+  }).join('');
   var rows = exps.map(function(ex){
     var dateLabel = ex.date ? new Date(ex.date+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : 'Pre-trip';
     var trip = ex.tripId && MS.trips[ex.tripId] ? MS.trips[ex.tripId].name : '';
-    return '<div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--sand)">'+
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--sand)">'+
       '<div style="flex:1;min-width:0">'+
-        '<div style="font-size:13px;font-weight:500">'+e(ex.title||category)+'</div>'+
+        '<div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+e(ex.title||category)+'</div>'+
         '<div style="font-size:10px;color:var(--muted);margin-top:2px">'+dateLabel+(trip?' \xb7 '+e(trip):'')+'</div>'+
       '</div>'+
-      '<div style="font-size:14px;font-weight:700;color:'+cat.color+'">€'+(ex.eurAmount||0).toFixed(2)+'</div>'+
+      '<div style="font-size:14px;font-weight:700;color:'+cat.color+';flex-shrink:0;margin-left:8px">€'+(ex.eurAmount||0).toFixed(2)+'</div>'+
+      '<button onclick="openExpMenu(\''+ex.id+'\')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;padding:2px 4px;flex-shrink:0;line-height:1">⋯</button>'+
     '</div>';
   }).join('');
-  openModal('<div class="mhandle"></div>'+
-    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">'+
-    '<div style="width:36px;height:36px;border-radius:8px;background:'+cat.color+'22;display:flex;align-items:center;justify-content:center;font-size:18px">'+cat.icon+'</div>'+
-    '<div><div class="mtitle" style="margin-bottom:0">'+e(category)+'</div>'+
-    '<div style="font-size:11px;color:var(--muted)">'+exps.length+' expenses \xb7 €'+Math.round(total)+' total</div></div></div>'+
-    '<div style="margin-top:16px">'+rows+'</div>'
+  openModal(
+    '<div class="mhandle"></div>'+
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'+
+      '<div style="width:36px;height:36px;border-radius:8px;background:'+cat.color+'22;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+cat.icon+'</div>'+
+      '<div><div class="mtitle" style="margin-bottom:0">'+e(category)+'</div>'+
+      '<div style="font-size:11px;color:var(--muted)">'+exps.length+' expenses \xb7 €'+Math.round(total)+' total</div></div>'+
+    '</div>'+
+    '<div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">'+chips+'</div>'+
+    rows
   );
 }
 
