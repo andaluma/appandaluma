@@ -369,20 +369,19 @@ window.addEventListener("load", function() {
   <div id="pin-error" style="color:#E04F28;font-size:13px;margin-bottom:16px;min-height:20px;text-align:center"></div>
   
   <!-- Number pad -->
-  <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px">
-    <button class="pkey" onclick="pinKey(1)">1</button>
-    <button class="pkey" onclick="pinKey(2)">2</button>
-    <button class="pkey" onclick="pinKey(3)">3</button>
-    <button class="pkey" onclick="pinKey(4)">4</button>
-    <button class="pkey" onclick="pinKey(5)">5</button>
-    <button class="pkey" onclick="pinKey(6)">6</button>
-    <button class="pkey" onclick="pinKey(7)">7</button>
-    <button class="pkey" onclick="pinKey(8)">8</button>
-    <button class="pkey" onclick="pinKey(9)">9</button>
+ <div id="pin-pad" style="display:grid;grid-template-columns:repeat(3,72px);gap:10px">
+    <button class="pkey" data-n="1">1</button>
+    <button class="pkey" data-n="2">2</button>
+    <button class="pkey" data-n="3">3</button>
+    <button class="pkey" data-n="4">4</button>
+    <button class="pkey" data-n="5">5</button>
+    <button class="pkey" data-n="6">6</button>
+    <button class="pkey" data-n="7">7</button>
+    <button class="pkey" data-n="8">8</button>
+    <button class="pkey" data-n="9">9</button>
     <div></div>
-    <button class="pkey" onclick="pinKey(0)">0</button>
-    <button class="pkey pkey-del" onclick="pinDel()">⌫</button>
-  </div>
+    <button class="pkey" data-n="0">0</button>
+    <button class="pkey pkey-del" data-n="del">&#x232B;</button>
 </div>
 <!-- SETUP -->
 <div id="setup" style="display:flex;flex-direction:column">
