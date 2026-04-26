@@ -512,7 +512,27 @@ function afterPin(){
   }catch(ex){ db=null; }
 }
 
-document.addEventListener('DOMContentLoaded', function(){ init(); });
+document.addEventListener('DOMContentLoaded', function(){
+  // Bind PIN pad via event delegation
+  var pad = document.getElementById('pin-pad');
+  if(pad){
+    pad.addEventListener('click', function(ev){
+      var btn = ev.target.closest('[data-n]');
+      if(!btn) return;
+      var n = btn.getAttribute('data-n');
+      if(n === 'del') pinDel();
+      else pinKey(parseInt(n));
+    });
+  }
+  // Also support keyboard input for PIN
+  document.addEventListener('keydown', function(ev){
+    var ps = document.getElementById('pin-screen');
+    if(!ps || ps.style.display === 'none') return;
+    if(ev.key >= '0' && ev.key <= '9') pinKey(parseInt(ev.key));
+    if(ev.key === 'Backspace') pinDel();
+  });
+  init();
+});
 
 function doSetup(){
   var raw=document.getElementById('fb-in').value.trim();
