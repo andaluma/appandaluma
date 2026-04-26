@@ -512,16 +512,23 @@ function afterPin(){
   }catch(ex){ db=null; }
 }
 
-// Use event delegation on document for PIN - works regardless of timing
-document.addEventListener('click', function(ev){
-  var btn = ev.target.closest('[data-n]');
-  if(!btn) return;
+// PIN input - click and touch handlers
+function handlePinInput(ev){
+  var btn = ev.target;
+  // Walk up to find data-n
+  while(btn && !btn.getAttribute('data-n') && btn !== document.body){
+    btn = btn.parentElement;
+  }
+  if(!btn || !btn.getAttribute('data-n')) return;
   var ps = document.getElementById('pin-screen');
   if(!ps || ps.style.display === 'none') return;
+  ev.preventDefault();
   var n = btn.getAttribute('data-n');
   if(n === 'del') pinDel();
   else pinKey(parseInt(n));
-});
+}
+document.addEventListener('click', handlePinInput);
+document.addEventListener('touchend', handlePinInput, {passive:false});
 
 document.addEventListener('keydown', function(ev){
   var ps = document.getElementById('pin-screen');
