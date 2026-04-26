@@ -1058,7 +1058,7 @@ var CURRENCIES = [
 // Load money data from Firebase
 function loadMoneyData(){
   if(db && !offline){
-    db.ref('trips').on('value', function(snap){ MS.trips = snap.val()||{}; renderMoney(); renderInsights(); });
+    db.ref('trips').on('value', function(snap){ MS.trips = snap.val()||{}; if(!MS.activeTripId) autoSelectTrip(); renderMoney(); renderInsights(); });
     db.ref('expenses').on('value', function(snap){ MS.expenses = snap.val()||{}; renderMoney(); renderInsights(); });
   }
 }
@@ -1104,14 +1104,20 @@ function renderTripBar(){
 function autoSelectTrip(){
   var today = td();
   var trips = Object.values(MS.trips);
-  // Find trip where today falls within startDate..endDate
+  // 1. Trip whose date range contains today
   var current = trips.find(function(t){
     return t.startDate && t.startDate <= today && (!t.endDate || t.endDate >= today);
   });
   if(current){ MS.activeTripId = current.id; return; }
-  // Otherwise pick most recent trip
-  trips.sort(function(a,b){ return (b.startDate||'') > (a.startDate||'') ? 1 : -1; });
-  if(trips.length) MS.activeTripId = trips[0].id;
+  // 2. Most recently started trip that has already begun (prefer past over future)
+  var past = trips.filter(function(t){ return t.startDate && t.startDate <= today; });
+  past.sort(function(a,b){ return (b.startDate||'')>(a.startDate||'') ? 1 : -1; });
+  if(past.length){ MS.activeTripId = past[0].id; return; }
+  // 3. Nearest upcoming trip as last resort
+  var future = trips.filter(function(t){ return t.startDate && t.startDate > today; });
+  future.sort(function(a,b){ return (a.startDate||'')>(b.startDate||'') ? 1 : -1; });
+  if(future.length){ MS.activeTripId = future[0].id; return; }
+  if(trips.length){ MS.activeTripId = Object.values(MS.trips)[0].id; }
 }
 
 function exportBackup(){
