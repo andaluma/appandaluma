@@ -512,6 +512,52 @@ function afterPin(){
   }catch(ex){ db=null; }
 }
 
+
+// ── PIN FUNCTIONS ────────────────────────────────────────
+var PIN = '1213';
+var pinEntry = '';
+
+function checkAuth(){ return ls('andaluma-auth') === 'ok'; }
+
+function showPin(){
+  document.getElementById('pin-screen').style.display = 'flex';
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+}
+
+function pinKey(n){
+  if(pinEntry.length >= 4) return;
+  pinEntry += String(n);
+  updatePinDots();
+  if(pinEntry.length === 4) setTimeout(checkPin, 100);
+}
+
+function pinDel(){
+  pinEntry = pinEntry.slice(0, -1);
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+}
+
+function updatePinDots(){
+  var dots = document.querySelectorAll('.pdot');
+  dots.forEach(function(d, i){
+    if(i < pinEntry.length) d.classList.add('filled');
+    else d.classList.remove('filled');
+  });
+}
+
+function checkPin(){
+  if(pinEntry === PIN){
+    lss('andaluma-auth', 'ok');
+    document.getElementById('pin-screen').style.display = 'none';
+    afterPin();
+  } else {
+    document.getElementById('pin-error').textContent = 'Wrong PIN. Try again.';
+    pinEntry = '';
+    updatePinDots();
+  }
+}
+
 // PIN input - click and touch handlers
 function handlePinInput(ev){
   var btn = ev.target;
