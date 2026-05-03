@@ -75,10 +75,10 @@ html{height:100%;height:-webkit-fill-available;overflow-x:hidden;width:100%}body
 }
 .btn-gcal.connected{background:rgba(10,122,136,0.5);border-color:var(--teal)}
 /* time zones - each in its own color */
-.tz-bar{display:flex;gap:0;border-radius:8px;overflow:hidden}
-.tz-item{flex:1;padding:8px 10px;display:flex;flex-direction:column;align-items:center}
-.tz-lbl{font-size:8px;letter-spacing:0.1em;text-transform:uppercase;opacity:0.7;margin-bottom:2px;font-weight:600}
-.tz-time{font-size:15px;font-weight:700}
+.tz-pills-wrap{display:flex;flex-direction:row;gap:4px;align-items:center;}
+.tz-pill{display:flex;flex-direction:column;align-items:center;padding:3px 8px;border-radius:6px;}
+.tz-lbl{font-size:8px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.55;font-weight:600;color:white;}
+.tz-time{font-size:13px;font-weight:700;color:white;}
 
 /* ── OWNER BAR ── */
 #owner-wrap{flex-shrink:0;padding:10px 14px;background:var(--dark);border-top:1px solid rgba(255,255,255,0.06)}
