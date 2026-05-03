@@ -251,7 +251,7 @@ function drawAddExpense(){
     return '<option value="'+e(c)+'"'+(on?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
   var tripCur = inferTripCurrency(MS.activeTripId);
-  var tripCur = inferTripCurrency(MS.activeTripId);`n  var _pinned = [];
+  var _pinned = [];
   if(tripCur) _pinned.push(tripCur);
   if(_pinned.indexOf('EUR')<0) _pinned.push('EUR');
   if(_pinned.indexOf('USD')<0) _pinned.push('USD');
@@ -269,13 +269,13 @@ function drawAddExpense(){
     '<div class="mhandle"></div><div class="mtitle">Add expense</div>'+
     '<div class="fg"><label class="flbl">Amount</label>'+
     '<div style="display:flex;gap:8px">'+
-   '<div class="curr-wrap">'+
-   '<div class="curr-sel" id="curr-sel-btn" onclick="toggleCurrDD()">'+m.currency+' ▾</div>'+
-   '<div class="curr-dd" id="curr-dd" style="display:none">'+
-   '<input class="curr-search" id="curr-search" type="text" placeholder="Search..." oninput="filterCurrDD()" autocomplete="off">'+
-   '<div class="curr-list" id="curr-list">'+
-   _allCurs.map(function(c){return'<div class="curr-item'+(c===m.currency?' sel':'')+(_pinned.indexOf(c)>=0?' pinned':'')+'" onclick="pickCurr(\''+c+'\')">'+c+'</div>';}).join('')+
-'</div></div></div>'+
+    '<div class="curr-wrap">'+
+    '<div class="curr-sel" id="curr-sel-btn" onclick="toggleCurrDD()">'+m.currency+' ▾</div>'+
+    '<div class="curr-dd" id="curr-dd" style="display:none">'+
+    '<input class="curr-search" id="curr-search" type="text" placeholder="Search..." oninput="filterCurrDD()" autocomplete="off">'+
+    '<div class="curr-list" id="curr-list">'+
+    _allCurs.map(function(c){return'<div class="curr-item'+(c===m.currency?' sel':'')+(_pinned.indexOf(c)>=0?' pinned':'')+'" onclick="pickCurr(\''+c+'\')">'+c+'</div>';}).join('')+
+    '</div></div></div>'+
     '<input type="number" class="finput" id="exp-amt" placeholder="0.00" value="'+e(m.amount)+'" oninput="emst.amount=this.value" style="flex:1">'+
     '</div></div>'+
     '<div class="fg"><label class="flbl">What for</label>'+
@@ -333,6 +333,7 @@ function pickCurr(c){
     el.classList.toggle('sel',el.textContent.trim()===c);
   });
 }
+
 function submitExpense(){
   var amt = parseFloat((document.getElementById('exp-amt')||{}).value||emst.amount||0);
   if(!amt){ alert('Enter an amount.'); return; }
@@ -499,8 +500,6 @@ function drawEditExpense(){
     return '<option value="'+e(c)+'"'+(c===m.category?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
   var tripCur = inferTripCurrency(MS.activeTripId);
-  var tripCur = inferTripCurrency(MS.activeTripId);`n  var _pinned = [];
-  if(tripCur) _pinned.push(tripCur);
   var pinned = [];
   if(tripCur) pinned.push(tripCur);
   if(pinned.indexOf('USD')<0) pinned.push('USD');
