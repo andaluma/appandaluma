@@ -250,16 +250,12 @@ function drawAddExpense(){
     var on = c===m.category;
     return '<option value="'+e(c)+'"'+(on?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
-  var tripCur = inferTripCurrency(MS.activeTripId);
-  var pinned = [];
-  if(tripCur) pinned.push(tripCur);
-  if(pinned.indexOf('USD')<0) pinned.push('USD');
-  if(pinned.indexOf('EUR')<0) pinned.push('EUR');
-  var rest = CURRENCIES.filter(function(c){ return pinned.indexOf(c)<0; }).sort();
-  var orderedCurs = pinned.concat(rest);
-  var currOpts = orderedCurs.map(function(c){
-    return '<option'+(c===m.currency?' selected':'')+'>'+c+'</option>';
-  }).join('');
+  var _pinned = [];
+  if(tripCur) _pinned.push(tripCur);
+  if(_pinned.indexOf('EUR')<0) _pinned.push('EUR');
+  if(_pinned.indexOf('USD')<0) _pinned.push('USD');
+  var _rest = CURRENCIES.filter(function(c){ return _pinned.indexOf(c)<0; }).sort();
+  var _allCurs = _pinned.concat(_rest);
   var trips = Object.values(MS.trips);
   var tripOpts = '<option value="">No trip</option>'+trips.map(function(t){
     return '<option value="'+e(t.id)+'"'+(t.id===m.tripId?' selected':'')+'>'+e(t.name)+'</option>';
@@ -272,7 +268,13 @@ function drawAddExpense(){
     '<div class="mhandle"></div><div class="mtitle">Add expense</div>'+
     '<div class="fg"><label class="flbl">Amount</label>'+
     '<div style="display:flex;gap:8px">'+
-    '<select class="finput" style="width:90px;flex-shrink:0" onchange="emst.currency=this.value">'+currOpts+'</select>'+
+   '<div class="curr-wrap">'+
+   '<div class="curr-sel" id="curr-sel-btn" onclick="toggleCurrDD()">'+m.currency+' ▾</div>'+
+   '<div class="curr-dd" id="curr-dd" style="display:none">'+
+   '<input class="curr-search" id="curr-search" type="text" placeholder="Search..." oninput="filterCurrDD()" autocomplete="off">'+
+   '<div class="curr-list" id="curr-list">'+
+   _allCurs.map(function(c){return'<div class="curr-item'+(c===m.currency?' sel':'')+(_pinned.indexOf(c)>=0?' pinned':'')+'" onclick="pickCurr(\''+c+'\')">'+c+'</div>';}).join('')+
+'</div></div></div>'+
     '<input type="number" class="finput" id="exp-amt" placeholder="0.00" value="'+e(m.amount)+'" oninput="emst.amount=this.value" style="flex:1">'+
     '</div></div>'+
     '<div class="fg"><label class="flbl">What for</label>'+
@@ -308,6 +310,28 @@ function drawAddExpense(){
   setTimeout(function(){ var el=document.getElementById('exp-amt'); if(el) el.focus(); }, 80);
 }
 
+function toggleCurrDD(){
+  var dd=document.getElementById('curr-dd');
+  if(!dd)return;
+  dd.style.display=dd.style.display==='none'?'block':'none';
+  if(dd.style.display==='block'){var s=document.getElementById('curr-search');if(s)s.focus();}
+}
+function filterCurrDD(){
+  var q=(document.getElementById('curr-search')||{}).value||'';
+  document.querySelectorAll('#curr-list .curr-item').forEach(function(el){
+    el.style.display=el.textContent.toLowerCase().indexOf(q.toLowerCase())>=0?'':'none';
+  });
+}
+function pickCurr(c){
+  emst.currency=c;
+  var btn=document.getElementById('curr-sel-btn');
+  if(btn)btn.textContent=c+' ▾';
+  var dd=document.getElementById('curr-dd');
+  if(dd)dd.style.display='none';
+  document.querySelectorAll('#curr-list .curr-item').forEach(function(el){
+    el.classList.toggle('sel',el.textContent.trim()===c);
+  });
+}
 function submitExpense(){
   var amt = parseFloat((document.getElementById('exp-amt')||{}).value||emst.amount||0);
   if(!amt){ alert('Enter an amount.'); return; }
