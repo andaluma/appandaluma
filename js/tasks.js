@@ -134,7 +134,7 @@ function renderHdr(){
 
 function renderOwner(){
   var os=[{id:'andre',l:'André'},{id:'daniella',l:'Daniella'},{id:'both',l:'Both'}];
-  var btns=os.map(function(o){return'<button class="obtn'+(S.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="setOwner(''+o.id+'')">'+o.l+'</button>';}).join('');
+    var btns=os.map(function(o){return'<button class="obtn'+(S.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="setOwner(\''+o.id+'\')">'+o.l+'</button>';}).join('');
   document.getElementById('owner-wrap').innerHTML='<div class="owner-bar">'+btns+'</div>';
 }
 
@@ -146,7 +146,7 @@ function renderWeek(){
     var tasks=tasksForDate(d);
     var vs={};tasks.forEach(function(t){if(t.venture)vs[t.venture]=true;});
     var dots=Object.keys(vs).slice(0,4).map(function(v){return'<div class="wk-vdot" style="background:'+(VCOL[v]||'#999')+'"></div>';}).join('');
-    h+='<div class="wk-day'+(sel?' sel':'')+(tod&&!sel?' tod':'')+'" onclick="selDate(''+d+'')">'+
+    h+='<div class="wk-day'+(sel?' sel':'')+(tod&&!sel?' tod':'')+'" onclick="selDate(\''+d+'\')">'+
       '<div class="wk-dn">'+dayName(d)+'</div>'+
       '<div class="wk-num">'+dayNum(d)+'</div>'+
       '<div class="wk-dots">'+dots+'</div>'+
