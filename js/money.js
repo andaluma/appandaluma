@@ -498,6 +498,8 @@ function drawEditExpense(){
     return '<option value="'+e(c)+'"'+(c===m.category?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
   var tripCur = inferTripCurrency(MS.activeTripId);
+  var _pinned = [];
+  if(tripCur) _pinned.push(tripCur);
   var pinned = [];
   if(tripCur) pinned.push(tripCur);
   if(pinned.indexOf('USD')<0) pinned.push('USD');
