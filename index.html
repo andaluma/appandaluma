@@ -10,6 +10,97 @@
 
 <style>
 /* Existing styles... */
+
+/* New Currency Dropdown Styles */
+.currency-dropdown {
+  position: relative;
+  width: 200px;
+}
+
+.currency-search {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.currency-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: none;
+  z-index: 1000;
+}
+
+.currency-dropdown-menu.open {
+  display: block;
+}
+
+.currency-group {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light-color);
+}
+
+.currency-group:last-child {
+  border-bottom: none;
+}
+
+.currency-group-title {
+  padding: 4px 12px;
+  font-weight: bold;
+  color: var(--text-secondary-color);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.currency-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.currency-item:hover {
+  background-color: var(--hover-bg-color);
+}
+
+.currency-item.pinned {
+  background-color: var(--highlight-bg-color);
+}
+
+.country-flag {
+  margin-right: 8px;
+}
+
+.currency-code {
+  font-weight: bold;
+  margin-right: 8px;
+  width: 40px;
+}
+
+.star-icon {
+  margin-left: auto;
+  color: var(--text-secondary-color);
+  cursor: pointer;
+}
+
+.star-icon.active {
+  color: var(--star-color);
+}
+
+.no-results {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-secondary-color);
+}
 </style>
 </head>
 <body>
@@ -17,8 +108,13 @@
 
 <!-- New Currency Dropdown Template (hidden by default) -->
 <div id="currency-dropdown-template" style="display:none">
-  <!-- Existing template content -->
-</div>
+  <div class="currency-dropdown">
+    <input class="currency-search" placeholder="Search currencies..." />
+    <div class="currency-dropdown-menu">
+      <!-- Pinned currencies will go here -->
+      <!-- Grouped currencies will be inserted dynamically -->
+    </div>
+  </div>
 
 <script>
 // Existing script content...
