@@ -1,4 +1,3 @@
-// ── DATE HELPERS ─────────────────────────────────────────
 function weekDays(off){var t=new Date(),dow=t.getDay(),mon=new Date(t);mon.setDate(t.getDate()-((dow+6)%7)+off*7);var r=[];for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(mon.getDate()+i);r.push(d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate()));}return r;}
 function dayName(str){return['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][(new Date(str+'T12:00:00').getDay()+6)%7];}
 function dayNum(str){return new Date(str+'T12:00:00').getDate();}
@@ -118,7 +117,7 @@ function renderHdr(){
   var gcalId=ls('andaluma-gcal');
   var gcalBtn=gcalId?('<button class="btn-gcal'+(gcalToken?' connected':'')+'" onclick="connectGcal()">'+(gcalToken?'📅 Cal ✓':'📅 Calendar')+'</button>'):'';
   var sync=db&&!offline?'● synced':'○ local';
-  var tz=TZS.map(function(t){return'<div class="tz-item" style="background:'+t.bg+'"><div class="tz-lbl">'+t.l+'</div><div class="tz-time">'+tzTime(t.z)+'</div></div>';}).join('');
+  var tz=TZS.map(function(t){return'<div class="tz-pill" style="background:'+t.bg+'"><div class="tz-lbl">'+t.l+'</div><div class="tz-time">'+tzTime(t.z)+'</div></div>';}).join('');
   document.getElementById('hdr').innerHTML=
     '<div class="hdr-top">'+
     '<div class="hdr-logo-grid">'+
@@ -127,14 +126,15 @@ function renderHdr(){
     '<div class="hdr-tile" style="background:var(--teal)">Lu</div>'+
     '<div class="hdr-tile" style="background:var(--amber)">Ma</div>'+
     '</div>'+
-    '<div class="hdr-right">'+gcalBtn+'<div class="hdr-sync">'+sync+'</div><button class="gear-btn" onclick="openSettings()">&#9881;&#65039;</button></div>'+
-    '</div>'+
-    '<div class="tz-bar">'+tz+'</div>';
+    '<div class="hdr-right">'+
+    '<div class="tz-pills-wrap">'+tz+'</div>'+
+    gcalBtn+'<div class="hdr-sync">'+sync+'</div><button class="gear-btn" onclick="openSettings()">&#9881;&#65039;</button></div>'+
+    '</div>';
 }
 
 function renderOwner(){
   var os=[{id:'andre',l:'André'},{id:'daniella',l:'Daniella'},{id:'both',l:'Both'}];
-  var btns=os.map(function(o){return'<button class="obtn'+(S.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="setOwner(\''+o.id+'\')">'+o.l+'</button>';}).join('');
+  var btns=os.map(function(o){return'<button class="obtn'+(S.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="setOwner(''+o.id+'')">'+o.l+'</button>';}).join('');
   document.getElementById('owner-wrap').innerHTML='<div class="owner-bar">'+btns+'</div>';
 }
 
@@ -146,7 +146,7 @@ function renderWeek(){
     var tasks=tasksForDate(d);
     var vs={};tasks.forEach(function(t){if(t.venture)vs[t.venture]=true;});
     var dots=Object.keys(vs).slice(0,4).map(function(v){return'<div class="wk-vdot" style="background:'+(VCOL[v]||'#999')+'"></div>';}).join('');
-    h+='<div class="wk-day'+(sel?' sel':'')+(tod&&!sel?' tod':'')+'" onclick="selDate(\''+d+'\')">'+
+    h+='<div class="wk-day'+(sel?' sel':'')+(tod&&!sel?' tod':'')+'" onclick="selDate(''+d+'')">'+
       '<div class="wk-dn">'+dayName(d)+'</div>'+
       '<div class="wk-num">'+dayNum(d)+'</div>'+
       '<div class="wk-dots">'+dots+'</div>'+
@@ -162,13 +162,13 @@ function renderTaskItem(t){
   if(t.rolled)tags+='<span class="tag-roll">↩'+(t.rollCount>1?' '+t.rollCount+'×':'')+'</span>';
   if(t.recurring||t._ri)tags+='<span class="tag-rec">↻</span>';
   if(S.owner==='both')tags+='<span class="tag-own" data-o="'+e(t.owner||'andre')+'">'+(t.owner==='daniella'?'D':'A')+'</span>';
-var cbc=t._ri?'cycleStatus(\''+t.id+'\',\''+e(t._rd||'')+'\')':'cycleStatus(\''+t.id+'\',\'\')';
+var cbc=t._ri?'cycleStatus(''+t.id+'',''+e(t._rd||'')+'')':'cycleStatus(''+t.id+'','')';
   return'<div class="ti '+st+(t.rolled?' rolled':'')+'" data-v="'+e(v)+'">'+
     '<div class="ti-accent"></div>'+
     '<div class="ti-inner">'+
     '<button class="ti-cb" onclick="'+cbc+'">'+cb+'</button>'+
     '<div class="ti-body"><div class="ti-title">'+e(t.title)+'</div><div class="ti-tags">'+tags+'</div></div>'+
-    '<button class="ti-more" onclick="openMenu(\''+e(t.id)+'\')">⋯</button>'+
+    '<button class="ti-more" onclick="openMenu(''+e(t.id)+'')">⋯</button>'+
     '</div></div>';
 }
 
@@ -215,14 +215,14 @@ function drawAdd(){
   var vs=[{id:'andaluma',l:'Andaluma'},{id:'vae',l:'VAE'},{id:'baraca',l:'Baraca'},{id:'personal',l:'Personal'}];
   var os=[{id:'andre',l:'André'},{id:'daniella',l:'Daniella'},{id:'both',l:'Both'}];
   var wds=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var vch=vs.map(function(v){return'<div class="vchip'+(m.venture===v.id?' on':'')+'" data-v="'+v.id+'" onclick="mst.venture=\''+v.id+'\';drawAdd()">'+v.l+'</div>';}).join('');
-  var och=os.map(function(o){return'<div class="ochip'+(m.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="mst.owner=\''+o.id+'\';drawAdd()">'+o.l+'</div>';}).join('');
+  var vch=vs.map(function(v){return'<div class="vchip'+(m.venture===v.id?' on':'')+'" data-v="'+v.id+'" onclick="mst.venture=''+v.id+'';drawAdd()">'+v.l+'</div>';}).join('');
+  var och=os.map(function(o){return'<div class="ochip'+(m.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="mst.owner=''+o.id+'';drawAdd()">'+o.l+'</div>';}).join('');
   var reh='';
   if(m.rec){
     reh='<div class="recopts">'+
-      '<div class="recopt'+(m.recType==='daily'?' on':'')+'" onclick="mst.recType=\'daily\';drawAdd()">Daily</div>'+
-      '<div class="recopt'+(m.recType==='weekly'?' on':'')+'" onclick="mst.recType=\'weekly\';drawAdd()">Weekly</div>'+
-      '<div class="recopt'+(m.recType==='manual'?' on':'')+'" onclick="mst.recType=\'manual\';drawAdd()">Specific date</div>'+
+      '<div class="recopt'+(m.recType==='daily'?' on':'')+'" onclick="mst.recType='daily';drawAdd()">Daily</div>'+
+      '<div class="recopt'+(m.recType==='weekly'?' on':'')+'" onclick="mst.recType='weekly';drawAdd()">Weekly</div>'+
+      '<div class="recopt'+(m.recType==='manual'?' on':'')+'" onclick="mst.recType='manual';drawAdd()">Specific date</div>'+
       '</div>';
     if(m.recType==='weekly'){
       reh+='<div class="daychips">'+wds.map(function(d,i){return'<div class="dchip'+(m.recDays.indexOf(i)>=0?' on':'')+'" onclick="tRD('+i+')">'+d+'</div>';}).join('')+'</div>';
@@ -275,12 +275,12 @@ function openMenu(id){
   var isAndre = t.owner==='andre';
   var newOwner = isAndre ? 'daniella' : 'andre';
   var acts=[
-    {ic:'↩',l:'Roll to another day',bg:'rgba(201,138,16,0.1)',col:'var(--amber)',fn:'openRoll("'+id+'")'},
-    {ic:'✂',l:'Split task',bg:'rgba(10,122,136,0.1)',col:'var(--teal)',fn:'openSplit("'+id+'")'},
-    {ic:'✏',l:'Edit',bg:'var(--sand)',col:'var(--dark)',fn:'openEdit("'+id+'")'},
-    {ic:'→',l:'Move to Someday',bg:'var(--sand)',col:'var(--muted)',fn:'updTask("'+id+'",{date:null});closeModal()'},
-    {ic:isAndre?'👩':'👨',l:isAndre?'Move to Daniella':'Move to André',bg:isAndre?'rgba(184,51,104,0.1)':'rgba(224,79,40,0.1)',col:isAndre?'var(--berry)':'var(--coral)',fn:'updTask("'+id+'",{owner:"'+newOwner+'"});closeModal()'},
-    {ic:'🗑',l:'Delete',bg:'rgba(192,57,43,0.08)',col:'#C0392B',fn:'doDelete("'+id+'")'},
+    {ic:'↩',l:'Roll to another day',bg:'rgba(201,138,16,0.1)',col:'var(--amber)',fn:'openRoll(''+id+'')'},
+    {ic:'✂',l:'Split task',bg:'rgba(10,122,136,0.1)',col:'var(--teal)',fn:'openSplit(''+id+'')'},
+    {ic:'✏',l:'Edit',bg:'var(--sand)',col:'var(--dark)',fn:'openEdit(''+id+'')'},
+    {ic:'→',l:'Move to Someday',bg:'var(--sand)',col:'var(--muted)',fn:'updTask(''+id+'',{date:null});closeModal()'},
+    {ic:isAndre?'👩':'👨',l:isAndre?'Move to Daniella':'Move to André',bg:isAndre?'rgba(184,51,104,0.1)':'rgba(224,79,40,0.1)',col:isAndre?'var(--berry)':'var(--coral)',fn:'updTask(''+id+'',{owner:"'+newOwner+'"});closeModal()'},
+    {ic:'🗑',l:'Delete',bg:'rgba(192,57,43,0.08)',col:'#C0392B',fn:'doDelete(''+id+'')'},
   ];
   var menuHtml = '<div class="mhandle"></div>'+
     '<div style="font-family:Playfair Display,serif;font-size:17px;margin-bottom:3px">'+e(t.title)+'</div>'+
@@ -310,8 +310,8 @@ function openSplit(id){
     '<input type="text" class="finput" id="sp2" placeholder="Second part..."></div>'+
     '<div class="fg"><label class="flbl">Part 2 goes to</label>'+
     '<div class="split2">'+
-    '<button style="background:var(--sand);color:var(--dark)" onclick="doSplit(\''+id+'\',\'same\')">Same day</button>'+
-    '<button style="background:var(--coral);color:white" onclick="doSplit(\''+id+'\',\'next\')">Next day</button>'+
+    '<button style="background:var(--sand);color:var(--dark)" onclick="doSplit(''+id+'','same')">Same day</button>'+
+    '<button style="background:var(--coral);color:white" onclick="doSplit(''+id+'','next')">Next day</button>'+
     '</div></div>');
 }
 
@@ -328,7 +328,7 @@ function openEdit(id){
   openModal('<div class="mhandle"></div><div class="mtitle">Edit task</div>'+
     '<div class="fg"><label class="flbl">Title</label><input type="text" class="finput" id="ed-t" value="'+e(t.title)+'"></div>'+
     '<div class="fg"><label class="flbl">Date</label><input type="date" class="fdate" id="ed-d" value="'+(t.date||'')+'"></div>'+
-    '<button class="btn-pri" onclick="doEdit(\''+id+'\')">Save</button>');
+    '<button class="btn-pri" onclick="doEdit(''+id+'')">Save</button>');
 }
 
 function doEdit(id){
@@ -378,3 +378,4 @@ function fetchCal(date){
   fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin='+encodeURIComponent(s)+'&timeMax='+encodeURIComponent(en)+'&singleEvents=true&orderBy=startTime',{headers:{Authorization:'Bearer '+gcalToken}})
   .then(function(r){return r.json();}).then(function(data){S.calEvs=data.items||[];renderDay();}).catch(function(){});
 }
+
