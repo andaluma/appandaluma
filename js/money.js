@@ -250,7 +250,8 @@ function drawAddExpense(){
     var on = c===m.category;
     return '<option value="'+e(c)+'"'+(on?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
-  var _pinned = [];
+  var tripCur = inferTripCurrency(MS.activeTripId);
+  var tripCur = inferTripCurrency(MS.activeTripId);`n  var _pinned = [];
   if(tripCur) _pinned.push(tripCur);
   if(_pinned.indexOf('EUR')<0) _pinned.push('EUR');
   if(_pinned.indexOf('USD')<0) _pinned.push('USD');
@@ -498,7 +499,7 @@ function drawEditExpense(){
     return '<option value="'+e(c)+'"'+(c===m.category?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
   var tripCur = inferTripCurrency(MS.activeTripId);
-  var _pinned = [];
+  var tripCur = inferTripCurrency(MS.activeTripId);`n  var _pinned = [];
   if(tripCur) _pinned.push(tripCur);
   var pinned = [];
   if(tripCur) pinned.push(tripCur);
