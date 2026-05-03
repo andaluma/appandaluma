@@ -169,7 +169,7 @@ function renderMoneyContent(){
   var el = document.getElementById('money-content');
   if(!el) return;
   var exps = expensesForDay(MS.moneyDate);
-  var html = renderFixedSection();
+  var html = '';
   html += '<div class="exp-list">';
   if(!exps.length){
     html += '<div style="padding:36px 20px;text-align:center"><div style="font-size:28px;margin-bottom:8px">€</div>'+
@@ -214,7 +214,8 @@ function renderMoneyContent(){
       html += '</div>';
     }
   }
-
+html += renderFixedSection();
+el.innerHTML = html;
   el.innerHTML = html;
 }
 
