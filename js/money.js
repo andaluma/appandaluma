@@ -732,7 +732,7 @@ function fetchConvRates(){
 
 function recalcConv(){
   if(!convRatesFetched) return;
-  var baseVal = parseFloat(convValues[convLastEdited])||0;
+  var baseVal = parseFloat(String(convValues[convLastEdited]||'').replace(/,/g,''))||0;
   var baseRate = convRates[convLastEdited]||1;
   var eurVal = baseVal / baseRate;
   var currencies = getConvCurrencies();
@@ -745,9 +745,24 @@ function recalcConv(){
 
 function onConvInput(code, val){
   convLastEdited = code;
-  convValues[code] = val;
+  // Store as a plain number (strip any commas the user may have typed)
+  convValues[code] = parseFloat(String(val).replace(/,/g,''))||0;
   recalcConv();
   renderConverterValues();
+}
+
+// Strip commas when user taps a field to edit, and select all for easy overwrite
+function onConvFocus(code){
+  var inp = document.getElementById('conv-inp-'+code);
+  if(!inp) return;
+  inp.value = String(inp.value).replace(/,/g,'');
+  inp.select();
+}
+
+function clearConv(){
+  convValues = {};
+  convLastEdited = 'EUR';
+  renderConverter();
 }
 
 function renderConverterValues(){
@@ -757,14 +772,21 @@ function renderConverterValues(){
     if(!inp) return;
     if(c === convLastEdited) return;
     var v = convValues[c];
-    inp.value = (v !== undefined && v !== 0) ? formatConvVal(c, v) : '';
+    inp.value = (v !== undefined && v !== null && v !== 0) ? formatConvVal(c, v) : '';
   });
 }
 
 function formatConvVal(code, val){
-  if(val === 0 || val === undefined) return '';
-  if(['JPY','KRW','VND','CLP','COP','IDR','MNT','RUB'].indexOf(code)>=0) return Math.round(val).toString();
-  return val.toFixed(2);
+  if(val === 0 || val === undefined || val === null) return '';
+  var noDecimal = ['JPY','KRW','VND','CLP','COP','IDR','MNT','RUB'];
+  if(noDecimal.indexOf(code) >= 0){
+    // Integer with thousands commas: 24500000 → "24,500,000"
+    return Math.round(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  // Decimal with thousands commas: 1234.56 → "1,234.56"
+  var parts = val.toFixed(2).split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
 }
 
 function filterConvSearch(val){
@@ -798,6 +820,7 @@ function renderConverter(){
 
   var html = '<div class="conv-header">';
   html += '<div class="conv-title">Currencies</div>';
+  html += '<button onclick="clearConv()" style="background:rgba(10,122,136,0.12);border:none;border-radius:8px;color:var(--teal);font-size:12px;font-weight:600;font-family:\'DM Sans\',sans-serif;padding:6px 12px;cursor:pointer;letter-spacing:0.02em">✕ Clear</button>';
   html += '</div>';
 
   html += '<div class="conv-board">';
@@ -805,11 +828,11 @@ function renderConverter(){
     var isPinned = pinned.indexOf(c) >= 0;
     var flag = CONV_FLAGS[c]||'💱';
     var val = convValues[c];
-    var dispVal = (c === convLastEdited) ? (convValues[c]||'') : ((val !== undefined && val !== 0) ? formatConvVal(c, val) : '');
+    var dispVal = (val !== undefined && val !== null && val !== 0) ? formatConvVal(c, val) : '';
     html += '<div class="conv-row'+(isPinned?' pinned':'')+'">';
     html += '<span class="conv-flag">'+flag+'</span>';
     html += '<span class="conv-code">'+c+'</span>';
-    html += '<input class="conv-input" id="conv-inp-'+c+'" type="number" inputmode="decimal" placeholder="0.00" value="'+(dispVal||'')+'" oninput="onConvInput(\''+c+'\',this.value)">';
+    html += '<input class="conv-input" id="conv-inp-'+c+'" type="text" inputmode="decimal" placeholder="0" value="'+e(dispVal)+'" oninput="onConvInput(\''+c+'\',this.value)" onfocus="onConvFocus(\''+c+'\')">';
     if(!isPinned){
       html += '<button class="conv-star on" onclick="toggleConvStar(\''+c+'\')" title="Remove">✕</button>';
     }
