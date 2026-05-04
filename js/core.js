@@ -191,33 +191,55 @@ function persist(){if(db&&!offline)db.ref('tasks').set(S.tasks);else lss('andalu
 function loadLocal(){try{var s=ls('andaluma-tasks');S.tasks=s?JSON.parse(s):{};}catch(e){S.tasks={};}}
 
 // ── MODAL ────────────────────────────────────────────────
-function openModal(html){document.getElementById('mcontent').innerHTML=html;document.getElementById('modal-overlay').style.display='flex';}
-function closeModal(){document.getElementById('modal-overlay').style.display='none';mst={};}
+function openModal(html){
+  document.getElementById('mcontent').innerHTML=html;
+  document.getElementById('modal-overlay').style.display='flex';
+  // Push a history entry so the Android back button closes the modal
+  history.pushState({modal:true},'');
+}
+function closeModal(){
+  document.getElementById('modal-overlay').style.display='none';
+  mst={};
+  // Pop the history entry we pushed — but only if we're still sitting on it
+  if(history.state&&history.state.modal) history.back();
+}
 function bgClose(ev){if(ev.target===document.getElementById('modal-overlay'))closeModal();}
+
+// ── ANDROID BACK BUTTON ──────────────────────────────────
+window.addEventListener('popstate',function(){
+  var ov=document.getElementById('modal-overlay');
+  if(ov&&ov.style.display!=='none'){
+    // Back pressed while modal is open → close modal (history already popped)
+    ov.style.display='none'; mst={}; return;
+  }
+  // Back pressed on a non-tasks tab → return to tasks
+  if(currentTab!=='tasks') _switchTabUI('tasks');
+});
 
 // ── TAB SWITCHING ────────────────────────────────────────
 var currentTab = 'tasks';
-function switchTab(tab) {
+
+// Internal: updates UI only, no history push (used by popstate handler)
+function _switchTabUI(tab){
   currentTab = tab;
   ['tasks','money','insights'].forEach(function(t){
     var v = document.getElementById(t+'-view');
     var b = document.getElementById('nav-'+t);
-    if(v){
-      if(t===tab){
-        v.style.display = (t==='insights') ? 'block' : 'flex';
-      } else {
-        v.style.display = 'none';
-      }
-    }
-    if(b) b.className = 'nav-btn' + (t===tab ? ' on' : '');
+    if(v) v.style.display = t===tab ? (t==='insights'?'block':'flex') : 'none';
+    if(b) b.className = 'nav-btn'+(t===tab?' on':'');
   });
-  var fab = document.getElementById('fab');
-  var mic = document.getElementById('fab-mic');
+  var fab=document.getElementById('fab'), mic=document.getElementById('fab-mic');
   if(tab==='tasks'){ fab.style.display='flex'; mic.style.display='flex'; }
   else if(tab==='money'){ fab.style.display='flex'; mic.style.display='none'; fab.textContent='+'; }
   else { fab.style.display='none'; mic.style.display='none'; }
   if(tab==='money') renderMoney();
   if(tab==='insights') renderInsights();
+}
+
+function switchTab(tab) {
+  // Push a history entry when leaving tasks so back button returns here
+  if(tab!=='tasks') history.pushState({tab:tab},'');
+  _switchTabUI(tab);
 }
 
 function fabAction(){
