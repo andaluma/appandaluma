@@ -62,6 +62,8 @@ function renderTripBar(){
   if(hiddenCount > 0 || showPastTrips){
     html += '<button class="trip-chip past-toggle" onclick="togglePastTrips()">'+(showPastTrips ? 'Hide past' : hiddenCount+' past')+'</button>';
   }
+  // Insights icon — right-aligned in the trip bar
+  html += '<button class="trip-chip" onclick="showInsights()" title="Insights" style="margin-left:auto;background:rgba(10,122,136,0.18);color:rgba(255,255,255,0.75)">◑ Insights</button>';
   html += '</div>';
   el.innerHTML = html;
 }
@@ -647,6 +649,27 @@ function deleteFixed(id){
   if(confirm('Delete this fixed expense?')){ delete MS.fixedExpenses[id]; persistMoney(); closeModal(); renderMoneyContent(); }
 }
 
+// ── INSIGHTS OVERLAY (accessed from Money tab) ───────────
+function showInsights(){
+  var mv = document.getElementById('money-view');
+  var iv = document.getElementById('insights-view');
+  if(mv) mv.style.display = 'none';
+  if(iv){ iv.style.display = 'flex'; renderInsights(); }
+  history.pushState({insights:true}, '');
+}
+
+function hideInsights(){
+  var iv = document.getElementById('insights-view');
+  var mv = document.getElementById('money-view');
+  if(iv) iv.style.display = 'none';
+  if(mv) mv.style.display = 'flex';
+  // Pop the history entry we pushed, but suppress the tab-switch side-effect
+  if(history.state && history.state.insights){
+    _suppressNextBackTabSwitch = true;
+    history.back();
+  }
+}
+
 // ── CURRENCY CONVERTER ───────────────────────────────────
 var convPanel = 0;
 var convRates = {};
@@ -766,7 +789,7 @@ function filterConvSearch(val){
 }
 
 function renderConverter(){
-  var el = document.getElementById('converter-panel');
+  var el = document.getElementById('converter-view');
   if(!el) return;
   var currencies = getConvCurrencies();
   var pinned = ['EUR','USD'];
@@ -775,7 +798,6 @@ function renderConverter(){
 
   var html = '<div class="conv-header">';
   html += '<div class="conv-title">Currencies</div>';
-  html += '<button class="conv-back" onclick="showMoneyPanel(0)">← Expenses</button>';
   html += '</div>';
 
   html += '<div class="conv-board">';

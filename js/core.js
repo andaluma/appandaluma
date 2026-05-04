@@ -206,13 +206,24 @@ function closeModal(){
 function bgClose(ev){if(ev.target===document.getElementById('modal-overlay'))closeModal();}
 
 // ── ANDROID BACK BUTTON ──────────────────────────────────
+// Flag to suppress the tab-switch when hideInsights() calls history.back()
+var _suppressNextBackTabSwitch = false;
+
 window.addEventListener('popstate',function(){
+  // 1. Modal open?
   var ov=document.getElementById('modal-overlay');
-  if(ov&&ov.style.display!=='none'){
-    // Back pressed while modal is open → close modal (history already popped)
-    ov.style.display='none'; mst={}; return;
+  if(ov&&ov.style.display!=='none'){ ov.style.display='none'; mst={}; return; }
+  // 2. Insights overlay open (shown from within Money tab)?
+  var iv=document.getElementById('insights-view');
+  if(iv&&iv.style.display!=='none'){
+    iv.style.display='none';
+    var mv=document.getElementById('money-view');
+    if(mv) mv.style.display='flex';
+    return;
   }
-  // Back pressed on a non-tasks tab → return to tasks
+  // 3. hideInsights() just fired history.back() — don't also jump to Tasks
+  if(_suppressNextBackTabSwitch){ _suppressNextBackTabSwitch=false; return; }
+  // 4. Non-tasks tab → return to Tasks
   if(currentTab!=='tasks') _switchTabUI('tasks');
 });
 
@@ -222,10 +233,13 @@ var currentTab = 'tasks';
 // Internal: updates UI only, no history push (used by popstate handler)
 function _switchTabUI(tab){
   currentTab = tab;
-  ['tasks','money','insights'].forEach(function(t){
+  // Always hide the insights overlay when switching nav tabs
+  var iv=document.getElementById('insights-view');
+  if(iv) iv.style.display='none';
+  ['tasks','money','converter'].forEach(function(t){
     var v = document.getElementById(t+'-view');
     var b = document.getElementById('nav-'+t);
-    if(v) v.style.display = t===tab ? (t==='insights'?'block':'flex') : 'none';
+    if(v) v.style.display = t===tab ? 'flex' : 'none';
     if(b) b.className = 'nav-btn'+(t===tab?' on':'');
   });
   var fab=document.getElementById('fab'), mic=document.getElementById('fab-mic');
@@ -233,7 +247,7 @@ function _switchTabUI(tab){
   else if(tab==='money'){ fab.style.display='flex'; mic.style.display='none'; fab.textContent='+'; }
   else { fab.style.display='none'; mic.style.display='none'; }
   if(tab==='money') renderMoney();
-  if(tab==='insights') renderInsights();
+  if(tab==='converter'){ if(!convRatesFetched) fetchConvRates(); else renderConverter(); }
 }
 
 function switchTab(tab) {

@@ -260,6 +260,12 @@ function renderInsights(){
 
   var html = '';
 
+  // ── Back button to Money tab ──
+  html += '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px 2px;position:sticky;top:0;background:var(--cream);z-index:2;border-bottom:1px solid var(--sand)">'+
+    '<button onclick="hideInsights()" style="background:none;border:none;cursor:pointer;color:var(--teal);font-size:13px;font-weight:600;font-family:\'DM Sans\',sans-serif;padding:4px 0;display:flex;align-items:center;gap:5px">← Money</button>'+
+    '<div style="font-family:\'Playfair Display\',serif;font-size:18px;font-weight:700;color:var(--dark)">Insights</div>'+
+  '</div>';
+
   // ── Interactive chart builder ──
   html += '<div class="ic-header">'+
     '<div class="ic-title">Spending</div>'+
