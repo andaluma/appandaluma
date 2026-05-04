@@ -684,16 +684,27 @@ function getConvCurrencies(){
 }
 
 function fetchConvRates(){
-  fetch('https://api.frankfurter.dev/v1/latest?base=EUR')
+  // Seed with fallback rates for currencies Frankfurter doesn't cover (VND, IDR, etc.)
+  // RATE_FALLBACK stores EUR-per-unit, converter needs units-per-EUR, so invert.
+  Object.keys(RATE_FALLBACK).forEach(function(c){
+    if(!convRates[c]) convRates[c] = 1 / RATE_FALLBACK[c];
+  });
+  convRates['EUR'] = 1;
+  fetch('https://api.frankfurter.app/latest?base=EUR')
     .then(function(r){ return r.json(); })
     .then(function(data){
-      convRates = data.rates || {};
+      var fresh = data.rates || {};
+      Object.keys(fresh).forEach(function(c){ convRates[c] = fresh[c]; });
       convRates['EUR'] = 1;
       convRatesFetched = true;
       recalcConv();
       renderConverter();
     })
-    .catch(function(){ });
+    .catch(function(){
+      convRatesFetched = true;
+      recalcConv();
+      renderConverter();
+    });
 }
 
 function recalcConv(){
