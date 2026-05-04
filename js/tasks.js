@@ -359,17 +359,94 @@ function doSplit(id,when){
 
 function openEdit(id){
   var t=S.tasks[id];if(!t)return;
+  var isRec=!!(t.recurring);
+  var recType=t.recurType||'daily';
+  var recDays=t.recurDays||[];
+  var wds=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var reh='';
+  if(isRec){
+    reh='<div class="recopts" id="ed-recopts">'+
+      '<div class="recopt'+(recType==='daily'?' on':'')+'" onclick="edToggleRecType(\''+id+'\',\'daily\')">Daily</div>'+
+      '<div class="recopt'+(recType==='weekly'?' on':'')+'" onclick="edToggleRecType(\''+id+'\',\'weekly\')">Weekly</div>'+
+      '</div>';
+    if(recType==='weekly'){
+      reh+='<div class="daychips" id="ed-daychips">'+
+        wds.map(function(d,i){return'<div class="dchip'+(recDays.indexOf(i)>=0?' on':'')+'" onclick="edToggleRD(\''+id+'\','+i+')">'+d+'</div>';}).join('')+
+      '</div>';
+    }
+  }
   openModal('<div class="mhandle"></div><div class="mtitle">Edit task</div>'+
     '<div class="fg"><label class="flbl">Title</label><input type="text" class="finput" id="ed-t" value="'+e(t.title)+'"></div>'+
-    '<div class="fg"><label class="flbl">Date</label><input type="date" class="fdate" id="ed-d" value="'+(t.date||'')+'"></div>'+
+    '<div class="fg"><label class="flbl">Date</label><input type="date" class="fdate" id="ed-d" value="'+(t.date||'')+'" '+(isRec&&recType!=='manual'?'':'')+'></div>'+
+    '<div class="fg"><div class="recrow"><button class="sw'+(isRec?' on':'')+'" id="ed-rec-sw" onclick="edToggleRec(\''+id+'\')"></button><span>Recurring</span></div>'+
+    '<div id="ed-rec-body">'+reh+'</div></div>'+
     '<button class="btn-pri" onclick="doEdit(\''+id+'\')">Save</button>');
 }
 
+function edToggleRec(id){
+  var t=S.tasks[id];if(!t)return;
+  var sw=document.getElementById('ed-rec-sw');
+  var body=document.getElementById('ed-rec-body');
+  var isNowOn=sw.classList.toggle('on');
+  t.recurring=isNowOn;
+  if(!t.recurType)t.recurType='daily';
+  var recType=t.recurType,recDays=t.recurDays||[];
+  var wds=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var reh='';
+  if(isNowOn){
+    reh='<div class="recopts" id="ed-recopts">'+
+      '<div class="recopt'+(recType==='daily'?' on':'')+'" onclick="edToggleRecType(\''+id+'\',\'daily\')">Daily</div>'+
+      '<div class="recopt'+(recType==='weekly'?' on':'')+'" onclick="edToggleRecType(\''+id+'\',\'weekly\')">Weekly</div>'+
+      '</div>';
+    if(recType==='weekly'){
+      reh+='<div class="daychips" id="ed-daychips">'+
+        wds.map(function(d,i){return'<div class="dchip'+(recDays.indexOf(i)>=0?' on':'')+'" onclick="edToggleRD(\''+id+'\','+i+')">'+d+'</div>';}).join('')+
+      '</div>';
+    }
+  }
+  body.innerHTML=reh;
+}
+
+function edToggleRecType(id,type){
+  var t=S.tasks[id];if(!t)return;
+  t.recurType=type;
+  var wds=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var recDays=t.recurDays||[];
+  document.querySelectorAll('#ed-recopts .recopt').forEach(function(el){el.classList.toggle('on',el.textContent.toLowerCase()===type);});
+  var existing=document.getElementById('ed-daychips');
+  if(existing)existing.remove();
+  if(type==='weekly'){
+    var body=document.getElementById('ed-rec-body');
+    var dc=document.createElement('div');
+    dc.className='daychips';dc.id='ed-daychips';
+    dc.innerHTML=wds.map(function(d,i){return'<div class="dchip'+(recDays.indexOf(i)>=0?' on':'')+'" onclick="edToggleRD(\''+id+'\','+i+')">'+d+'</div>';}).join('');
+    body.appendChild(dc);
+  }
+}
+
+function edToggleRD(id,i){
+  var t=S.tasks[id];if(!t)return;
+  if(!t.recurDays)t.recurDays=[];
+  var idx=t.recurDays.indexOf(i);
+  if(idx>=0)t.recurDays.splice(idx,1);else t.recurDays.push(i);
+  document.querySelectorAll('#ed-daychips .dchip').forEach(function(el,j){el.classList.toggle('on',t.recurDays.indexOf(j)>=0);});
+}
+
 function doEdit(id){
+  var t=S.tasks[id];if(!t)return;
   var title=(document.getElementById('ed-t')||{}).value||'';
   var date=(document.getElementById('ed-d')||{}).value||null;
   if(!title.trim()){alert('Title required.');return;}
-  updTask(id,{title:title.trim(),date:date||null});closeModal();
+  var sw=document.getElementById('ed-rec-sw');
+  var isRec=sw?sw.classList.contains('on'):!!(t.recurring);
+  updTask(id,{
+    title:title.trim(),
+    date:date||null,
+    recurring:isRec,
+    recurType:isRec?(t.recurType||'daily'):null,
+    recurDays:isRec&&t.recurType==='weekly'?(t.recurDays||[]):null
+  });
+  closeModal();
 }
 
 // ── VOICE INPUT ──────────────────────────────────────────
