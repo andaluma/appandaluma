@@ -3,6 +3,40 @@ function dayName(str){return['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][(new Dat
 function dayNum(str){return new Date(str+'T12:00:00').getDate();}
 function fmtDay(str){return new Date(str+'T12:00:00').toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});}
 
+// Returns date itself if Mon–Fri, otherwise advances to next Monday
+function nextWorkDay(from){
+  var d=new Date(from+'T12:00:00'),dow=d.getDay();
+  if(dow===6)d.setDate(d.getDate()+2);      // Sat → Mon
+  else if(dow===0)d.setDate(d.getDate()+1); // Sun → Mon
+  return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+}
+
+// Rolls all past unfinished (non-recurring) tasks forward to the next working day.
+// Runs at most once per calendar day (guarded by localStorage key 'andaluma-lastroll').
+function rolloverPastTasks(){
+  var today=td();
+  if(ls('andaluma-lastroll')===today)return;
+  lss('andaluma-lastroll',today);
+  var target=nextWorkDay(today);
+  var ids=Object.keys(S.tasks);
+  var changed=false;
+  ids.forEach(function(id){
+    var t=S.tasks[id];
+    if(!t||t._ov||t.recurring)return;          // skip overrides & recurring
+    if(!t.date||t.date>=today)return;           // skip today / future / someday
+    if(t.status==='done')return;                // skip already done
+    var nid=uid();
+    S.tasks[nid]=Object.assign({},t,{
+      id:nid,date:target,status:'todo',
+      rolled:true,rollCount:(t.rollCount||0)+1,
+      createdAt:Date.now()
+    });
+    S.tasks[id].status='done';
+    changed=true;
+  });
+  if(changed)persist();
+}
+
 // ── TASK CRUD ────────────────────────────────────────────
 function addTask(t){
   var id=uid();

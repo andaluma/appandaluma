@@ -73,10 +73,11 @@ function afterPin(){
     db.ref('tasks').on('value',function(snap){
       S.tasks=snap.val()||{};
       lss('andaluma-tasks',JSON.stringify(S.tasks));
+      rolloverPastTasks();
       renderAll();
     });
     loadMoneyData();
-  }catch(ex){ db=null; }
+  }catch(ex){ db=null; rolloverPastTasks(); renderAll(); }
 }
 
 // ── PIN FUNCTIONS ────────────────────────────────────────
@@ -161,7 +162,7 @@ function doSetup(){
   }catch(e){alert('Invalid JSON — copy the full config object from Firebase.');}
 }
 
-function skipSetup(){offline=true;lss('andaluma-fb','offline');loadLocal();boot();}
+function skipSetup(){offline=true;lss('andaluma-fb','offline');loadLocal();rolloverPastTasks();boot();}
 
 function startFB(cfg){
   try{
@@ -172,9 +173,10 @@ function startFB(cfg){
     db.ref('tasks').on('value',function(snap){
       S.tasks=snap.val()||{};
       lss('andaluma-tasks',JSON.stringify(S.tasks));
+      rolloverPastTasks();
       renderAll();
     });
-  }catch(e){offline=true;loadLocal();boot();}
+  }catch(e){offline=true;loadLocal();rolloverPastTasks();boot();}
 }
 
 function boot(){
