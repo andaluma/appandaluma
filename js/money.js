@@ -515,30 +515,6 @@ function fixedByCategoryForMonth(monthKey){
   return cats;
 }
 
-function renderDonutSVG(catAmounts, size){
-  var entries=Object.keys(catAmounts).map(function(k){return{k:k,v:catAmounts[k]};});
-  var total=entries.reduce(function(s,e){return s+e.v;},0);
-  if(!total||!entries.length) return '<svg width="'+size+'" height="'+size+'"><circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+(size/2-6)+'" fill="none" stroke="var(--sand)" stroke-width="8"/></svg>';
-  var r=size/2-6,cx=size/2,cy=size/2,circ=2*Math.PI*r,cursor=0,segs='';
-  entries.forEach(function(en){
-    var pct=en.v/total,dash=pct*circ,color=(CATS[en.k]||CATS['Others']).color,rot=(cursor/circ)*360-90;
-    segs+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="8" stroke-dasharray="'+dash.toFixed(2)+' '+(circ-dash).toFixed(2)+'" transform="rotate('+rot.toFixed(1)+' '+cx+' '+cy+')"/>';
-    cursor+=dash;
-  });
-  return '<svg width="'+size+'" height="'+size+'">'+segs+'<circle cx="'+cx+'" cy="'+cy+'" r="'+(r-8)+'" fill="white"/></svg>';
-}
-
-function renderMonthlyOverview(){
-  var monthKey=getCurrentMonthKey(),fixedTotal=fixedTotalForMonth(monthKey),variableTotal=variableTotalForMonth(monthKey),total=fixedTotal+variableTotal;
-  var catAmts=fixedByCategoryForMonth(monthKey),donut=renderDonutSVG(catAmts,68),d=new Date();
-  var monthLabel=d.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-  return '<div class="month-overview"><div class="month-ov-title">'+monthLabel+'</div><div class="month-ov-body">'+
-    '<div class="month-donut">'+donut+'</div><div class="month-ov-stats">'+
-    '<div class="month-stat-row"><span class="month-stat-lbl"><span class="month-stat-dot" style="background:var(--teal)"></span>Fixed</span><span class="month-stat-val">€'+fixedTotal.toFixed(0)+'</span></div>'+
-    '<div class="month-stat-row"><span class="month-stat-lbl"><span class="month-stat-dot" style="background:var(--coral)"></span>Variable</span><span class="month-stat-val">€'+variableTotal.toFixed(0)+'</span></div>'+
-    '<div class="month-stat-row" style="border-top:1px solid var(--sand);margin-top:4px;padding-top:5px"><span class="month-stat-lbl" style="font-weight:700">Total</span><span class="month-stat-val" style="font-size:14px">€'+total.toFixed(0)+'</span></div>'+
-    '</div></div></div>';
-}
 
 function renderFixedSection(){
   var monthKey=getCurrentMonthKey();
@@ -576,7 +552,7 @@ function openAddFixed(){
   var catOpts=Object.keys(CATS).map(function(c){
     return '<option value="'+e(c)+'"'+(c==='Insurance & subscriptions'?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
-  openModal('<div class="mhandle"></div><div class="mtitle">New Fixed Expense</div>'+
+  openModal('<div class="mhandle"></div><div class="mtitle">New fixed expense</div>'+
     '<div class="fg"><label class="flbl">Name</label><input type="text" class="finput" id="fx-name" placeholder="e.g. Netflix, Spotify…"></div>'+
     '<div class="fg"><label class="flbl">Category</label><select class="finput" id="fx-cat">'+catOpts+'</select></div>'+
     '<div class="fg"><label class="flbl">Type</label><div style="display:flex;gap:8px">'+
@@ -897,33 +873,6 @@ function renderConverter(){
   el.innerHTML = html;
 }
 
-// ── SWIPE BETWEEN MONEY PANELS ───────────────────────────
-var moneySwipeX0 = null;
-
-function showMoneyPanel(idx){
-  convPanel = idx;
-  var wrap = document.getElementById('money-swipe-wrap');
-  if(!wrap) return;
-  var panels = wrap.querySelectorAll('.money-panel');
-  for(var i=0;i<panels.length;i++) panels[i].style.transform='translateX('+((-idx*100))+'%)';
-  var dots = document.querySelectorAll('#money-dots .conv-tab-dot');
-  for(var j=0;j<dots.length;j++) dots[j].className='conv-tab-dot'+(j===idx?' on':'');
-  if(idx===1 && !convRatesFetched) fetchConvRates();
-  if(idx===1) renderConverter();
-}
-
-(function(){
-  var wrap = document.getElementById('money-swipe-wrap');
-  if(!wrap) return;
-  wrap.addEventListener('touchstart', function(ev){ moneySwipeX0=ev.touches[0].clientX; }, {passive:true});
-  wrap.addEventListener('touchend', function(ev){
-    if(moneySwipeX0===null) return;
-    var dx=ev.changedTouches[0].clientX-moneySwipeX0; moneySwipeX0=null;
-    if(Math.abs(dx)<50) return;
-    if(dx<0&&convPanel===0) showMoneyPanel(1);
-    else if(dx>0&&convPanel===1) showMoneyPanel(0);
-  }, {passive:true});
-})();
 
 // ── HOOK loadMoneyData INTO boot ─────────────────────────
 var _origBoot = boot;

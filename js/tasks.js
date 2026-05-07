@@ -240,7 +240,7 @@ function toggleSD(){S.showSD=!S.showSD;renderDay();}
 
 // ── ADD / EDIT TASK MODALS ────────────────────────────────
 function openAdd(pre){
-  mst={title:pre||'',venture:'andaluma',owner:S.owner==='both'?'both':S.owner,date:S.date,someday:false,rec:false,recType:'daily',recDays:[],manualDate:''};
+  mst={title:pre||'',venture:'andaluma',owner:S.owner==='both'?'both':S.owner,date:S.date,someday:false,rec:false,recType:'daily',recDays:[],manualDate:'',_firstOpen:true};
   drawAdd();
 }
 
@@ -278,7 +278,10 @@ function drawAdd(){
     '<div class="fg"><div class="recrow"><button class="sw'+(m.rec?' on':'')+'" onclick="mst.rec=!mst.rec;drawAdd()"></button><span>Recurring</span></div>'+reh+'</div>'+
     '<button class="btn-pri" onclick="submitAdd()">Add task</button>'
   );
-  setTimeout(function(){var el=document.getElementById('t-title');if(el)el.focus();},80);
+  if(m._firstOpen){
+    m._firstOpen = false;
+    setTimeout(function(){var el=document.getElementById('t-title');if(el)el.focus();},80);
+  }
 }
 
 function tRD(i){var idx=mst.recDays.indexOf(i);if(idx>=0)mst.recDays.splice(idx,1);else mst.recDays.push(i);drawAdd();}
