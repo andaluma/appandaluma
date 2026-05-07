@@ -200,8 +200,12 @@ function openModal(html){
 function closeModal(){
   document.getElementById('modal-overlay').style.display='none';
   mst={};
-  // Pop the history entry we pushed — but only if we're still sitting on it
-  if(history.state&&history.state.modal) history.back();
+  // Pop the history entry we pushed, but suppress the tab-switch side-effect
+  // (same pattern as hideInsights — programmatic close must not switch tabs)
+  if(history.state&&history.state.modal){
+    _suppressNextBackTabSwitch=true;
+    history.back();
+  }
 }
 function bgClose(ev){if(ev.target===document.getElementById('modal-overlay'))closeModal();}
 

@@ -221,6 +221,7 @@ function openAddExpense(){
     currency:defCur, amount:'', note:'', date:MS.moneyDate,
     tripId: MS.activeTripId||'', preTrip:false,
     checkIn: MS.moneyDate||'', checkOut:'',
+    _firstOpen: true,   // focus the amount field only on first open, not on chip redraws
   };
   drawAddExpense();
 }
@@ -289,7 +290,10 @@ function drawAddExpense(){
     })()+
     '<button class="btn-pri" onclick="submitExpense()">Add expense</button>'
   );
-  setTimeout(function(){ var el=document.getElementById('exp-amt'); if(el) el.focus(); }, 80);
+  if(m._firstOpen){
+    m._firstOpen = false;
+    setTimeout(function(){ var el=document.getElementById('exp-amt'); if(el) el.focus(); }, 80);
+  }
 }
 
 function toggleCurrDD(){
@@ -636,13 +640,42 @@ function editFixed(id){
   var fx=MS.fixedExpenses[id]; if(!fx) return;
   var monthKey=getCurrentMonthKey();
   var softUnconfirmed=fx.fixedType==='soft'&&!isFixedConfirmedForMonth(fx,monthKey);
+  // Guard: fx.amount may be undefined on older records
+  var amtLabel=fx.fixedType==='hard'?'€'+(fx.amount||0).toFixed(2)+' fixed':'varies monthly';
   openModal('<div class="mhandle"></div>'+
     '<div style="font-family:Playfair Display,serif;font-size:17px;margin-bottom:3px">'+e(fx.name)+'</div>'+
-    '<div style="font-size:11px;color:var(--muted);margin-bottom:20px">'+e(fx.category)+' · '+(fx.fixedType==='hard'?'€'+fx.amount.toFixed(2)+' fixed':'varies monthly')+'</div>'+
+    '<div style="font-size:11px;color:var(--muted);margin-bottom:20px">'+e(fx.category)+' · '+amtLabel+'</div>'+
     '<div class="alist">'+
+    '<div class="aitem" onclick="closeModal();setTimeout(function(){openEditFixed(\''+id+'\')},80)"><div class="aicon" style="background:var(--sand);color:var(--dark)">✏️</div>Edit</div>'+
     (softUnconfirmed?'<div class="aitem" onclick="closeModal();setTimeout(function(){confirmSoftFixed(\''+id+'\')},80)"><div class="aicon" style="background:rgba(201,138,16,0.08);color:var(--amber)">✓</div>Confirm this month</div>':'')+
-    (fx.fixedType==='soft'&&!softUnconfirmed?'<div class="aitem" onclick="closeModal();setTimeout(function(){confirmSoftFixed(\''+id+'\')},80)"><div class="aicon" style="background:rgba(10,122,136,0.08);color:var(--teal)">✏️</div>Edit this month\'s amount</div>':'')+
+    (fx.fixedType==='soft'&&!softUnconfirmed?'<div class="aitem" onclick="closeModal();setTimeout(function(){confirmSoftFixed(\''+id+'\')},80)"><div class="aicon" style="background:rgba(10,122,136,0.08);color:var(--teal)">↺</div>Edit this month\'s amount</div>':'')+
     '<div class="aitem danger" onclick="deleteFixed(\''+id+'\')"><div class="aicon" style="background:rgba(192,57,43,0.08);color:#C0392B">🗑</div>Delete</div></div>');
+}
+
+function openEditFixed(id){
+  var fx=MS.fixedExpenses[id]; if(!fx) return;
+  var catOpts=Object.keys(CATS).map(function(c){
+    return '<option value="'+e(c)+'"'+(c===fx.category?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
+  }).join('');
+  openModal('<div class="mhandle"></div><div class="mtitle">Edit fixed expense</div>'+
+    '<div class="fg"><label class="flbl">Name</label><input type="text" class="finput" id="efx-name" value="'+e(fx.name)+'"></div>'+
+    '<div class="fg"><label class="flbl">Category</label><select class="finput" id="efx-cat">'+catOpts+'</select></div>'+
+    (fx.fixedType==='hard'?'<div class="fg"><label class="flbl">Amount (€)</label><input type="number" class="finput" id="efx-amount" value="'+(fx.amount||0)+'" step="0.01" inputmode="decimal"></div>':'')+
+    '<button class="btn-pri" onclick="submitEditFixed(\''+id+'\')">Save</button>');
+}
+
+function submitEditFixed(id){
+  var fx=MS.fixedExpenses[id]; if(!fx) return;
+  var name=(document.getElementById('efx-name')||{}).value||'';
+  if(!name.trim()){alert('Enter a name.');return;}
+  fx.name=name.trim();
+  fx.category=(document.getElementById('efx-cat')||{}).value||fx.category;
+  if(fx.fixedType==='hard'){
+    var amt=parseFloat((document.getElementById('efx-amount')||{}).value||0);
+    if(!amt){alert('Enter an amount.');return;}
+    fx.amount=amt;
+  }
+  persistMoney(); closeModal(); renderMoneyContent();
 }
 
 function deleteFixed(id){
