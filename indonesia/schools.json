@@ -1,0 +1,631 @@
+{
+  "lastUpdated": "2026-05-12",
+  "exchangeRates": {
+    "asOf": "2026-05-12",
+    "IDR_per_EUR": 20500,
+    "IDR_per_USD": 17450,
+    "USD_per_EUR": 1.175
+  },
+  "schools": [
+    {
+      "id": "anak-alam",
+      "name": "Anak Alam Intercultural School",
+      "shortName": "Anak Alam",
+      "island": "Lombok",
+      "area": "Kuta Lombok",
+      "website": "anakalamschool.org",
+      "instagram": "@anakalamschoollombok",
+      "pedagogy": "Australian Curriculum base, inquiry-driven, sustainability and permaculture focus. Cambridge IGCSE pathway available for secondary (Marine Science, Travel & Tourism, A-Level Math). Individualized Education Plans (IEPs).",
+      "ageRange": { "min": 2, "max": 18 },
+      "schoolHours": "08:30–14:30, Mon–Fri",
+      "languageOfInstruction": "English, with Bahasa Indonesia",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Admissions", "type": "email", "value": "admission@anakalamschool.org" },
+        { "label": "Admin", "type": "email", "value": "admin@anakalamschool.org" },
+        { "label": "Accounting", "type": "email", "value": "accounting@anakalamschool.org" },
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 878-4602-8188" }
+      ],
+      "programs": [
+        {
+          "id": "regular-term-2025-26",
+          "type": "Regular term",
+          "termWindow": "Aug 2025 – Jun 2026",
+          "termEndDate": "2026-06-26",
+          "monthsActive": [1,2,3,4,5,6,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "Playgroup (<3 yrs)", "ageMin": 2, "ageMax": 3, "pricing": { "monthly_IDR": 3000000, "term_IDR": 8550000 } },
+            { "label": "Early Years Kindy", "ageMin": 3, "ageMax": 5, "pricing": { "monthly_IDR": 3250000, "term_IDR": 9262500 } },
+            { "label": "Early Years Pre-Primary", "ageMin": 5, "ageMax": 6, "pricing": { "monthly_IDR": 3480000, "term_IDR": 9918000 } },
+            { "label": "Lower Primary G1–3", "ageMin": 6, "ageMax": 9, "pricing": { "monthly_IDR": 4290000, "term_IDR": 12226500 } },
+            { "label": "Upper Primary G4–6", "ageMin": 9, "ageMax": 12, "pricing": { "monthly_IDR": 4630000, "term_IDR": 13195500 } },
+            { "label": "Secondary G7–10", "ageMin": 12, "ageMax": 16, "pricing": { "monthly_IDR": 5035000, "term_IDR": 14349750 } },
+            { "label": "Secondary G11–12", "ageMin": 16, "ageMax": 18, "pricing": { "monthly_IDR": 5035000, "term_IDR": 14349750 } }
+          ],
+          "includes": ["Tuition"],
+          "excludes": ["Lunch", "Extracurriculars", "Exam fees"],
+          "minDuration": "1 month",
+          "discounts": {
+            "sibling": "10% off 2nd child, 20% off 3rd, 30% off 4th (full-time only)",
+            "partTime": "15% off for 4 days/wk, 30% off for 3 days/wk (verify if applies to short-term)"
+          },
+          "dropIn": {
+            "available": true,
+            "rates_IDR": {
+              "min10days": 300000,
+              "min5days": 400000,
+              "dropIn": 500000
+            },
+            "note": "Per day pricing. Trial day is free."
+          },
+          "status": "Confirmed",
+          "statusDetail": "Academic Year 2025–26 handbook",
+          "notes": "Short-term rates shown above. Full-time annual tuition ranges Rp 26.4M–45M + Rp 5M–7.5M dev fee (10% off if paid annually by Jul 24). 4-term calendar. Year ends Jun 26, 2026. Trial day is free."
+        },
+        {
+          "id": "summer-camp-2026",
+          "type": "Holiday camp",
+          "monthsActive": [7],
+          "status": "Unconfirmed",
+          "statusDetail": "School has not responded to follow-up as of May 2026",
+          "notes": "School has indicated a summer camp is offered but dates and pricing haven't been finalized."
+        }
+      ]
+    },
+    {
+      "id": "selong-bay",
+      "name": "Selong Bay School",
+      "shortName": "Selong Bay",
+      "island": "Lombok",
+      "area": "Selong Belanak",
+      "pedagogy": "Worldschooler-friendly community school. Activities include surf lessons, scouts, cooking, and gymnastics.",
+      "ageRange": { "min": 2, "max": 12 },
+      "schoolHours": "Mon–Fri",
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 813-5974-095" }
+      ],
+      "programs": [
+        {
+          "id": "regular-term-2026",
+          "type": "Regular term",
+          "termWindow": "Jan 2026 – Jun 2026, Jul 2026 – Dec 2026",
+          "monthsActive": [1,2,3,4,5,6,7,8,9,10,11,12],
+          "closedMonths": "Long break Jun 22 – Jul 26",
+          "ageTiers": [
+            { "label": "Early Years Half-Day", "ageMin": 2, "ageMax": 3, "pricing": { "monthly_IDR": 5000000, "term_IDR": 12500000 } },
+            { "label": "Early Years Full-Time", "ageMin": 2, "ageMax": 3, "pricing": { "monthly_IDR": 7718750, "term_IDR": 19296875 } },
+            { "label": "Pre-School Full-Time", "ageMin": 4, "ageMax": 5, "pricing": { "monthly_IDR": 9218750, "term_IDR": 23046875 } },
+            { "label": "Primary Gr 1–6", "ageMin": 6, "ageMax": 12, "pricing": { "monthly_IDR": 11875000, "term_IDR": 29687500 } }
+          ],
+          "includes": ["Tuition", "Development and Resource Fees"],
+          "excludes": ["Lunch", "Activity costs"],
+          "discounts": {
+            "sibling": "5% sibling discount"
+          },
+          "status": "Confirmed",
+          "statusDetail": "2026 Temporary Student fee schedule",
+          "notes": "Long break Jun 22 – Jul 26. School resumes Jul 27. 8 min from Selong Belanak. Also offers afternoon-only activities (2hrs, Rp 300K): cooking, gymnastics, surf, scouts, etc. Activities also run at Tropik and on the beach. Bus from Kuta available."
+        },
+        {
+          "id": "nature-camp-2026",
+          "type": "Holiday camp",
+          "monthsActive": [6, 7],
+          "status": "Unconfirmed",
+          "statusDetail": "Dates and pricing TBC",
+          "notes": "A 1-week nature camp may run during the long break. Details pending."
+        }
+      ]
+    },
+    {
+      "id": "mandalika",
+      "name": "Mandalika Intercultural School",
+      "shortName": "MIS",
+      "island": "Lombok",
+      "area": "Kuta Lombok",
+      "pedagogy": "Australian National Curriculum, small class sizes.",
+      "ageRange": { "min": 2, "max": 10 },
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Info", "type": "email", "value": "info@mandalikaschool.com" },
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 811-2891-9009" }
+      ],
+      "programs": [
+        {
+          "id": "regular-term",
+          "type": "Regular term",
+          "monthsActive": [1,2,3,4,5,6,8,9,10,11,12],
+          "status": "Pending",
+          "statusDetail": "Regular term pricing not yet collected",
+          "notes": "Pricing pending — contact school directly."
+        },
+        {
+          "id": "summer-camp-2026",
+          "type": "Holiday camp",
+          "dates": "Jun 22 – Jul 31, 2026",
+          "monthsActive": [6, 7],
+          "schoolHours": "09:00–15:00, Mon–Fri",
+          "ageTiers": [
+            { "label": "Early Years", "ageMin": 2, "ageMax": 5, "pricing": { "daily_IDR": 450000, "weekly_IDR": 2200000, "fullProgram_IDR": 10800000 } },
+            { "label": "Primary", "ageMin": 6, "ageMax": 10, "pricing": { "daily_IDR": 450000, "weekly_IDR": 2200000, "fullProgram_IDR": 10800000 } }
+          ],
+          "includes": [],
+          "excludes": ["Lunch (bring your own)"],
+          "status": "Confirmed",
+          "statusDetail": "Confirmed as of May 2026",
+          "notes": "6-week holiday programme. Same pricing across age groups."
+        }
+      ]
+    },
+    {
+      "id": "wonder",
+      "name": "Wonder Intercultural School",
+      "shortName": "Wonder",
+      "island": "Lombok",
+      "area": "Kuta Lombok",
+      "pedagogy": "Child-led, inquiry-based, not-for-profit. Licensed for ages 3–12.",
+      "ageRange": { "min": 3, "max": 12 },
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 812-3395-1550" },
+        { "label": "Instagram", "type": "instagram", "value": "@wonderschool.cc" }
+      ],
+      "programs": [
+        {
+          "id": "regular-term",
+          "type": "Regular term",
+          "status": "Pending",
+          "statusDetail": "Pricing and program details pending response from school as of May 2026",
+          "notes": "Contact school directly for current availability and pricing."
+        }
+      ]
+    },
+    {
+      "id": "sekolah-nusa-alam",
+      "name": "Sekolah Nusa Alam",
+      "shortName": "Nusa Alam",
+      "island": "Lombok",
+      "area": "Mataram",
+      "pedagogy": "Cambridge International Curriculum, fully licensed, formal academic school.",
+      "ageRange": { "min": 3, "max": 18 },
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [],
+      "programs": [
+        {
+          "id": "regular-term",
+          "type": "Regular term",
+          "status": "Deprioritized",
+          "statusDetail": "Full-time formal school — included for completeness",
+          "notes": "More formal/academic than typical worldschooler preference. Located in Mataram, the capital, north of Kuta area."
+        }
+      ]
+    },
+    {
+      "id": "wood-school",
+      "name": "Wood School Bali",
+      "shortName": "Wood School",
+      "island": "Bali",
+      "area": "Ubud",
+      "address": "Jl. Dr. Ir. Soekarno, Pejeng, Tampaksiring, Gianyar Regency, Bali 80552",
+      "website": "woodschoolbali.com",
+      "pedagogy": "Neohumanist Education combined with BC (British Columbia) curriculum. Nature-based, project-based learning. Plant-based food. Founded 2013.",
+      "ageRange": { "min": 3, "max": 18 },
+      "schoolHours": "08:00–14:00 (13:00 close on Fridays)",
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Admissions", "type": "email", "value": "admissions@woodschoolbali.com" },
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 821-4794-9688" },
+        { "label": "Instagram", "type": "instagram", "value": "@woodschoolbali" }
+      ],
+      "programs": [
+        {
+          "id": "trial-term-2026-27",
+          "type": "Short-term",
+          "termWindow": "2026–27 academic year",
+          "monthsActive": [1,2,3,4,5,6,7,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "Early Years Pre-K", "ageMin": 3, "ageMax": 5, "pricing": { "weekly_IDR": 2600000 } },
+            { "label": "Primary K–Gr4", "ageMin": 5, "ageMax": 10, "pricing": { "weekly_IDR": 3200000 } },
+            { "label": "Upper Primary Gr5–6", "ageMin": 10, "ageMax": 12, "pricing": { "weekly_IDR": 3600000 } },
+            { "label": "Middle School Gr7–8", "ageMin": 12, "ageMax": 14, "pricing": { "weekly_IDR": 4000000 } }
+          ],
+          "includes": ["Tuition"],
+          "excludes": [],
+          "minDuration": "3 weeks",
+          "maxDuration": "6 weeks",
+          "status": "Confirmed",
+          "statusDetail": "Trial Fees 2026/27 schedule",
+          "notes": "Non-refundable. June 2026 availability noted as 2nd–12th only — verify with school."
+        },
+        {
+          "id": "summer-camp-2026",
+          "type": "Holiday camp",
+          "dates": "Jul 13–17, Jul 20–24, Jul 27–31, 2026",
+          "monthsActive": [7],
+          "schoolHours": "10:00–15:00, Mon–Fri",
+          "ageTiers": [
+            { "label": "Ages 3–4", "ageMin": 3, "ageMax": 4, "pricing": { "weekly_USD": { "apr": 280, "may": 300, "jun": 320, "jul": 340 } } },
+            { "label": "Ages 5–6", "ageMin": 5, "ageMax": 6, "pricing": { "weekly_USD": { "apr": 345, "may": 365, "jun": 385, "jul": 405 } } },
+            { "label": "Ages 7–9", "ageMin": 7, "ageMax": 9, "pricing": { "weekly_USD": { "apr": 363, "may": 383, "jun": 403, "jul": 423 } } },
+            { "label": "Ages 10–12", "ageMin": 10, "ageMax": 12, "pricing": { "weekly_USD": { "apr": 388, "may": 408, "jun": 428, "jul": 448 } } }
+          ],
+          "includes": ["Vegan lunch and snacks"],
+          "excludes": [],
+          "discounts": {
+            "sibling": "5% off 1st sibling, 10% off 2nd, 15% off 3rd"
+          },
+          "status": "Confirmed",
+          "statusDetail": "Summer Camp 2026 flyer",
+          "notes": "Weekly sessions in July. Early-booking pricing increases each month — book early for best rate. Ages 3–14."
+        }
+      ]
+    },
+    {
+      "id": "bali-earth-school",
+      "name": "Bali Earth School",
+      "shortName": "Bali Earth",
+      "island": "Bali",
+      "area": "Ubud",
+      "website": "baliearthschool.id",
+      "pedagogy": "Project-Based Learning modeled on High Tech High (San Diego). Jolly Phonics for literacy, storytelling focus. Founder trained with HTH educators.",
+      "ageRange": { "min": 4, "max": 15 },
+      "schoolHours": "09:00–15:00, Mon–Fri (Friday is outing day)",
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 823-3999-9686" }
+      ],
+      "programs": [
+        {
+          "id": "regular-school",
+          "type": "Short-term",
+          "monthsActive": [1,2,3,4,5,6,7,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "Ages 4–6", "ageMin": 4, "ageMax": 6, "pricing": { "2week_IDR": 10000000, "4week_IDR": 15000000, "12week_IDR": 33000000, "24week_IDR": 60000000, "yearly_IDR": 110000000 } },
+            { "label": "Ages 7–11", "ageMin": 7, "ageMax": 11, "pricing": { "2week_IDR": 10000000, "4week_IDR": 15000000, "12week_IDR": 33000000, "24week_IDR": 60000000, "yearly_IDR": 110000000 } },
+            { "label": "Ages 12–15", "ageMin": 12, "ageMax": 15, "pricing": { "2week_IDR": 10000000, "4week_IDR": 15000000, "12week_IDR": 33000000, "24week_IDR": 60000000, "yearly_IDR": 110000000 } }
+          ],
+          "includes": ["Meals", "Outings", "Transport", "Materials"],
+          "excludes": [],
+          "minDuration": "2 weeks",
+          "discounts": {
+            "sibling": "5% sibling discount",
+            "trial": "2-week trial fee credits toward enrolment if continued"
+          },
+          "status": "Confirmed",
+          "statusDetail": "Current fee schedule",
+          "notes": "All-inclusive pricing (meals, outings, transport, materials). No registration or levy fee. Significant savings on longer commitments."
+        },
+        {
+          "id": "holiday-camp",
+          "type": "Holiday camp",
+          "monthsActive": [],
+          "schoolHours": "09:00–15:00, Mon–Fri",
+          "ageTiers": [
+            { "label": "All ages", "ageMin": 4, "ageMax": 15, "pricing": { "1week_IDR": 7000000, "2week_IDR": 12000000, "3week_IDR": 15500000, "4week_IDR": 19000000 } }
+          ],
+          "includes": ["Lunch (vegan and non-vegan options)", "2 snacks", "Materials", "Outings"],
+          "excludes": [],
+          "capacity": "30 kids total, max 5 per country",
+          "status": "Unconfirmed",
+          "statusDetail": "2026 dates not yet specified",
+          "notes": "\"6 Essences of The Earth\" themed camp. All-inclusive. Cap of 30 kids, max 5 per country."
+        }
+      ]
+    },
+    {
+      "id": "green-school",
+      "name": "Green School Bali",
+      "shortName": "Green School",
+      "island": "Bali",
+      "area": "Ubud",
+      "address": "Jalan Raya Sibang Kaja, Banjar Saren, Abiansemal, Kabupaten Badung, Bali 80352",
+      "website": "bali.greenschool.org",
+      "instagram": "@greenschoolbali",
+      "pedagogy": "Green School's own learner-driven curriculum with a strong sustainability and environmental focus. Wall-less bamboo classrooms in the jungle. Hands-on, project-based, experiential learning rooted in UN Sustainable Development Goals.",
+      "ageRange": { "min": 3, "max": 18 },
+      "schoolHours": "08:15–15:15, Mon–Fri",
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Admissions", "type": "email", "value": "admissions@greenschool.org" },
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 85100891339" }
+      ],
+      "programs": [
+        {
+          "id": "annual-enrollment",
+          "type": "Regular term",
+          "termWindow": "Aug 2025 – Jun 2026",
+          "monthsActive": [1,2,3,4,5,6,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "Early Years (Gecko/Starling, 3–4)", "ageMin": 3, "ageMax": 4, "pricing": { "yearly_IDR": 177800000 } },
+            { "label": "Early Years (Kindy, 5)", "ageMin": 5, "ageMax": 5, "pricing": { "yearly_IDR": 210140000 } },
+            { "label": "Primary G1–3", "ageMin": 6, "ageMax": 9, "pricing": { "yearly_IDR": 240370000 } },
+            { "label": "Middle/High School", "ageMin": 10, "ageMax": 18, "pricing": { "yearly_IDR": 319000000 } }
+          ],
+          "includes": ["Core education"],
+          "excludes": ["Transport", "Lunch", "Optional activities", "External exams"],
+          "minDuration": "1 year (1 semester for Early Years only)",
+          "discounts": {
+            "sibling": "5% off 2nd child, 10% off 3rd, 15% off 4th"
+          },
+          "status": "Confirmed",
+          "statusDetail": "2025–26 fee schedule",
+          "notes": "One-time admission fees: Rp 40,000,000 (non-refundable) + Rp 30,000,000 refundable deposit. Minimum 1-year enrollment (1 semester for Early Years only). The most famous alternative school in Bali — but not flexible for short stays."
+        }
+      ]
+    },
+    {
+      "id": "green-camp",
+      "name": "Green Camp Bali",
+      "shortName": "Green Camp",
+      "island": "Bali",
+      "area": "Ubud",
+      "address": "Green School campus, Sibang Kaja, Abiansemal, Bali",
+      "website": "greencampbali.com",
+      "instagram": "@greencampbali",
+      "pedagogy": "Short-term camp programs on the Green School campus. Nature immersion, sustainability projects, adventure activities. The realistic option for families wanting a Green School experience without the year-long commitment.",
+      "ageRange": { "min": 4, "max": 17 },
+      "schoolHours": "Day and overnight programs",
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Info", "type": "email", "value": "info@greencampbali.com" }
+      ],
+      "programs": [
+        {
+          "id": "family-camp",
+          "type": "Holiday camp",
+          "monthsActive": [1,2,3,4,5,6,7,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "Family Camp 3-day (adult)", "ageMin": 4, "ageMax": 12, "pricing": { "program_USD": 405 } },
+            { "label": "Family Camp 5-day (adult)", "ageMin": 4, "ageMax": 12, "pricing": { "program_USD": 584 } }
+          ],
+          "includes": ["Activities", "Meals during camp"],
+          "excludes": ["Accommodation (for day camps)", "Transport"],
+          "status": "Confirmed",
+          "statusDetail": "Year-round availability",
+          "notes": "Family camps (ages 4–12 with parents), kids camps (7–12), youth camps (13–17). Half-day to 2-week programs. Year-round. The best short-term option for a Green School experience."
+        }
+      ]
+    },
+    {
+      "id": "boundless-life",
+      "name": "Boundless Life Bali",
+      "shortName": "Boundless Life",
+      "island": "Bali",
+      "area": "Sanur",
+      "address": "Jl. Segara Ayu No.1, Sanur Kaja, Denpasar Selatan, Bali 80227",
+      "website": "bali.boundless.life",
+      "instagram": "@boundlesslife",
+      "pedagogy": "Finnish-inspired curriculum ('Boundless Education'). Experiential, purposeful, nature-based learning. Each session has a unifying 'Quest' based on a UN SDG. Weekly field trips. Small groups. Purpose-built for digital nomad and worldschooling families.",
+      "ageRange": { "min": 1, "max": 12 },
+      "schoolHours": "08:45–15:15, Mon–Fri",
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Instagram", "type": "instagram", "value": "@boundlesslife" }
+      ],
+      "programs": [
+        {
+          "id": "cohort-3month",
+          "type": "Short-term",
+          "termWindow": "3-month cohorts: Jan–Mar, Apr–Jun, Sep–Nov",
+          "monthsActive": [1,2,3,4,5,6,9,10,11],
+          "ageTiers": [
+            { "label": "Per child", "ageMin": 1, "ageMax": 12, "pricing": { "monthly_EUR": 1100 } }
+          ],
+          "includes": ["Two daily snacks", "Lunch", "Field trips every 2 weeks", "Parents' lounge", "Community events", "Weekly parent wellness"],
+          "excludes": ["Housing (available separately)", "Transport"],
+          "minDuration": "3 months",
+          "discounts": {
+            "sibling": "10% off 2nd child, 15% off 3rd+"
+          },
+          "status": "Confirmed",
+          "statusDetail": "Current fee structure",
+          "notes": "Plus €100/month per adult. First cohort tuition due at registration. Co-living accommodation packages available separately. Sanur is a calm, family-friendly area."
+        },
+        {
+          "id": "cohort-4week",
+          "type": "Holiday camp",
+          "termWindow": "4-week cohorts: July, August, December",
+          "monthsActive": [7, 8, 12],
+          "ageTiers": [
+            { "label": "Per child", "ageMin": 1, "ageMax": 12, "pricing": { "monthly_EUR": 1100 } }
+          ],
+          "includes": ["Two daily snacks", "Lunch", "Field trips", "Parents' lounge", "Community events"],
+          "excludes": ["Housing", "Transport"],
+          "minDuration": "4 weeks",
+          "discounts": {
+            "sibling": "10% off 2nd child, 15% off 3rd+"
+          },
+          "status": "Confirmed",
+          "statusDetail": "Current fee structure",
+          "notes": "Plus €100/month per adult. Shorter commitment option during holiday months."
+        }
+      ]
+    },
+    {
+      "id": "joglo-clubhouse",
+      "name": "Joglo Clubhouse",
+      "shortName": "Joglo",
+      "island": "Bali",
+      "area": "Canggu",
+      "address": "Jl. Raya Munggu, Munggu, Bali",
+      "website": "jogloclubhousebali.com",
+      "instagram": "@jogloclubhouse",
+      "pedagogy": "Cambridge International Primary and Lower Secondary curriculum. Student-centered approach with classic subjects plus project-based inquiry. Very flexible enrollment — short-term, part-time, and full-time accepted. Free trial day.",
+      "ageRange": { "min": 4, "max": 11 },
+      "schoolHours": "08:30–14:00, Mon–Fri",
+      "languageOfInstruction": "English, with Indonesian Language & Culture",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 852-2644-0456" }
+      ],
+      "programs": [
+        {
+          "id": "regular-term",
+          "type": "Regular term",
+          "monthsActive": [1,2,3,4,5,6,7,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "All ages (4–11)", "ageMin": 4, "ageMax": 11, "pricing": { "yearly_IDR": 61180000 } }
+          ],
+          "includes": ["Morning snacks (fruit + pancakes)", "Rice-based lunch", "Vegan/vegetarian/GF options"],
+          "excludes": [],
+          "status": "Confirmed",
+          "statusDetail": "Current fee schedule",
+          "notes": "One of the most worldschooler-friendly schools in Bali. Very flexible enrollment: short-term, part-time accepted. Free trial day. Just WhatsApp with passport photos and dates. Near Canggu."
+        },
+        {
+          "id": "holiday-program",
+          "type": "Holiday camp",
+          "monthsActive": [1,2,3,4,5,6,7,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "All ages (4–11)", "ageMin": 4, "ageMax": 11, "pricing": { "daily_IDR": 650000 } }
+          ],
+          "includes": ["Morning snacks", "Lunch"],
+          "excludes": [],
+          "dropIn": {
+            "available": true,
+            "rates_IDR": {
+              "dropIn": 650000,
+              "min5days": 550000
+            },
+            "note": "Daily drop-in or multi-day (min 5 days for discounted rate). Subject to availability."
+          },
+          "status": "Confirmed",
+          "statusDetail": "Holiday program rates",
+          "notes": "Daily and weekly drop-in available. The most flexible option in Bali for short stays."
+        }
+      ]
+    },
+    {
+      "id": "pelangi-school",
+      "name": "Pelangi School Bali",
+      "shortName": "Pelangi",
+      "island": "Bali",
+      "area": "Ubud",
+      "address": "Banjar Kumbuh, Mas, Ubud, Bali",
+      "website": "pelangischoolbali.com",
+      "instagram": "@pelangi_school_bali",
+      "pedagogy": "British National Curriculum combined with Indonesian KBK, heavily influenced by Waldorf pedagogy. Bilingual (English and Bahasa Indonesia). Not-for-profit. ~200 students from nearly 30 nationalities.",
+      "ageRange": { "min": 1, "max": 12 },
+      "schoolHours": "08:30–15:00, Mon–Fri",
+      "languageOfInstruction": "English and Bahasa Indonesia (bilingual)",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Office", "type": "email", "value": "office@pelangischoolbali.com" },
+        { "label": "Office", "type": "whatsapp", "value": "+62 821-4524-7146" }
+      ],
+      "programs": [
+        {
+          "id": "regular-term",
+          "type": "Regular term",
+          "termWindow": "Aug 2025 – Jun 2026",
+          "monthsActive": [1,2,3,4,5,6,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "Tiny Tots (1.5–3)", "ageMin": 1, "ageMax": 3, "pricing": { "yearly_IDR": 69345000 } },
+            { "label": "Playgroup (3–4)", "ageMin": 3, "ageMax": 4, "pricing": { "yearly_IDR": 72220000 } },
+            { "label": "Primary (higher grades)", "ageMin": 5, "ageMax": 12, "pricing": { "yearly_IDR": 225000000 } }
+          ],
+          "includes": ["Core education"],
+          "excludes": ["Lunch", "Transport"],
+          "discounts": {
+            "sibling": "2.5% off tuition for additional siblings"
+          },
+          "status": "Confirmed",
+          "statusDetail": "2025–26 fee schedule",
+          "notes": "Additional one-time fees in first year (~Rp 22M). Waldorf-influenced, bilingual, multicultural. Likely requires term-based commitment for main school."
+        },
+        {
+          "id": "creative-camp",
+          "type": "Holiday camp",
+          "monthsActive": [7, 8, 12, 1],
+          "ageTiers": [
+            { "label": "All ages (3–12)", "ageMin": 3, "ageMax": 12, "pricing": {} }
+          ],
+          "includes": ["Activities", "Creative workshops", "Field trips"],
+          "excludes": ["Lunch"],
+          "status": "Confirmed",
+          "statusDetail": "Summer and winter camps offered annually",
+          "notes": "5-week summer camp (Jul–Aug) and 3-week winter camp (Dec–Jan). Book a single day, a week, or the full program. Yoga, music, art, cooking, nature projects. Pricing TBC — contact school."
+        }
+      ]
+    },
+    {
+      "id": "sun-school",
+      "name": "Sun School Bali",
+      "shortName": "Sun School",
+      "island": "Bali",
+      "area": "Canggu",
+      "address": "Kaba-Kaba village, Tabanan, Bali",
+      "website": "sunschoolbali.com",
+      "pedagogy": "Waldorf-inspired (Steiner education). Emotional intelligence at the forefront. Wall-less classrooms connected to nature, set among jungle and rice fields with a river. Founded by Jamie Bade.",
+      "ageRange": { "min": 4, "max": 12 },
+      "languageOfInstruction": "English",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "Admissions", "type": "whatsapp", "value": "+62 811-389-969" }
+      ],
+      "programs": [
+        {
+          "id": "regular-term",
+          "type": "Regular term",
+          "monthsActive": [1,2,3,4,5,6,8,9,10,11,12],
+          "status": "Pending",
+          "statusDetail": "Pricing not publicly available — contact school directly",
+          "notes": "Beautiful nature-immersed campus near Canggu. Waldorf/Steiner approach. Likely accepts mid-year enrollment subject to availability. Contact via WhatsApp for fees and availability."
+        }
+      ]
+    },
+    {
+      "id": "bumi-kecil",
+      "name": "Bumi Kecil International Kindergarten",
+      "shortName": "Bumi Kecil",
+      "island": "Gili Air",
+      "area": "Gili Air",
+      "address": "Jl. Bambu, Gili Air, Nusa Tenggara Barat",
+      "website": "bumikecil.org",
+      "instagram": "@bumikecil.giliair",
+      "pedagogy": "Reggio Emilia philosophy combined with Cambridge International Curriculum. Child-led, play-based, creative learning. Bamboo open-plan classrooms. Mixed-age groups. Max 24 students.",
+      "ageRange": { "min": 3, "max": 9 },
+      "schoolHours": "08:30–12:30 (Playgroup/Kindy), 08:30–14:30 (Pre-Primary/Primary)",
+      "languageOfInstruction": "English and Bahasa Indonesia",
+      "lastVerified": "2026-05-12",
+      "contacts": [
+        { "label": "School", "type": "email", "value": "info@bumikecil.org" },
+        { "label": "School", "type": "whatsapp", "value": "+62 822 3533 9848" },
+        { "label": "Instagram", "type": "instagram", "value": "@bumikecil.giliair" }
+      ],
+      "programs": [
+        {
+          "id": "regular-enrollment",
+          "type": "Regular term",
+          "monthsActive": [1,2,3,4,5,6,7,8,9,10,11,12],
+          "ageTiers": [
+            { "label": "Playgroup/Kindy (3–5)", "ageMin": 3, "ageMax": 5, "pricing": { "monthly_IDR": 6940000, "yearly_IDR": 65340000 } },
+            { "label": "Pre-Primary/Primary (5–9)", "ageMin": 5, "ageMax": 9, "pricing": { "monthly_IDR": 6940000, "yearly_IDR": 84580000 } }
+          ],
+          "includes": ["Snacks", "Lunch (Pre-Primary/Primary)", "Excursions", "Individual Learning Plans"],
+          "excludes": [],
+          "minDuration": "2 weeks",
+          "dropIn": {
+            "available": true,
+            "rates_IDR": {
+              "dropIn": 400000
+            },
+            "note": "Drop-in available — contact in advance. Free trial day offered."
+          },
+          "status": "Confirmed",
+          "statusDetail": "Current fee schedule from bumikecil.org",
+          "notes": "One of the only school options on the Gili islands. Drop-in from Rp 400K/day makes it perfect for families passing through. Car-free island — peaceful setting."
+        }
+      ]
+    }
+  ]
+}

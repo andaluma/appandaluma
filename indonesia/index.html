@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Indonesia Guide — Andaluma</title>
+<meta name="description" content="A worldschooler's guide to Indonesia: schools, health insurance, visas, communities, and accommodation in Bali, Lombok & Gili Air.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --coral:#E04F28;--berry:#B83368;--teal:#0A7A88;
+  --amber:#C98A10;--forest:#2D5C3A;--dark:#1A1208;
+  --muted:#7A6E5A;--sand:#EDE5D4;--cream:#F7F2E8;
+  --white:#FFFFFF;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;overflow-x:hidden;scroll-behavior:smooth}
+body{min-height:100%;background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 80px}
+
+/* Header */
+.site-header{background:var(--dark);color:var(--white);padding:max(48px,env(safe-area-inset-top,48px)) 16px 28px}
+.site-header-inner{max-width:720px;margin:0 auto}
+.logo-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;width:56px;margin-bottom:14px}
+.logo-tile{display:flex;align-items:center;justify-content:center;height:26px;border-radius:3px;font-family:'Playfair Display',serif;font-size:9px;font-weight:700;color:white;letter-spacing:0.04em}
+.site-header h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1.2;margin-bottom:6px}
+.site-header .subtitle{font-size:14px;opacity:0.55;font-weight:400}
+.badge-indonesia{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;background:var(--teal);color:white;padding:3px 10px;border-radius:4px;margin-bottom:12px}
+
+/* Nav tiles */
+.nav-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:20px 0 8px}
+.nav-tile{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px;border-radius:12px;
+  cursor:pointer;transition:all .15s;
+  text-decoration:none;border:none;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  color:var(--white);
+}
+.nav-tile:hover{opacity:0.9;transform:translateY(-1px)}
+.nav-tile .tile-icon{font-size:20px;flex-shrink:0}
+.nav-tile .tile-label{line-height:1.2}
+.nav-tile .tile-sub{font-size:11px;font-weight:400;opacity:0.7;display:block;margin-top:2px}
+@media(max-width:400px){.nav-tiles{grid-template-columns:1fr}.nav-tile{padding:12px 14px}}
+
+/* Intro */
+.intro{padding:16px 0 8px;font-size:14px;color:var(--muted);line-height:1.7}
+.intro strong{color:var(--dark)}
+
+/* Section anchors */
+.section-anchor{scroll-margin-top:20px}
+
+/* Filter bar */
+.filter-bar{position:sticky;top:0;z-index:50;background:var(--cream);padding:14px 0 10px;border-bottom:1px solid var(--sand)}
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.filter-label{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);width:100%;margin-bottom:-2px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:500;border:1.5px solid var(--sand);background:var(--white);color:var(--dark);cursor:pointer;transition:all .15s;user-select:none}
+.chip:hover{border-color:var(--muted)}
+.chip.active{background:var(--dark);color:var(--white);border-color:var(--dark)}
+.input-sm{padding:6px 12px;border-radius:10px;font-size:13px;font-family:'DM Sans',sans-serif;border:1.5px solid var(--sand);background:var(--white);color:var(--dark);outline:none;width:70px}
+.input-sm:focus{border-color:var(--coral)}
+select.input-sm{width:auto;cursor:pointer;appearance:auto}
+.filter-summary{font-size:12px;color:var(--muted);padding:4px 0}
+.filter-summary strong{color:var(--dark)}
+.clear-btn{font-size:12px;color:var(--coral);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;padding:4px 8px}
+
+/* Cards */
+.school-card{background:var(--white);border-radius:14px;padding:20px;margin-bottom:14px;border:1px solid var(--sand);transition:box-shadow .2s}
+.school-card:hover{box-shadow:0 2px 12px rgba(26,18,8,0.06)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;cursor:pointer}
+.card-top-left{flex:1}
+.school-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;line-height:1.2}
+.island-badge{flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 10px;border-radius:4px;color:var(--white)}
+.island-badge.lombok{background:var(--teal)}
+.island-badge.bali{background:var(--coral)}
+.island-badge.gili-air{background:var(--amber)}
+.card-meta{font-size:13px;color:var(--muted);margin-bottom:2px}
+.card-meta span{margin-right:12px}
+.card-summary{font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:6px}
+.card-summary .expand-hint{color:var(--teal);font-weight:600}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.tag{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--sand);color:var(--muted);font-weight:500}
+.program-row{padding:12px 0;border-top:1px solid var(--sand)}
+.program-row:first-child{border-top:none;padding-top:4px}
+.program-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+.program-type{font-size:13px;font-weight:600;color:var(--dark)}
+.status-pill{font-size:10px;font-weight:700;letter-spacing:0.04em;padding:2px 8px;border-radius:10px}
+.status-pill.confirmed{background:#d4edda;color:#155724}
+.status-pill.unconfirmed{background:#fff3cd;color:#856404}
+.status-pill.pending{background:#e2e3e5;color:#383d41}
+.status-pill.deprioritized{background:#e2e3e5;color:#6c757d}
+.price-line{font-size:14px;font-weight:600;color:var(--dark);margin:4px 0}
+.price-detail{font-size:12px;color:var(--muted);line-height:1.6}
+.program-note{font-size:12px;color:var(--muted);font-style:italic;margin-top:4px}
+.includes-excludes{font-size:12px;color:var(--muted);margin-top:4px}
+.includes-excludes .inc{color:var(--forest)}
+.includes-excludes .exc{color:var(--coral)}
+.discount-line{font-size:12px;color:var(--amber);margin-top:2px;font-weight:500}
+.card-expand{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--sand);margin-top:8px}
+.contact-links{display:flex;gap:8px;flex-wrap:wrap}
+.contact-link{font-size:12px;font-weight:600;text-decoration:none;padding:4px 10px;border-radius:6px;transition:opacity .15s}
+.contact-link:hover{opacity:0.8}
+.contact-link.wa{background:rgba(37,211,102,0.12);color:#25d366}
+.contact-link.email{background:rgba(10,122,136,0.1);color:var(--teal)}
+.contact-link.web{background:rgba(224,79,40,0.1);color:var(--coral)}
+.contact-link.ig{background:rgba(184,51,104,0.1);color:var(--berry)}
+.month-strip{display:flex;gap:2px;margin:8px 0}
+.month-cell{flex:1;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase}
+.month-cell.active{background:var(--teal);color:white;opacity:0.7}
+.month-cell.highlighted{background:var(--teal);color:white;opacity:1}
+.month-cell.inactive{background:var(--sand);color:var(--muted);opacity:0.5}
+.dropin-box{background:rgba(10,122,136,0.06);border-radius:8px;padding:10px 12px;margin-top:8px}
+.dropin-box .dropin-title{font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px}
+.dropin-box .dropin-rate{font-size:13px;color:var(--dark);margin-bottom:2px}
+
+/* Editorial / collapsible sections */
+.editorial{background:var(--white);border-radius:14px;border:1px solid var(--sand);padding:24px 20px;margin:28px 0}
+.editorial h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:14px}
+.editorial p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px}
+.editorial ul{margin:8px 0 12px 16px;font-size:14px;color:var(--muted);line-height:1.8}
+.editorial li{margin-bottom:4px}
+.section-toggle{cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.toggle-hint{font-size:14px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400}
+
+/* Future sections */
+.future-section{border:1.5px dashed var(--sand);border-radius:14px;padding:20px;margin-bottom:14px;text-align:center}
+.future-section h3{font-size:15px;color:var(--muted);font-weight:600;margin-bottom:4px}
+.future-section p{font-size:13px;color:var(--muted);opacity:0.6}
+
+/* Suggest button */
+.suggest-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:600;color:var(--teal);
+  background:rgba(10,122,136,0.08);border:none;border-radius:6px;
+  padding:3px 8px;cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all .15s;margin-top:4px;
+}
+.suggest-btn:hover{background:rgba(10,122,136,0.15)}
+.suggest-form{margin-top:8px;padding:10px 12px;background:rgba(10,122,136,0.04);border-radius:8px;border:1px solid var(--sand)}
+.suggest-input{width:100%;padding:8px 10px;border:1.5px solid var(--sand);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--white);color:var(--dark);outline:none;resize:vertical;min-height:60px}
+.suggest-input:focus{border-color:var(--teal)}
+.suggest-input::placeholder{color:var(--muted);opacity:0.6}
+.suggest-submit{padding:6px 14px;border-radius:8px;border:none;background:var(--teal);color:white;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;margin-top:6px}
+.suggest-submit:hover{opacity:0.9}
+.suggest-cancel{padding:6px 14px;border-radius:8px;border:none;background:var(--sand);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;margin-top:6px;margin-left:6px}
+.suggest-thanks{font-size:12px;color:var(--forest);font-weight:600;margin-top:6px}
+
+/* Suggestion badge */
+.suggest-count{
+  position:fixed;bottom:20px;right:20px;z-index:100;
+  background:var(--teal);color:white;border-radius:50%;
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 16px rgba(10,122,136,0.3);transition:transform .15s;
+}
+.suggest-count:hover{transform:scale(1.1)}
+.suggest-panel{
+  position:fixed;bottom:74px;right:20px;z-index:100;
+  background:var(--white);border:1px solid var(--sand);border-radius:14px;
+  padding:16px;width:300px;max-height:400px;overflow-y:auto;
+  box-shadow:0 8px 30px rgba(0,0,0,0.12);
+}
+.suggest-panel h3{font-size:14px;font-weight:700;margin-bottom:8px}
+.suggest-item{font-size:12px;color:var(--muted);padding:8px 0;border-bottom:1px solid var(--sand);line-height:1.5}
+.suggest-item:last-child{border-bottom:none}
+.suggest-item .si-school{font-weight:600;color:var(--dark)}
+.suggest-item .si-field{font-size:11px;color:var(--teal);font-weight:600}
+.suggest-item .si-text{margin-top:2px}
+.suggest-export{width:100%;padding:8px;margin-top:8px;border-radius:8px;border:none;background:var(--teal);color:white;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+
+/* Currency toggle */
+.currency-toggle{display:inline-flex;border:1.5px solid var(--sand);border-radius:8px;overflow:hidden}
+.currency-toggle button{padding:5px 12px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--muted);border:none;cursor:pointer;transition:all .15s}
+.currency-toggle button.active{background:var(--dark);color:var(--white)}
+.rates-notice{font-size:11px;color:var(--muted);opacity:0.7;margin-left:8px}
+
+/* Footer */
+.site-footer{text-align:center;padding:28px 16px 40px;font-size:12px;color:var(--muted)}
+.site-footer a{color:var(--coral);text-decoration:none;font-weight:600}
+.no-results{padding:40px 20px;text-align:center;color:var(--muted)}
+.no-results .emoji{font-size:32px;margin-bottom:8px}
+.no-results p{font-size:14px}
+
+@media(max-width:480px){
+  .wrap{padding:0 12px 80px}
+  .school-name{font-size:16px}
+  .site-header h1{font-size:22px}
+  .suggest-panel{width:calc(100vw - 40px);right:20px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <div class="logo-grid">
+      <div class="logo-tile" style="background:var(--coral)">An</div>
+      <div class="logo-tile" style="background:var(--berry)">Da</div>
+      <div class="logo-tile" style="background:var(--teal)">Lu</div>
+      <div class="logo-tile" style="background:var(--amber)">Ma</div>
+    </div>
+    <div class="badge-indonesia">Indonesia</div>
+    <h1>Bali &amp; Lombok</h1>
+    <div class="subtitle">A worldschooler's guide for traveling families</div>
+  </div>
+</header>
+
+<div class="wrap" x-data="schoolsApp()" x-init="init()">
+
+  <!-- Nav tiles -->
+  <div class="nav-tiles">
+    <a class="nav-tile" href="#schools" style="background:var(--teal)">
+      <span class="tile-icon">🏫</span>
+      <span class="tile-label">Schools &amp; Camps<span class="tile-sub">Pricing &amp; details</span></span>
+    </a>
+    <a class="nav-tile" href="#insurance" style="background:var(--coral)">
+      <span class="tile-icon">🏥</span>
+      <span class="tile-label">Health Insurance<span class="tile-sub">SafetyWing vs Genki</span></span>
+    </a>
+    <a class="nav-tile" href="#visa" style="background:var(--berry)">
+      <span class="tile-icon">🛂</span>
+      <span class="tile-label">Visa Logistics<span class="tile-sub">Coming soon</span></span>
+    </a>
+    <a class="nav-tile" href="#community" style="background:var(--amber)">
+      <span class="tile-icon">👨‍👩‍👧‍👦</span>
+      <span class="tile-label">Communities<span class="tile-sub">Tips & hubs</span></span>
+    </a>
+  </div>
+
+  <!-- Intro -->
+  <div class="intro">
+    <p>A curated guide for <strong>slow-traveling families</strong> looking at schools, insurance, and practical logistics for Bali, Lombok & Gili Air. Prices are collected from school documents, websites, and fellow travelers — check the <strong>status labels</strong> and <strong>"last verified"</strong> dates. This is a shared effort by families on the road, not an official directory.</p>
+  </div>
+
+  <!-- ═══════════════════════════════ SCHOOLS ═══════════════════════════════ -->
+  <div id="schools" class="section-anchor"></div>
+  <h2 style="font-family:'Playfair Display',serif;font-size:22px;margin:24px 0 8px;padding-top:8px">Schools &amp; Camps</h2>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="filter-row">
+      <span class="filter-label">Island</span>
+      <button class="chip" :class="{'active': island === ''}" @click="island = ''">All</button>
+      <button class="chip" :class="{'active': island === 'Lombok'}" @click="island = 'Lombok'">Lombok</button>
+      <button class="chip" :class="{'active': island === 'Bali'}" @click="island = 'Bali'">Bali</button>
+      <button class="chip" :class="{'active': island === 'Gili Air'}" @click="island = 'Gili Air'">Gili Air</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Program</span>
+      <button class="chip" :class="{'active': programType === ''}" @click="programType = ''">All</button>
+      <template x-for="t in ['Regular term','Short-term','Holiday camp']">
+        <button class="chip" :class="{'active': programType === t}" @click="programType = t" x-text="t"></button>
+      </template>
+    </div>
+    <div class="filter-row" style="flex-wrap:nowrap;gap:10px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <label class="filter-label" style="width:auto;margin-bottom:0">Age</label>
+        <input type="number" class="input-sm" min="2" max="18" placeholder="—" x-model.number="childAge">
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <label class="filter-label" style="width:auto;margin-bottom:0">Month</label>
+        <select class="input-sm" x-model.number="arrivalMonth">
+          <option value="0">Any</option>
+          <template x-for="(m,i) in months">
+            <option :value="i+1" x-text="m"></option>
+          </template>
+        </select>
+      </div>
+    </div>
+    <div class="filter-row" style="justify-content:space-between;align-items:center">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="filter-label" style="width:auto;margin-bottom:0">Currency</span>
+        <div class="currency-toggle">
+          <button :class="{'active': currency === 'IDR'}" @click="currency = 'IDR'">IDR</button>
+          <button :class="{'active': currency === 'USD'}" @click="currency = 'USD'">USD</button>
+          <button :class="{'active': currency === 'EUR'}" @click="currency = 'EUR'">EUR</button>
+        </div>
+        <span class="rates-notice" x-text="'Rates as of ' + data.exchangeRates.asOf"></span>
+      </div>
+      <button class="clear-btn" @click="clearFilters()">Clear all</button>
+    </div>
+    <div class="filter-summary">
+      <strong x-text="filteredSchools.length"></strong> <span x-text="filteredSchools.length === 1 ? 'school' : 'schools'"></span> found
+    </div>
+  </div>
+
+  <!-- School results -->
+  <div style="padding-top:14px">
+    <template x-if="filteredSchools.length === 0">
+      <div class="no-results">
+        <div class="emoji">🏫</div>
+        <p>No schools match your filters. Try broadening your search.</p>
+      </div>
+    </template>
+
+    <template x-for="school in filteredSchools" :key="school.id">
+      <div class="school-card" x-data="{expanded:false}">
+        <!-- Collapsed: name + meta + quick price -->
+        <div class="card-top" @click="expanded=!expanded">
+          <div class="card-top-left">
+            <div class="school-name" x-text="school.name"></div>
+            <div class="card-meta">
+              <span x-text="school.area"></span>
+              <span x-text="'Ages ' + school.ageRange.min + '–' + school.ageRange.max"></span>
+            </div>
+            <div class="card-summary">
+              <span x-text="quickPrice(school)"></span>
+              <span class="expand-hint" x-text="expanded ? '▲ Less' : '▼ Details'"></span>
+            </div>
+          </div>
+          <span class="island-badge" :class="school.island.toLowerCase().replace(/\s+/g, '-')" x-text="school.island"></span>
+        </div>
+
+        <!-- Expanded content -->
+        <div x-show="expanded" x-collapse>
+          <div class="card-tags" style="margin-top:10px">
+            <span class="tag" x-text="school.languageOfInstruction || 'English'"></span>
+            <template x-if="school.schoolHours">
+              <span class="tag" x-text="school.schoolHours"></span>
+            </template>
+          </div>
+
+          <div class="month-strip">
+            <template x-for="(m,i) in monthsShort">
+              <div class="month-cell"
+                :class="{
+                  'highlighted': arrivalMonth === i+1 && schoolActiveInMonth(school, i+1),
+                  'active': arrivalMonth !== i+1 && schoolActiveInMonth(school, i+1),
+                  'inactive': !schoolActiveInMonth(school, i+1)
+                }"
+                x-text="m"></div>
+            </template>
+          </div>
+
+          <div style="font-size:13px;color:var(--muted);margin:8px 0;line-height:1.6" x-text="school.pedagogy"></div>
+
+          <!-- Programs -->
+          <template x-for="prog in filteredPrograms(school)" :key="prog.id">
+            <div class="program-row">
+              <div class="program-header">
+                <span class="program-type" x-text="prog.type"></span>
+                <span class="status-pill" :class="prog.status.toLowerCase()" x-text="prog.status"></span>
+              </div>
+              <template x-if="prog.dates">
+                <div style="font-size:12px;color:var(--muted);margin-bottom:4px" x-text="prog.dates"></div>
+              </template>
+              <template x-if="prog.termWindow">
+                <div style="font-size:12px;color:var(--muted);margin-bottom:4px" x-text="prog.termWindow"></div>
+              </template>
+              <template x-if="prog.ageTiers && prog.ageTiers.length">
+                <div>
+                  <template x-for="tier in matchingTiers(prog)" :key="tier.label">
+                    <div>
+                      <div class="price-line">
+                        <span x-text="tier.label + ': '"></span>
+                        <span x-text="formatTierPrice(tier)"></span>
+                      </div>
+                      <div class="price-detail" x-html="formatAllPrices(tier)"></div>
+                    </div>
+                  </template>
+                </div>
+              </template>
+              <template x-if="!prog.ageTiers || prog.ageTiers.length === 0">
+                <div class="program-note" x-text="prog.statusDetail || prog.notes"></div>
+              </template>
+              <template x-if="prog.includes && prog.includes.length">
+                <div class="includes-excludes">
+                  <span class="inc">Includes: <span x-text="prog.includes.join(', ')"></span></span>
+                </div>
+              </template>
+              <template x-if="prog.excludes && prog.excludes.length">
+                <div class="includes-excludes">
+                  <span class="exc">Excludes: <span x-text="prog.excludes.join(', ')"></span></span>
+                </div>
+              </template>
+              <template x-if="prog.discounts">
+                <div>
+                  <template x-if="prog.discounts.sibling">
+                    <div class="discount-line" x-text="'Sibling: ' + prog.discounts.sibling"></div>
+                  </template>
+                  <template x-if="prog.discounts.partTime">
+                    <div class="discount-line" x-text="'Part-time: ' + prog.discounts.partTime"></div>
+                  </template>
+                  <template x-if="prog.discounts.trial">
+                    <div class="discount-line" x-text="prog.discounts.trial"></div>
+                  </template>
+                </div>
+              </template>
+              <template x-if="prog.dropIn && prog.dropIn.available">
+                <div class="dropin-box">
+                  <div class="dropin-title">Drop-in available</div>
+                  <template x-if="prog.dropIn.rates_IDR.dropIn">
+                    <div class="dropin-rate" x-text="formatPrice(prog.dropIn.rates_IDR.dropIn) + '/day (pure drop-in)'"></div>
+                  </template>
+                  <template x-if="prog.dropIn.rates_IDR.min5days">
+                    <div class="dropin-rate" x-text="formatPrice(prog.dropIn.rates_IDR.min5days) + '/day (min 5 days)'"></div>
+                  </template>
+                  <template x-if="prog.dropIn.rates_IDR.min10days">
+                    <div class="dropin-rate" x-text="formatPrice(prog.dropIn.rates_IDR.min10days) + '/day (min 10 days)'"></div>
+                  </template>
+                  <template x-if="prog.dropIn.note">
+                    <div class="price-detail" x-text="prog.dropIn.note"></div>
+                  </template>
+                </div>
+              </template>
+              <template x-if="prog.notes">
+                <div class="program-note" x-text="prog.notes"></div>
+              </template>
+              <template x-if="prog.minDuration || prog.maxDuration">
+                <div class="price-detail">
+                  <template x-if="prog.minDuration"><span x-text="'Min: ' + prog.minDuration"></span></template>
+                  <template x-if="prog.maxDuration"><span x-text="' · Max: ' + prog.maxDuration"></span></template>
+                </div>
+              </template>
+              <template x-if="prog.capacity">
+                <div class="price-detail" style="color:var(--coral);font-weight:500" x-text="prog.capacity"></div>
+              </template>
+
+              <!-- Suggest edit for this program -->
+              <div x-data="{suggesting:false,sent:false,text:''}" style="margin-top:6px">
+                <button class="suggest-btn" @click="suggesting=!suggesting" x-show="!sent">
+                  <span>✏️</span> <span>Suggest an edit</span>
+                </button>
+                <div class="suggest-form" x-show="suggesting && !sent" x-collapse>
+                  <textarea class="suggest-input" x-model="text" :placeholder="'Know something different about ' + school.shortName + '\'s ' + prog.type + '? Share it here — pricing, dates, contacts, anything.'"></textarea>
+                  <div>
+                    <button class="suggest-submit" @click="if(text.trim()){addSuggestion(school.shortName,prog.type,text);sent=true}">Send suggestion</button>
+                    <button class="suggest-cancel" @click="suggesting=false;text=''">Cancel</button>
+                  </div>
+                </div>
+                <div class="suggest-thanks" x-show="sent">Thanks! We'll review your suggestion.</div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Contacts -->
+          <div class="card-expand">
+            <div class="contact-links">
+              <template x-for="c in school.contacts" :key="c.value">
+                <a class="contact-link"
+                  :class="{'wa':c.type==='whatsapp','email':c.type==='email','web':c.type==='website','ig':c.type==='instagram'}"
+                  :href="contactHref(c)" target="_blank" x-text="contactLabel(c)"></a>
+              </template>
+              <template x-if="school.website">
+                <a class="contact-link web" :href="'https://'+school.website" target="_blank">Website</a>
+              </template>
+              <template x-if="school.instagram">
+                <a class="contact-link ig" :href="'https://instagram.com/'+school.instagram.replace('@','')" target="_blank" x-text="school.instagram"></a>
+              </template>
+            </div>
+            <div style="font-size:11px;color:var(--muted);white-space:nowrap" x-text="'Verified '+school.lastVerified"></div>
+          </div>
+
+          <!-- General school suggestion -->
+          <div x-data="{suggesting:false,sent:false,text:''}" style="margin-top:8px">
+            <button class="suggest-btn" @click="suggesting=!suggesting" x-show="!sent">
+              <span>✏️</span> <span>Suggest info about this school</span>
+            </button>
+            <div class="suggest-form" x-show="suggesting && !sent" x-collapse>
+              <textarea class="suggest-input" x-model="text" :placeholder="'Know more about ' + school.shortName + '? Contacts, address, experiences — anything helps.'"></textarea>
+              <div>
+                <button class="suggest-submit" @click="if(text.trim()){addSuggestion(school.shortName,'General',text);sent=true}">Send suggestion</button>
+                <button class="suggest-cancel" @click="suggesting=false;text=''">Cancel</button>
+              </div>
+            </div>
+            <div class="suggest-thanks" x-show="sent">Thanks! We'll review your suggestion.</div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- What we learned about schools -->
+  <div class="editorial" x-data="{open:false}">
+    <h2 class="section-toggle" @click="open=!open">
+      <span>What we learned about schools</span>
+      <span class="toggle-hint" x-text="open ? '▲ Hide' : '▼ Show'"></span>
+    </h2>
+    <div x-show="open" x-collapse>
+    <p style="margin-top:14px">After researching and contacting these schools over several months, a few patterns stand out:</p>
+    <ul>
+      <li><strong>Lombok school terms typically end mid-to-late June.</strong> July is summer-camp territory — if you're arriving in July, regular enrollment usually isn't an option until late July or August.</li>
+      <li><strong>Drop-in pricing often isn't on the website.</strong> Several schools offer it but you have to ask. Anak Alam, for example, has a structured drop-in rate that only appears in the handbook.</li>
+      <li><strong>Sibling discounts vary widely</strong> — from 5% (Selong Bay) to 30% off a 4th child (Anak Alam). Always ask; these can make a significant difference for families with multiple kids.</li>
+      <li><strong>Response times vary dramatically.</strong> Some schools reply within hours on WhatsApp; others take weeks or don't reply at all. We've noted this in the status labels.</li>
+      <li><strong>"All-inclusive" means different things.</strong> Bali Earth School includes meals, transport, and materials. Most Lombok schools exclude lunch and activities. Always check the includes/excludes.</li>
+      <li><strong>Bali schools (Ubud area) are generally pricier</strong> than Lombok, but often include more. Compare total cost, not just tuition.</li>
+      <li><strong>Trial days or trial weeks</strong> are common — Anak Alam offers a free trial day, Bali Earth's 2-week trial credits toward enrollment.</li>
+    </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ INSURANCE ═══════════════════════════════ -->
+  <div id="insurance" class="section-anchor"></div>
+  <div class="editorial" x-data="{open:false}">
+    <h2 class="section-toggle" @click="open=!open">
+      <span>Health Insurance</span>
+      <span class="toggle-hint" x-text="open ? '▲ Hide' : '▼ Show'"></span>
+    </h2>
+    <div x-show="open" x-collapse>
+    <p style="margin-top:14px">Two nomad-friendly health insurance providers that work well for families in Indonesia. Both cover Indonesia fully, cancel anytime, and are popular in the worldschooler community.</p>
+
+    <div style="display:flex;gap:12px;margin:16px 0">
+      <div style="flex:1;background:rgba(10,122,136,0.06);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal);margin-bottom:4px">SafetyWing</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--dark)">~$136</div>
+        <div style="font-size:12px;color:var(--muted)">/month · family of 4</div>
+        <div style="font-size:11px;color:var(--forest);font-weight:600;margin-top:4px">Kids ride free</div>
+      </div>
+      <div style="flex:1;background:rgba(184,51,104,0.06);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--berry);margin-bottom:4px">Genki</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--dark)">~€233</div>
+        <div style="font-size:12px;color:var(--muted)">/month · family of 4</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Per person pricing</div>
+      </div>
+    </div>
+
+    <p style="font-size:13px;color:var(--dark);font-weight:600;margin-bottom:4px">Why the difference?</p>
+    <p>SafetyWing includes one child under 10 free per paying adult — so both kids are covered at no extra cost. Genki charges per person regardless of age. For a family of 4, that's roughly <strong>$1,400/year saved</strong> with SafetyWing.</p>
+
+    <div style="overflow-x:auto;margin:16px -8px">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:340px">
+        <thead>
+          <tr style="border-bottom:2px solid var(--sand)">
+            <th style="text-align:left;padding:8px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted)"></th>
+            <th style="text-align:center;padding:8px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--teal)">SafetyWing</th>
+            <th style="text-align:center;padding:8px;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--berry)">Genki</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Adult price</td><td style="padding:8px;text-align:center">~$68/mo</td><td style="padding:8px;text-align:center">~€64/mo</td></tr>
+          <tr style="border-bottom:1px solid var(--sand);background:rgba(45,92,58,0.04)"><td style="padding:8px;font-weight:600">Child price</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">Free (under 10)</td><td style="padding:8px;text-align:center">~€53/mo</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Deductible</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">$0</td><td style="padding:8px;text-align:center">€50/claim</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Coverage max</td><td style="padding:8px;text-align:center">$250,000</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">€1,000,000</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Hospitalization</td><td style="padding:8px;text-align:center">✓</td><td style="padding:8px;text-align:center">✓</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Outpatient</td><td style="padding:8px;text-align:center">✓</td><td style="padding:8px;text-align:center">✓</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Emergency dental</td><td style="padding:8px;text-align:center">$1,000</td><td style="padding:8px;text-align:center">€500–€1,000</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Mental health</td><td style="padding:8px;text-align:center;color:var(--coral)">✗</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">✓ €1.5K/€20K</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Cancer</td><td style="padding:8px;text-align:center;color:var(--coral)">✗</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">✓</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Evacuation</td><td style="padding:8px;text-align:center">$100,000</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">€500,000</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Trip disruption</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">✓ $5,000</td><td style="padding:8px;text-align:center;color:var(--coral)">✗</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Lost luggage</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">✓ $3,000</td><td style="padding:8px;text-align:center;color:var(--coral)">✗</td></tr>
+          <tr style="border-bottom:1px solid var(--sand)"><td style="padding:8px;font-weight:600">Sports/surfing</td><td style="padding:8px;text-align:center">+$10/mo add-on</td><td style="padding:8px;text-align:center;color:var(--forest);font-weight:600">Included</td></tr>
+          <tr><td style="padding:8px;font-weight:600">Pre-existing</td><td style="padding:8px;text-align:center;color:var(--coral)">✗</td><td style="padding:8px;text-align:center;color:var(--coral)">✗</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size:13px;color:var(--dark);font-weight:600;margin:14px 0 4px">Our take</p>
+    <p>For most worldschooling families in Indonesia, SafetyWing makes sense as the primary insurance — the free kids policy is hard to beat, and hospital costs in Indonesia are low enough that the $250K cap goes a long way. If you need mental health coverage, higher evacuation limits, or want sports (surfing, diving) included without an add-on, Genki is the more comprehensive option at roughly double the cost.</p>
+
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+      <a href="https://safetywing.com/signup?product=nomad-insurance&callbackUrl=%2Fdashboard%2Fnomad-insurance%2Fpurchase&referralToken=ca6f4e7a-f162-4aac-814a-d9ad38572226" target="_blank" class="contact-link wa" style="background:rgba(10,122,136,0.1);color:var(--teal);padding:8px 16px;font-size:13px;border-radius:8px">SafetyWing — get €20 credit</a>
+      <a href="https://www.genki.world/" target="_blank" class="contact-link" style="background:rgba(184,51,104,0.1);color:var(--berry);padding:8px 16px;font-size:13px;border-radius:8px">Genki — get a quote</a>
+    </div>
+
+    <p style="font-size:12px;color:var(--muted);margin-top:12px">Pricing based on 2 adults (30–39) + 2 children (4–7), non-US residents, as of May 2026. SafetyWing bills every 28 days; Genki bills monthly. Always get a direct quote — rates may vary by age and nationality.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ VISA ═══════════════════════════════ -->
+  <div id="visa" class="section-anchor"></div>
+  <div class="future-section">
+    <h3>Visa Logistics</h3>
+    <p>Coming soon — stay durations by passport</p>
+  </div>
+
+  <!-- ═══════════════════════════════ COMMUNITY ═══════════════════════════════ -->
+  <div id="community" class="section-anchor"></div>
+  <div class="editorial" x-data="{open:true}">
+    <h2 class="section-toggle" @click="open=!open">
+      <span>Communities & Local Tips</span>
+      <span class="toggle-hint" x-text="open ? '▲ Hide' : '▼ Show'"></span>
+    </h2>
+    <div x-show="open" x-collapse>
+
+    <!-- Charlotte's Hub -->
+    <div style="background:rgba(201,138,16,0.08);border-radius:12px;padding:18px;margin-top:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px">C</div>
+        <div>
+          <div style="font-weight:700;color:var(--dark);font-size:15px">Charlotte's Indonesia Family Hubs</div>
+          <div style="font-size:12px;color:var(--muted)">Free pop-up hubs · May–Oct 2026 · Lombok, Gili Air & Bali</div>
+        </div>
+      </div>
+      <p style="font-size:13px;line-height:1.6;margin-bottom:10px">A co-created slow travel experience for families exploring Indonesia together. This is not a retreat — everyone plans their own stay and the group co-creates the experience. Surf, beach days, nature, shared meals & simple island living. Flexible, family-led & community-driven.</p>
+      <p style="font-size:13px;line-height:1.6;margin-bottom:12px">For open-minded families who value connection, freedom & adventure. DM Charlotte on Instagram for details and to join.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="https://www.instagram.com/charlotteamabbutt" target="_blank" class="contact-link" style="background:rgba(201,138,16,0.12);color:var(--amber);padding:6px 14px;font-size:12px;border-radius:8px">Charlotte on Instagram</a>
+        <a href="https://www.instagram.com/reels/DXyHQioSNOE/" target="_blank" class="contact-link" style="background:rgba(201,138,16,0.12);color:var(--amber);padding:6px 14px;font-size:12px;border-radius:8px">Hub flyer & details</a>
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:8px">Thanks to Charlotte for sharing her research and tips with the community.</p>
+    </div>
+
+    <!-- Selong Belanak tips -->
+    <div style="margin-top:20px">
+      <h4 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--dark);margin-bottom:10px">Selong Belanak — field-tested tips</h4>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Collected from Charlotte and other families on the ground, May 2026.</p>
+
+      <div style="display:grid;gap:12px">
+        <div style="background:var(--cream);border-radius:10px;padding:14px">
+          <div style="font-weight:700;font-size:13px;color:var(--teal);margin-bottom:4px">Surf lessons</div>
+          <p style="font-size:13px">Great spot for beginners and intermediate. ~Rp 250K for 2 hours, Rp 150K for 1 hour.</p>
+        </div>
+
+        <div style="background:var(--cream);border-radius:10px;padding:14px">
+          <div style="font-weight:700;font-size:13px;color:var(--coral);margin-bottom:4px">Restaurants worth trying</div>
+          <p style="font-size:13px">Three Sisters Dumplings · Naughty Surfer · Bareng · Pronto · Folk Cafe (views) · Laut Biru (beach restaurant)</p>
+        </div>
+
+        <div style="background:var(--cream);border-radius:10px;padding:14px">
+          <div style="font-weight:700;font-size:13px;color:var(--forest);margin-bottom:4px">Pools & beach clubs (non-guest access)</div>
+          <p style="font-size:13px">Many places let non-guests use pools if you buy food/drinks: Green Poya (free pool + sunset) · Uryah · Codium · Baris Beach · Amazing Lombok Resort (saltwater) · Tropik · Seven Havens · Mawi Surf Cafe · Maya Ocean View Resort</p>
+        </div>
+
+        <div style="background:var(--cream);border-radius:10px;padding:14px">
+          <div style="font-weight:700;font-size:13px;color:var(--berry);margin-bottom:4px">Tampah Hills</div>
+          <p style="font-size:13px">Padel court for Rp 300K. Open activities for non-residents: crafts, beach games, movie nights, cooking demos. Check their website for the weekly schedule.</p>
+        </div>
+
+        <div style="background:var(--cream);border-radius:10px;padding:14px">
+          <div style="font-weight:700;font-size:13px;color:var(--amber);margin-bottom:4px">Selong Bay School — afternoon activities</div>
+          <p style="font-size:13px">Besides full school days, you can book 2-hour afternoon sessions for Rp 300K: cooking, strength training, gymnastics, surf, scouts and more. They also run activities at Tropik and on the beach. Bus service from Kuta available.</p>
+        </div>
+
+        <div style="background:var(--cream);border-radius:10px;padding:14px">
+          <div style="font-weight:700;font-size:13px;color:var(--teal);margin-bottom:4px">Snorkelling — 3 Secret Gilis day trip</div>
+          <p style="font-size:13px">Private trip to Gili Nanggu, Gili Sudak & Gili Kedis: Rp 1.85–2.25M total. Includes car, private boat, gear, guide, island fees, water. Pickup ~9am, back ~7pm.</p>
+        </div>
+
+        <div style="background:var(--cream);border-radius:10px;padding:14px">
+          <div style="font-weight:700;font-size:13px;color:var(--forest);margin-bottom:4px">Car hire & groceries</div>
+          <p style="font-size:13px">6-seater car: ~Rp 11M for 2 months. Small shops and fruit stalls in Selong; head to Pepitos in Kuta for a bigger supermarket.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accommodation call-to-action -->
+    <div style="background:rgba(45,92,58,0.06);border-radius:12px;padding:18px;margin-top:20px;text-align:center">
+      <h4 style="font-family:'Playfair Display',serif;font-size:17px;color:var(--forest);margin-bottom:6px">Accommodation & co-living</h4>
+      <p style="font-size:13px;line-height:1.6;margin-bottom:8px">Looking for a place to stay? Have a villa tip or found a deal? We're building an accommodation section and would love your help — especially if you're interested in <strong>sharing a house with another family</strong> or setting up <strong>co-living</strong> near the schools.</p>
+      <p style="font-size:13px;line-height:1.6;margin-bottom:12px">More families together = better rates, built-in playdates, and someone to share the school run with.</p>
+      <a href="mailto:worldschooling@andaluma.com?subject=Accommodation%20tip%20or%20co-living%20interest" class="contact-link wa" style="background:var(--forest);color:white;padding:10px 20px;font-size:13px;border-radius:8px;display:inline-block">Share a tip or express interest</a>
+    </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>Last updated: <span x-text="data.lastUpdated"></span></p>
+    <p style="margin-top:6px">Spotted something wrong? <a href="mailto:worldschooling@andaluma.com">Let us know</a></p>
+    <p style="margin-top:10px;font-size:11px;opacity:0.6">Prices are collected from fellow travelers, school documents, and websites — they may change. Always confirm directly with the school. This is a shared effort by families on the road, not an official directory.</p>
+  </footer>
+
+  <!-- Floating suggestion count -->
+  <template x-if="suggestions.length > 0">
+    <div>
+      <div class="suggest-count" @click="showSuggestions=!showSuggestions" x-text="suggestions.length"></div>
+      <div class="suggest-panel" x-show="showSuggestions" x-collapse @click.outside="showSuggestions=false">
+        <h3>Your suggestions (<span x-text="suggestions.length"></span>)</h3>
+        <template x-for="(s,i) in suggestions" :key="i">
+          <div class="suggest-item">
+            <span class="si-school" x-text="s.school"></span> · <span class="si-field" x-text="s.field"></span>
+            <div class="si-text" x-text="s.text"></div>
+          </div>
+        </template>
+        <button class="suggest-export" @click="exportSuggestions()">Copy all to clipboard</button>
+      </div>
+    </div>
+  </template>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script>
+function schoolsApp() {
+  return {
+    data: { lastUpdated: '', exchangeRates: { asOf: '', IDR_per_EUR: 20500, IDR_per_USD: 17450, USD_per_EUR: 1.175 }, schools: [] },
+    island: '',
+    programType: '',
+    childAge: null,
+    arrivalMonth: 0,
+    currency: 'IDR',
+    suggestions: [],
+    showSuggestions: false,
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    monthsShort: ['J','F','M','A','M','J','J','A','S','O','N','D'],
+
+    async init() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('island')) this.island = params.get('island');
+      if (params.get('type')) this.programType = params.get('type');
+      if (params.get('age')) this.childAge = parseInt(params.get('age'));
+      if (params.get('month')) this.arrivalMonth = parseInt(params.get('month'));
+      if (params.get('currency')) this.currency = params.get('currency');
+
+      const saved = localStorage.getItem('andaluma-suggestions');
+      if (saved) this.suggestions = JSON.parse(saved);
+
+      try {
+        const resp = await fetch('schools.json');
+        this.data = await resp.json();
+      } catch(e) {
+        console.error('Failed to load schools.json', e);
+        this.data = { lastUpdated: '?', exchangeRates: { asOf: '?', IDR_per_EUR: 20500, IDR_per_USD: 17450, USD_per_EUR: 1.175 }, schools: [] };
+      }
+
+      this.$watch('island', () => this.syncURL());
+      this.$watch('programType', () => this.syncURL());
+      this.$watch('childAge', () => this.syncURL());
+      this.$watch('arrivalMonth', () => this.syncURL());
+      this.$watch('currency', () => this.syncURL());
+    },
+
+    syncURL() {
+      const p = new URLSearchParams();
+      if (this.island) p.set('island', this.island);
+      if (this.programType) p.set('type', this.programType);
+      if (this.childAge) p.set('age', this.childAge);
+      if (this.arrivalMonth) p.set('month', this.arrivalMonth);
+      if (this.currency !== 'IDR') p.set('currency', this.currency);
+      const qs = p.toString();
+      history.replaceState(null, '', qs ? '?' + qs : window.location.pathname);
+    },
+
+    clearFilters() {
+      this.island = '';
+      this.programType = '';
+      this.childAge = null;
+      this.arrivalMonth = 0;
+      this.currency = 'IDR';
+    },
+
+    addSuggestion(school, field, text) {
+      this.suggestions.push({ school, field, text, date: new Date().toISOString().slice(0,10) });
+      localStorage.setItem('andaluma-suggestions', JSON.stringify(this.suggestions));
+    },
+
+    exportSuggestions() {
+      const lines = this.suggestions.map(s => `[${s.date}] ${s.school} — ${s.field}: ${s.text}`);
+      navigator.clipboard.writeText(lines.join('\n\n')).then(() => alert('Suggestions copied to clipboard!'));
+    },
+
+    quickPrice(school) {
+      const progs = this.filteredPrograms(school);
+      const prog = progs.find(p => p.ageTiers && p.ageTiers.length > 0)
+        || school.programs.find(p => p.ageTiers && p.ageTiers.length > 0);
+      if (!prog) return '';
+      const tiers = this.matchingTiers(prog);
+      const tier = tiers.length ? tiers[0] : prog.ageTiers[0];
+      return 'From ' + this.formatTierPrice(tier);
+    },
+
+    get filteredSchools() {
+      if (!this.data.schools) return [];
+      return this.data.schools.filter(s => {
+        if (this.island && s.island !== this.island) return false;
+        if (this.childAge && (this.childAge < s.ageRange.min || this.childAge > s.ageRange.max)) return false;
+        const progs = this.filteredPrograms(s);
+        if (progs.length === 0) return false;
+        return true;
+      });
+    },
+
+    filteredPrograms(school) {
+      return school.programs.filter(p => {
+        if (this.programType && p.type !== this.programType) return false;
+        if (this.arrivalMonth && p.monthsActive && p.monthsActive.length > 0 && !p.monthsActive.includes(this.arrivalMonth)) return false;
+        if (this.childAge && p.ageTiers && p.ageTiers.length > 0) {
+          const match = p.ageTiers.some(t => this.childAge >= t.ageMin && this.childAge <= t.ageMax);
+          if (!match) return false;
+        }
+        return true;
+      });
+    },
+
+    schoolActiveInMonth(school, month) {
+      return school.programs.some(p => p.monthsActive && p.monthsActive.includes(month));
+    },
+
+    matchingTiers(prog) {
+      if (!prog.ageTiers) return [];
+      if (this.childAge) {
+        return prog.ageTiers.filter(t => this.childAge >= t.ageMin && this.childAge <= t.ageMax);
+      }
+      return prog.ageTiers;
+    },
+
+    convertPrice(idr) {
+      if (this.currency === 'IDR') return idr;
+      if (this.currency === 'USD') return Math.round(idr / this.data.exchangeRates.IDR_per_USD);
+      if (this.currency === 'EUR') return Math.round(idr / this.data.exchangeRates.IDR_per_EUR);
+      return idr;
+    },
+
+    formatPrice(idr) {
+      if (!idr) return '—';
+      const val = this.convertPrice(idr);
+      if (this.currency === 'IDR') return 'Rp ' + val.toLocaleString('en');
+      if (this.currency === 'USD') return '$' + val.toLocaleString('en');
+      if (this.currency === 'EUR') return '€' + val.toLocaleString('en');
+      return val.toString();
+    },
+
+    convertFromEUR(eur) {
+      if (this.currency === 'EUR') return eur;
+      if (this.currency === 'USD') return Math.round(eur * this.data.exchangeRates.USD_per_EUR);
+      return Math.round(eur * this.data.exchangeRates.IDR_per_EUR);
+    },
+
+    convertFromUSD(usd) {
+      if (this.currency === 'USD') return usd;
+      if (this.currency === 'EUR') return Math.round(usd / this.data.exchangeRates.USD_per_EUR);
+      return Math.round(usd * this.data.exchangeRates.IDR_per_USD);
+    },
+
+    formatConverted(val) {
+      if (this.currency === 'IDR') return 'Rp ' + val.toLocaleString('en');
+      if (this.currency === 'USD') return '$' + val.toLocaleString('en');
+      return '€' + val.toLocaleString('en');
+    },
+
+    formatTierPrice(tier) {
+      const p = tier.pricing;
+      if (p.monthly_IDR) return this.formatPrice(p.monthly_IDR) + '/mo';
+      if (p.monthly_EUR) return this.formatConverted(this.convertFromEUR(p.monthly_EUR)) + '/mo';
+      if (p.weekly_IDR) return this.formatPrice(p.weekly_IDR) + '/wk';
+      if (p.daily_IDR) return this.formatPrice(p.daily_IDR) + '/day';
+      if (p.yearly_IDR) return this.formatPrice(p.yearly_IDR) + '/yr';
+      if (p['4week_IDR']) return this.formatPrice(p['4week_IDR']) + ' (4 wks)';
+      if (p['2week_IDR']) return this.formatPrice(p['2week_IDR']) + ' (2 wks)';
+      if (p['1week_IDR']) return this.formatPrice(p['1week_IDR']) + ' (1 wk)';
+      if (p.program_USD) return this.formatConverted(this.convertFromUSD(p.program_USD));
+      if (p.weekly_USD) {
+        const rate = p.weekly_USD;
+        const now = new Date();
+        const monthKey = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][now.getMonth()];
+        const price = rate[monthKey] || rate.jul || Object.values(rate)[0];
+        return this.formatConverted(this.convertFromUSD(price)) + '/wk';
+      }
+      return '—';
+    },
+
+    formatAllPrices(tier) {
+      const p = tier.pricing;
+      const parts = [];
+      if (p.monthly_IDR) parts.push(this.formatPrice(p.monthly_IDR) + '/mo');
+      if (p.term_IDR) parts.push(this.formatPrice(p.term_IDR) + '/term');
+      if (p.weekly_IDR) parts.push(this.formatPrice(p.weekly_IDR) + '/wk');
+      if (p.daily_IDR) parts.push(this.formatPrice(p.daily_IDR) + '/day');
+      if (p.fullProgram_IDR) parts.push(this.formatPrice(p.fullProgram_IDR) + ' (full program)');
+      if (p['2week_IDR']) parts.push(this.formatPrice(p['2week_IDR']) + ' (2 wks)');
+      if (p['4week_IDR']) parts.push(this.formatPrice(p['4week_IDR']) + ' (4 wks)');
+      if (p['12week_IDR']) parts.push(this.formatPrice(p['12week_IDR']) + ' (12 wks)');
+      if (p['24week_IDR']) parts.push(this.formatPrice(p['24week_IDR']) + ' (24 wks)');
+      if (p.yearly_IDR) parts.push(this.formatPrice(p.yearly_IDR) + ' (yearly)');
+      if (p['1week_IDR']) parts.push(this.formatPrice(p['1week_IDR']) + ' (1 wk)');
+      if (p.weekly_USD) {
+        const r = p.weekly_USD;
+        const labels = {apr:'Book in Apr',may:'Book in May',jun:'Book in Jun',jul:'Book in Jul'};
+        parts.length = 0;
+        for (const [k,v] of Object.entries(r)) {
+          let displayed;
+          if (this.currency === 'USD') displayed = '$' + v;
+          else if (this.currency === 'EUR') displayed = '€' + Math.round(v / this.data.exchangeRates.USD_per_EUR);
+          else displayed = 'Rp ' + Math.round(v * this.data.exchangeRates.IDR_per_USD).toLocaleString('en');
+          parts.push((labels[k] || k) + ': ' + displayed + '/wk');
+        }
+      }
+      const unique = [...new Set(parts)];
+      return unique.length > 1 ? unique.join(' · ') : '';
+    },
+
+    contactHref(c) {
+      if (c.type === 'whatsapp') return 'https://wa.me/' + c.value.replace(/[\s\-\+]/g, '').replace(/^0/,'62');
+      if (c.type === 'email') return 'mailto:' + c.value;
+      if (c.type === 'instagram') return 'https://instagram.com/' + c.value.replace('@','');
+      return '#';
+    },
+
+    contactLabel(c) {
+      if (c.type === 'whatsapp') return 'WhatsApp';
+      if (c.type === 'email') return c.label || 'Email';
+      if (c.type === 'instagram') return c.value;
+      return c.label;
+    }
+  };
+}
+</script>
+</body>
+</html>
