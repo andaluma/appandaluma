@@ -774,6 +774,12 @@ function clearConv(){
   renderConverter();
 }
 
+function clearConvRow(code){
+  convValues[code] = 0;
+  var inp = document.getElementById('conv-inp-'+code);
+  if(inp) inp.value = '';
+}
+
 function renderConverterValues(){
   var currencies = getConvCurrencies();
   currencies.forEach(function(c){
@@ -839,12 +845,13 @@ function renderConverter(){
     var val = convValues[c];
     var dispVal = (val !== undefined && val !== null && val !== 0) ? formatConvVal(c, val) : '';
     html += '<div class="conv-row'+(isPinned?' pinned':'')+'">';
+    if(!isPinned){
+      html += '<button class="conv-star on" onclick="toggleConvStar(\''+c+'\')" title="Remove currency">✕</button>';
+    }
     html += '<span class="conv-flag">'+flag+'</span>';
     html += '<span class="conv-code">'+c+'</span>';
     html += '<input class="conv-input" id="conv-inp-'+c+'" type="text" inputmode="decimal" placeholder="0" value="'+e(dispVal)+'" oninput="onConvInput(\''+c+'\',this.value)" onfocus="onConvFocus(\''+c+'\')">';
-    if(!isPinned){
-      html += '<button class="conv-star on" onclick="toggleConvStar(\''+c+'\')" title="Remove">✕</button>';
-    }
+    html += '<button class="conv-clear" onclick="clearConvRow(\''+c+'\')" title="Clear">⌫</button>';
     html += '</div>';
   });
   html += '</div>';
