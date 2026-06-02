@@ -356,13 +356,16 @@ function submitExpense(){
 
 // ── EXCHANGE RATES ───────────────────────────────────────
 var rateCache = {};
+// Fallback rates: EUR per 1 unit of foreign currency (updated June 2026)
+// Used when Frankfurter is offline OR for currencies Frankfurter does not cover
+// (AED, VND, PEN, KWD, BHD, SAR, QAR, COP, CLP, TWD, MNT, RUB, GEL)
 var RATE_FALLBACK = {
-  USD:0.92, GBP:1.17, JPY:0.0061, KRW:0.00067, TWD:0.029, CNY:0.13,
-  AED:0.25, VND:0.000037, MXN:0.053, CAD:0.68, PEN:0.24, AUD:0.60,
-  CHF:1.04, SGD:0.69, THB:0.026, IDR:0.000058, MYR:0.20, PHP:0.016,
-  INR:0.011, BRL:0.18, COP:0.00023, CLP:0.00098, TRY:0.027, NOK:0.086,
-  SEK:0.088, DKK:0.134, NZD:0.55, ZAR:0.049, HKD:0.118, SAR:0.245,
-  QAR:0.252, KWD:2.99, BHD:2.65, MNT:0.00027, RUB:0.0099, GEL:0.34,
+  USD:0.859, GBP:1.156, JPY:0.00539, KRW:0.000569, TWD:0.0277, CNY:0.127,
+  AED:0.234, VND:0.0000333, MXN:0.0496, CAD:0.621, PEN:0.232, AUD:0.616,
+  CHF:1.096, SGD:0.672, THB:0.0264, IDR:0.0000481, MYR:0.217, PHP:0.0139,
+  INR:0.00904, BRL:0.171, COP:0.000204, CLP:0.000909, TRY:0.0187, NOK:0.0927,
+  SEK:0.0927, DKK:0.134, NZD:0.511, ZAR:0.0528, HKD:0.110, SAR:0.229,
+  QAR:0.236, KWD:2.79, BHD:2.28, MNT:0.000249, RUB:0.0105, GEL:0.310,
 };
 function fetchRate(currency, cb){
   if(currency==='EUR'){ cb(1); return; }
@@ -728,11 +731,19 @@ function fetchConvRates(){
       var fresh = data.rates || {};
       Object.keys(fresh).forEach(function(c){ convRates[c] = fresh[c]; });
       convRates['EUR'] = 1;
+      // Sync rateCache (EUR-per-unit) so expense recorder uses the same fresh rates
+      Object.keys(convRates).forEach(function(c){
+        if(c !== 'EUR' && convRates[c]) rateCache[c] = 1 / convRates[c];
+      });
       convRatesFetched = true;
       recalcConv();
       renderConverter();
     })
     .catch(function(){
+      // Frankfurter unavailable — seed rateCache from fallback-seeded convRates
+      Object.keys(convRates).forEach(function(c){
+        if(c !== 'EUR' && convRates[c]) rateCache[c] = 1 / convRates[c];
+      });
       convRatesFetched = true;
       recalcConv();
       renderConverter();
