@@ -88,7 +88,7 @@ function autoSelectTrip(){
 }
 
 function exportBackup(){
-  var data = { exportDate: new Date().toISOString(), tasks: S.tasks, trips: MS.trips, expenses: MS.expenses };
+  var data = { exportDate: new Date().toISOString(), tasks: S.tasks, trips: MS.trips, expenses: MS.expenses, fixedExpenses: MS.fixedExpenses };
   var blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
