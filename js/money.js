@@ -7,19 +7,55 @@ var CURRENCIES = [
 ];
 
 // ── FIREBASE MONEY DATA ──────────────────────────────────
+// Guard: true only after all three nodes have delivered their first snapshot.
+// persistMoney / persistExpense / removeExpense are no-ops until this is true,
+// preventing startup race conditions from wiping data.
+var moneyDataLoaded = false;
+
 function loadMoneyData(){
   if(db && !offline){
-    db.ref('trips').on('value', function(snap){ MS.trips = snap.val()||{}; if(!MS.activeTripId) autoSelectTrip(); renderMoney(); renderInsights(); });
-    db.ref('expenses').on('value', function(snap){ MS.expenses = snap.val()||{}; renderMoney(); renderInsights(); });
-    db.ref('fixedExpenses').on('value', function(snap){ MS.fixedExpenses = snap.val()||{}; renderMoney(); });
+    var _t=false, _e=false, _f=false;
+    function _checkLoaded(){ if(_t&&_e&&_f) moneyDataLoaded=true; }
+    db.ref('trips').on('value', function(snap){
+      MS.trips = snap.val()||{};
+      if(!_t){ _t=true; _checkLoaded(); }
+      if(!MS.activeTripId) autoSelectTrip();
+      renderMoney(); renderInsights();
+    });
+    db.ref('expenses').on('value', function(snap){
+      MS.expenses = snap.val()||{};
+      if(!_e){ _e=true; _checkLoaded(); }
+      renderMoney(); renderInsights();
+    });
+    db.ref('fixedExpenses').on('value', function(snap){
+      MS.fixedExpenses = snap.val()||{};
+      if(!_f){ _f=true; _checkLoaded(); }
+      renderMoney();
+    });
+  } else {
+    moneyDataLoaded = true; // offline mode — no Firebase writes anyway
   }
 }
 
+// Saves trips + fixedExpenses. Expenses are written individually via persistExpense/removeExpense.
 function persistMoney(){
-  if(db && !offline){
+  if(db && !offline && moneyDataLoaded){
     db.ref('trips').set(MS.trips);
-    db.ref('expenses').set(MS.expenses);
     db.ref('fixedExpenses').set(MS.fixedExpenses);
+  }
+}
+
+// Write a single expense record — never touches any other record.
+function persistExpense(id){
+  if(db && !offline && moneyDataLoaded && MS.expenses[id]){
+    db.ref('expenses').child(id).set(MS.expenses[id]);
+  }
+}
+
+// Remove a single expense record — never touches any other record.
+function removeExpense(id){
+  if(db && !offline && moneyDataLoaded){
+    db.ref('expenses').child(id).remove();
   }
 }
 
@@ -338,8 +374,9 @@ function submitExpense(){
         MS.expenses[id]={ id:id, title:(title.trim()||'Accommodation'), category:'Accommodation', owner:emst.owner,
           originalAmount:perNightOrig, originalCurrency:emst.currency, eurAmount:eurPerNight, lockedRate:rate,
           date:dateStr, tripId:emst.tripId||null, notes:emst.note||'', createdAt:Date.now()+i, venture:'personal', type:'expense' };
+        persistExpense(id); // write each night individually — safe, never touches other records
       }
-      persistMoney(); closeModal(); renderMoney(); renderInsights();
+      closeModal(); renderMoney(); renderInsights();
     });
     return;
   }
@@ -350,7 +387,7 @@ function submitExpense(){
       originalAmount:amt, originalCurrency:emst.currency, eurAmount:Math.round(eurAmt*100)/100, lockedRate:rate,
       date:emst.preTrip?null:(emst.date||MS.moneyDate), tripId:emst.tripId||null,
       notes:emst.note||'', createdAt:Date.now(), venture:'personal', type:'expense' };
-    persistMoney(); closeModal(); renderMoney();
+    persistExpense(id); closeModal(); renderMoney();
   });
 }
 
@@ -420,7 +457,7 @@ function openExpMenu(id){
 }
 
 function delExp(id){
-  if(confirm('Delete this expense?')){ delete MS.expenses[id]; persistMoney(); closeModal(); renderMoney(); renderInsights(); }
+  if(confirm('Delete this expense?')){ removeExpense(id); delete MS.expenses[id]; closeModal(); renderMoney(); renderInsights(); }
 }
 
 var eedst = {};
@@ -479,7 +516,7 @@ function submitEditExpense(){
     Object.assign(MS.expenses[id], { title:title.trim(), category:eedst.category, owner:eedst.owner,
       originalAmount:amt, originalCurrency:eedst.currency, eurAmount:Math.round(eurAmt*100)/100, lockedRate:rate,
       date:eedst.preTrip?null:(eedst.date||MS.moneyDate), tripId:eedst.tripId||null, notes:eedst.note||'' });
-    persistMoney(); closeModal(); renderMoney(); renderInsights();
+    persistExpense(id); closeModal(); renderMoney(); renderInsights();
   });
 }
 
