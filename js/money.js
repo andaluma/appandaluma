@@ -525,12 +525,49 @@ var fixedSectionOpen = true;
 
 function getCurrentMonthKey(){ var d=new Date(); return d.getFullYear()+'-'+(('0'+(d.getMonth()+1)).slice(-2)); }
 
+// Count how many times a fixed expense falls within a calendar month.
+// period: 'monthly' = 1 (if month >= startMonth), 'weekly' = every 7 days, '4weekly' = every 28 days.
+// Returns 0 if the startDate is after this month.
+function fxOccurrencesInMonth(fx, monthKey){
+  var period = fx.period || 'monthly';
+  var startDate = fx.startDate || null;
+
+  // If startDate is set and after this month → 0
+  if(startDate && monthKey < startDate.substr(0,7)) return 0;
+
+  if(period === 'monthly') return 1;
+
+  // Weekly / 4-weekly: count actual occurrence dates within the month
+  // Requires a startDate to anchor the cycle; fall back to 1 if missing
+  if(!startDate) return 1;
+
+  var periodDays = period === 'weekly' ? 7 : 28;
+  var y = parseInt(monthKey.substr(0,4)), mo = parseInt(monthKey.substr(5,2))-1;
+  var monthStart = new Date(y, mo, 1);
+  var monthEnd   = new Date(y, mo+1, 0, 23, 59, 59);
+  var start = new Date(startDate+'T12:00:00');
+  if(start > monthEnd) return 0;
+
+  // Advance from startDate to first occurrence on or after monthStart
+  var cur = new Date(start);
+  while(cur < monthStart) cur = new Date(cur.getTime() + periodDays*86400000);
+
+  var count = 0;
+  while(cur <= monthEnd){ count++; cur = new Date(cur.getTime() + periodDays*86400000); }
+  return count;
+}
+
 function getFixedAmountForMonth(fx, monthKey){
-  if(fx.fixedType === 'hard') return fx.amount || 0;
+  var occ = fxOccurrencesInMonth(fx, monthKey);
+  if(!occ) return 0;
+  if(fx.fixedType === 'hard') return (fx.amount || 0) * occ;
+  // soft: confirmedMonths stores the monthly total the user confirmed
   return (fx.confirmedMonths && fx.confirmedMonths[monthKey]) ? fx.confirmedMonths[monthKey] : 0;
 }
 
 function isFixedConfirmedForMonth(fx, monthKey){
+  var occ = fxOccurrencesInMonth(fx, monthKey);
+  if(!occ) return true; // not active this month → treat as confirmed (no pending dot)
   if(fx.fixedType === 'hard') return true;
   return !!(fx.confirmedMonths && fx.confirmedMonths[monthKey]);
 }
@@ -572,12 +609,18 @@ function renderFixedSection(){
     } else {
       items.forEach(function(fx){
         var cat=CATS[fx.category]||CATS['Others'],confirmed=isFixedConfirmedForMonth(fx,monthKey);
+        var occ=fxOccurrencesInMonth(fx,monthKey);
         var amt=getFixedAmountForMonth(fx,monthKey),isHard=fx.fixedType==='hard',pending=!isHard&&!confirmed;
+        var periodLbl={monthly:'monthly','4weekly':'4-weekly',weekly:'weekly'}[fx.period||'monthly']||'monthly';
+        // For weekly/4-weekly with >1 occurrence show "€x × n"
+        var amtStr = (isHard && occ>1)
+          ? '€'+(fx.amount||0).toFixed(2)+'×'+occ
+          : '€'+amt.toFixed(2);
         html+='<div class="fixed-item'+(pending?' soft-pending':'')+'" onclick="editFixed(\''+e(fx.id)+'\')">';
         html+='<div class="fixed-icon" style="background:'+cat.color+'22">'+cat.icon+'</div>';
-        html+='<div class="fixed-body"><div class="fixed-name">'+e(fx.name)+'</div><div class="fixed-sub">'+e(fx.category)+(isHard?' · auto':' · varies')+'</div></div>';
+        html+='<div class="fixed-body"><div class="fixed-name">'+e(fx.name)+'</div><div class="fixed-sub">'+e(fx.category)+' · '+(isHard?periodLbl:'varies')+'</div></div>';
         if(pending) html+='<button class="fixed-confirm-btn" onclick="event.stopPropagation();confirmSoftFixed(\''+e(fx.id)+'\')">Confirm</button>';
-        else html+='<div class="fixed-amt" style="color:'+(isHard?'var(--muted)':'var(--teal)')+'">€'+amt.toFixed(2)+'</div>';
+        else html+='<div class="fixed-amt" style="color:'+(isHard?'var(--muted)':'var(--teal)')+'">'+amtStr+'</div>';
         html+='</div>';
       });
     }
@@ -592,16 +635,23 @@ function openAddFixed(){
   var catOpts=Object.keys(CATS).map(function(c){
     return '<option value="'+e(c)+'"'+(c==='Insurance & subscriptions'?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
+  var today=new Date().toISOString().slice(0,10);
   openModal('<div class="mhandle"></div><div class="mtitle">New fixed expense</div>'+
     '<div class="fg"><label class="flbl">Name</label><input type="text" class="finput" id="fx-name" placeholder="e.g. Netflix, Spotify…"></div>'+
     '<div class="fg"><label class="flbl">Category</label><select class="finput" id="fx-cat">'+catOpts+'</select></div>'+
+    '<div class="fg"><label class="flbl">Starts from</label><input type="date" class="finput" id="fx-start" value="'+today+'"></div>'+
+    '<div class="fg"><label class="flbl">Recurrence</label><select class="finput" id="fx-period">'+
+    '<option value="monthly">Monthly</option>'+
+    '<option value="4weekly">Every 4 weeks</option>'+
+    '<option value="weekly">Weekly</option>'+
+    '</select></div>'+
     '<div class="fg"><label class="flbl">Type</label><div style="display:flex;gap:8px">'+
     '<label id="fx-lbl-hard" style="flex:1;display:flex;align-items:center;gap:7px;background:rgba(10,122,136,0.08);border:2px solid var(--teal);border-radius:9px;padding:10px 12px;cursor:pointer;font-size:12px;font-weight:600">'+
     '<input type="radio" name="fx-type" value="hard" checked onchange="fxTypeChange(this)"> Fixed amount</label>'+
     '<label id="fx-lbl-soft" style="flex:1;display:flex;align-items:center;gap:7px;background:white;border:2px solid var(--sand);border-radius:9px;padding:10px 12px;cursor:pointer;font-size:12px;font-weight:600">'+
     '<input type="radio" name="fx-type" value="soft" onchange="fxTypeChange(this)"> Confirm monthly</label>'+
     '</div></div>'+
-    '<div class="fg" id="fx-amt-wrap"><label class="flbl">Amount (€)</label>'+
+    '<div class="fg" id="fx-amt-wrap"><label class="flbl">Amount per occurrence (€)</label>'+
     '<input type="number" class="finput" id="fx-amount" placeholder="0.00" step="0.01" inputmode="decimal"></div>'+
     '<button class="btn-pri" onclick="submitFixed()">Add</button>');
 }
@@ -627,8 +677,10 @@ function submitFixed(){
   var fxType=typeEl?typeEl.value:'hard';
   var amount=parseFloat((document.getElementById('fx-amount')||{}).value||0);
   if(fxType==='hard'&&!amount){alert('Enter an amount.');return;}
+  var startDate=(document.getElementById('fx-start')||{}).value||new Date().toISOString().slice(0,10);
+  var period=(document.getElementById('fx-period')||{}).value||'monthly';
   var id='fx'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);
-  MS.fixedExpenses[id]={id:id,name:name.trim(),category:cat,fixedType:fxType,amount:fxType==='hard'?amount:0,confirmedMonths:{},createdAt:Date.now()};
+  MS.fixedExpenses[id]={id:id,name:name.trim(),category:cat,fixedType:fxType,period:period,startDate:startDate,amount:fxType==='hard'?amount:0,confirmedMonths:{},createdAt:Date.now()};
   persistMoney(); closeModal(); renderMoneyContent();
 }
 
@@ -670,13 +722,21 @@ function editFixed(id){
 
 function openEditFixed(id){
   var fx=MS.fixedExpenses[id]; if(!fx) return;
+  var period=fx.period||'monthly';
+  var startDate=fx.startDate||new Date().toISOString().slice(0,10);
   var catOpts=Object.keys(CATS).map(function(c){
     return '<option value="'+e(c)+'"'+(c===fx.category?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
+  }).join('');
+  var periodOpts=['monthly','4weekly','weekly'].map(function(p){
+    var lbl={monthly:'Monthly','4weekly':'Every 4 weeks',weekly:'Weekly'}[p];
+    return '<option value="'+p+'"'+(p===period?' selected':'')+'>'+lbl+'</option>';
   }).join('');
   openModal('<div class="mhandle"></div><div class="mtitle">Edit fixed expense</div>'+
     '<div class="fg"><label class="flbl">Name</label><input type="text" class="finput" id="efx-name" value="'+e(fx.name)+'"></div>'+
     '<div class="fg"><label class="flbl">Category</label><select class="finput" id="efx-cat">'+catOpts+'</select></div>'+
-    (fx.fixedType==='hard'?'<div class="fg"><label class="flbl">Amount (€)</label><input type="number" class="finput" id="efx-amount" value="'+(fx.amount||0)+'" step="0.01" inputmode="decimal"></div>':'')+
+    '<div class="fg"><label class="flbl">Starts from</label><input type="date" class="finput" id="efx-start" value="'+startDate+'"></div>'+
+    '<div class="fg"><label class="flbl">Recurrence</label><select class="finput" id="efx-period">'+periodOpts+'</select></div>'+
+    (fx.fixedType==='hard'?'<div class="fg"><label class="flbl">Amount per occurrence (€)</label><input type="number" class="finput" id="efx-amount" value="'+(fx.amount||0)+'" step="0.01" inputmode="decimal"></div>':'')+
     '<button class="btn-pri" onclick="submitEditFixed(\''+id+'\')">Save</button>');
 }
 
@@ -686,6 +746,8 @@ function submitEditFixed(id){
   if(!name.trim()){alert('Enter a name.');return;}
   fx.name=name.trim();
   fx.category=(document.getElementById('efx-cat')||{}).value||fx.category;
+  fx.startDate=(document.getElementById('efx-start')||{}).value||fx.startDate||new Date().toISOString().slice(0,10);
+  fx.period=(document.getElementById('efx-period')||{}).value||fx.period||'monthly';
   if(fx.fixedType==='hard'){
     var amt=parseFloat((document.getElementById('efx-amount')||{}).value||0);
     if(!amt){alert('Enter an amount.');return;}
