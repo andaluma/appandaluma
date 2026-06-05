@@ -612,10 +612,11 @@ function renderFixedSection(){
         var occ=fxOccurrencesInMonth(fx,monthKey);
         var amt=getFixedAmountForMonth(fx,monthKey),isHard=fx.fixedType==='hard',pending=!isHard&&!confirmed;
         var periodLbl={monthly:'monthly','4weekly':'4-weekly',weekly:'weekly'}[fx.period||'monthly']||'monthly';
-        // For weekly/4-weekly with >1 occurrence show "€x × n"
-        var amtStr = (isHard && occ>1)
-          ? '€'+(fx.amount||0).toFixed(2)+'×'+occ
-          : '€'+amt.toFixed(2);
+        var hasFxCur=isHard&&fx.originalCurrency&&fx.originalCurrency!=='EUR';
+        // Show original currency amount for non-EUR; multiply by occurrences for weekly/4-weekly
+        var amtStr = hasFxCur
+          ? fx.originalCurrency+' '+(fx.originalAmount||0).toFixed(2)+(occ>1?'×'+occ:'')
+          : (isHard&&occ>1?'€'+(fx.amount||0).toFixed(2)+'×'+occ:'€'+amt.toFixed(2));
         html+='<div class="fixed-item'+(pending?' soft-pending':'')+'" onclick="editFixed(\''+e(fx.id)+'\')">';
         html+='<div class="fixed-icon" style="background:'+cat.color+'22">'+cat.icon+'</div>';
         html+='<div class="fixed-body"><div class="fixed-name">'+e(fx.name)+'</div><div class="fixed-sub">'+e(fx.category)+' · '+(isHard?periodLbl:'varies')+'</div></div>';
@@ -630,6 +631,12 @@ function renderFixedSection(){
 }
 
 function toggleFixedSection(){ fixedSectionOpen=!fixedSectionOpen; renderMoneyContent(); }
+
+function fxCurrencyOpts(selected){
+  return CURRENCIES.map(function(c){
+    return '<option value="'+c+'"'+(c===(selected||'EUR')?' selected':'')+'>'+c+'</option>';
+  }).join('');
+}
 
 function openAddFixed(){
   var catOpts=Object.keys(CATS).map(function(c){
@@ -651,8 +658,11 @@ function openAddFixed(){
     '<label id="fx-lbl-soft" style="flex:1;display:flex;align-items:center;gap:7px;background:white;border:2px solid var(--sand);border-radius:9px;padding:10px 12px;cursor:pointer;font-size:12px;font-weight:600">'+
     '<input type="radio" name="fx-type" value="soft" onchange="fxTypeChange(this)"> Confirm monthly</label>'+
     '</div></div>'+
-    '<div class="fg" id="fx-amt-wrap"><label class="flbl">Amount per occurrence (€)</label>'+
-    '<input type="number" class="finput" id="fx-amount" placeholder="0.00" step="0.01" inputmode="decimal"></div>'+
+    '<div class="fg" id="fx-amt-wrap"><label class="flbl">Amount per occurrence</label>'+
+    '<div style="display:flex;gap:8px">'+
+    '<input type="number" class="finput" id="fx-amount" placeholder="0.00" step="0.01" inputmode="decimal" style="flex:1">'+
+    '<select class="finput" id="fx-currency" style="width:88px">'+fxCurrencyOpts('EUR')+'</select>'+
+    '</div></div>'+
     '<button class="btn-pri" onclick="submitFixed()">Add</button>');
 }
 
@@ -675,23 +685,39 @@ function submitFixed(){
   var cat=(document.getElementById('fx-cat')||{}).value||'Others';
   var typeEl=document.querySelector('input[name="fx-type"]:checked');
   var fxType=typeEl?typeEl.value:'hard';
-  var amount=parseFloat((document.getElementById('fx-amount')||{}).value||0);
-  if(fxType==='hard'&&!amount){alert('Enter an amount.');return;}
   var startDate=(document.getElementById('fx-start')||{}).value||new Date().toISOString().slice(0,10);
   var period=(document.getElementById('fx-period')||{}).value||'monthly';
   var id='fx'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);
-  MS.fixedExpenses[id]={id:id,name:name.trim(),category:cat,fixedType:fxType,period:period,startDate:startDate,amount:fxType==='hard'?amount:0,confirmedMonths:{},createdAt:Date.now()};
-  persistMoney(); closeModal(); renderMoneyContent();
+  if(fxType==='soft'){
+    MS.fixedExpenses[id]={id:id,name:name.trim(),category:cat,fixedType:'soft',period:period,startDate:startDate,amount:0,confirmedMonths:{},createdAt:Date.now()};
+    persistMoney(); closeModal(); renderMoneyContent();
+    return;
+  }
+  var origAmt=parseFloat((document.getElementById('fx-amount')||{}).value||0);
+  if(!origAmt){alert('Enter an amount.');return;}
+  var currency=(document.getElementById('fx-currency')||{}).value||'EUR';
+  fetchRate(currency,function(rate){
+    var eurAmt=currency==='EUR'?origAmt:Math.round(origAmt*rate*100)/100;
+    MS.fixedExpenses[id]={id:id,name:name.trim(),category:cat,fixedType:'hard',period:period,startDate:startDate,
+      originalAmount:origAmt,originalCurrency:currency,lockedRate:rate,
+      amount:eurAmt,confirmedMonths:{},createdAt:Date.now()};
+    persistMoney(); closeModal(); renderMoneyContent();
+  });
 }
 
 function confirmSoftFixed(id){
   var fx=MS.fixedExpenses[id]; if(!fx) return;
   var monthKey=getCurrentMonthKey();
-  var prev=fx.confirmedMonths&&Object.values(fx.confirmedMonths).slice(-1)[0];
+  var prevEur=fx.confirmedMonths&&Object.values(fx.confirmedMonths).slice(-1)[0];
+  // Suggest last confirmed EUR value; currency defaults to original currency if set
+  var defCur=fx.originalCurrency||'EUR';
   openModal('<div class="mhandle"></div><div class="mtitle">'+e(fx.name)+'</div>'+
     '<div style="font-size:13px;color:var(--muted);margin-bottom:18px">'+new Date().toLocaleDateString('en-GB',{month:'long',year:'numeric'})+'</div>'+
-    '<div class="fg"><label class="flbl">Amount (€)</label>'+
-    '<input type="number" class="finput" id="fx-confirm-amt" placeholder="0.00" step="0.01" inputmode="decimal"'+(prev?' value="'+prev+'"':'')+' autofocus></div>'+
+    '<div class="fg"><label class="flbl">Amount this month</label>'+
+    '<div style="display:flex;gap:8px">'+
+    '<input type="number" class="finput" id="fx-confirm-amt" placeholder="0.00" step="0.01" inputmode="decimal"'+(prevEur?' value="'+prevEur+'"':'')+' autofocus style="flex:1">'+
+    '<select class="finput" id="fx-confirm-cur" style="width:88px">'+fxCurrencyOpts(defCur)+'</select>'+
+    '</div></div>'+
     '<button class="btn-pri" onclick="submitConfirmSoft(\''+id+'\',\''+monthKey+'\')">Confirm</button>');
 }
 
@@ -699,17 +725,24 @@ function submitConfirmSoft(id,monthKey){
   var fx=MS.fixedExpenses[id]; if(!fx) return;
   var amt=parseFloat((document.getElementById('fx-confirm-amt')||{}).value||0);
   if(!amt){alert('Enter an amount.');return;}
-  if(!fx.confirmedMonths) fx.confirmedMonths={};
-  fx.confirmedMonths[monthKey]=amt;
-  persistMoney(); closeModal(); renderMoneyContent();
+  var currency=(document.getElementById('fx-confirm-cur')||{}).value||'EUR';
+  fetchRate(currency,function(rate){
+    var eurAmt=currency==='EUR'?amt:Math.round(amt*rate*100)/100;
+    if(!fx.confirmedMonths) fx.confirmedMonths={};
+    fx.confirmedMonths[monthKey]=eurAmt;
+    persistMoney(); closeModal(); renderMoneyContent();
+  });
 }
 
 function editFixed(id){
   var fx=MS.fixedExpenses[id]; if(!fx) return;
   var monthKey=getCurrentMonthKey();
   var softUnconfirmed=fx.fixedType==='soft'&&!isFixedConfirmedForMonth(fx,monthKey);
-  // Guard: fx.amount may be undefined on older records
-  var amtLabel=fx.fixedType==='hard'?'€'+(fx.amount||0).toFixed(2)+' fixed':'varies monthly';
+  var amtLabel=fx.fixedType==='hard'
+    ? (fx.originalCurrency&&fx.originalCurrency!=='EUR'
+        ? fx.originalCurrency+' '+(fx.originalAmount||0).toFixed(2)+' · €'+(fx.amount||0).toFixed(2)
+        : '€'+(fx.amount||0).toFixed(2)+' fixed')
+    : 'varies monthly';
   openModal('<div class="mhandle"></div>'+
     '<div style="font-family:Playfair Display,serif;font-size:17px;margin-bottom:3px">'+e(fx.name)+'</div>'+
     '<div style="font-size:11px;color:var(--muted);margin-bottom:20px">'+e(fx.category)+' · '+amtLabel+'</div>'+
@@ -724,6 +757,8 @@ function openEditFixed(id){
   var fx=MS.fixedExpenses[id]; if(!fx) return;
   var period=fx.period||'monthly';
   var startDate=fx.startDate||new Date().toISOString().slice(0,10);
+  var origAmt=fx.originalAmount||fx.amount||0;       // show original if stored, else EUR
+  var origCur=fx.originalCurrency||'EUR';
   var catOpts=Object.keys(CATS).map(function(c){
     return '<option value="'+e(c)+'"'+(c===fx.category?' selected':'')+'>'+CATS[c].icon+' '+c+'</option>';
   }).join('');
@@ -736,7 +771,12 @@ function openEditFixed(id){
     '<div class="fg"><label class="flbl">Category</label><select class="finput" id="efx-cat">'+catOpts+'</select></div>'+
     '<div class="fg"><label class="flbl">Starts from</label><input type="date" class="finput" id="efx-start" value="'+startDate+'"></div>'+
     '<div class="fg"><label class="flbl">Recurrence</label><select class="finput" id="efx-period">'+periodOpts+'</select></div>'+
-    (fx.fixedType==='hard'?'<div class="fg"><label class="flbl">Amount per occurrence (€)</label><input type="number" class="finput" id="efx-amount" value="'+(fx.amount||0)+'" step="0.01" inputmode="decimal"></div>':'')+
+    (fx.fixedType==='hard'?
+      '<div class="fg"><label class="flbl">Amount per occurrence</label>'+
+      '<div style="display:flex;gap:8px">'+
+      '<input type="number" class="finput" id="efx-amount" value="'+origAmt+'" step="0.01" inputmode="decimal" style="flex:1">'+
+      '<select class="finput" id="efx-currency" style="width:88px">'+fxCurrencyOpts(origCur)+'</select>'+
+      '</div></div>':'')+
     '<button class="btn-pri" onclick="submitEditFixed(\''+id+'\')">Save</button>');
 }
 
@@ -749,11 +789,19 @@ function submitEditFixed(id){
   fx.startDate=(document.getElementById('efx-start')||{}).value||fx.startDate||new Date().toISOString().slice(0,10);
   fx.period=(document.getElementById('efx-period')||{}).value||fx.period||'monthly';
   if(fx.fixedType==='hard'){
-    var amt=parseFloat((document.getElementById('efx-amount')||{}).value||0);
-    if(!amt){alert('Enter an amount.');return;}
-    fx.amount=amt;
+    var origAmt=parseFloat((document.getElementById('efx-amount')||{}).value||0);
+    if(!origAmt){alert('Enter an amount.');return;}
+    var currency=(document.getElementById('efx-currency')||{}).value||'EUR';
+    fetchRate(currency,function(rate){
+      fx.originalAmount=origAmt;
+      fx.originalCurrency=currency;
+      fx.lockedRate=rate;
+      fx.amount=currency==='EUR'?origAmt:Math.round(origAmt*rate*100)/100;
+      persistMoney(); closeModal(); renderMoneyContent();
+    });
+  } else {
+    persistMoney(); closeModal(); renderMoneyContent();
   }
-  persistMoney(); closeModal(); renderMoneyContent();
 }
 
 function deleteFixed(id){
