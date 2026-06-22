@@ -257,6 +257,7 @@ function openAddExpense(){
     currency:defCur, amount:'', note:'', date:MS.moneyDate,
     tripId: MS.activeTripId||'', preTrip:false,
     checkIn: MS.moneyDate||'', checkOut:'',
+    spreadRange:false, dateEnd:'',
     _firstOpen: true,   // focus the amount field only on first open, not on chip redraws
   };
   drawAddExpense();
@@ -322,7 +323,23 @@ function drawAddExpense(){
           (nights>0?'<div style="font-size:12px;color:var(--amber);margin-top:5px;font-weight:600">'+nights+' night'+(nights===1?'':'s')+perNightNote+'</div>':'')+
           '</div>';
       }
-      return '<div class="fg"><label class="flbl">Date</label><input type="date" class="fdate" value="'+e(m.date)+'" onchange="emst.date=this.value"></div>';
+      var days=0, perDayNote='';
+      if(m.spreadRange && m.date && m.dateEnd && m.dateEnd>=m.date){
+        days=Math.round((new Date(m.dateEnd)-new Date(m.date))/86400000)+1;
+        if(days>0 && parseFloat(m.amount)>0){
+          var pd=(parseFloat(m.amount)/days).toFixed(2);
+          perDayNote=' · '+m.currency+' '+pd+'/day';
+        }
+      }
+      return '<div class="fg"><label class="flbl">Date</label>'+
+        '<input type="date" class="fdate" value="'+e(m.date)+'" onchange="emst.date=this.value;drawAddExpense()">'+
+        '<label class="sdcheck"><input type="checkbox" '+(m.spreadRange?'checked':'')+' onchange="emst.spreadRange=this.checked;if(!emst.dateEnd)emst.dateEnd=emst.date;drawAddExpense()"> Spread over date range</label>'+
+        (m.spreadRange?
+          '<div class="fg" style="margin-top:8px"><label class="flbl">End date (inclusive)</label>'+
+          '<input type="date" class="fdate" value="'+e(m.dateEnd||'')+'" onchange="emst.dateEnd=this.value;drawAddExpense()">'+
+          (days>0?'<div style="font-size:12px;color:var(--amber);margin-top:5px;font-weight:600">'+days+' day'+(days===1?'':'s')+perDayNote+'</div>':'')+
+          '</div>':'')+
+        '</div>';
     })()+
     '<button class="btn-pri" onclick="submitExpense()">Add expense</button>'
   );
@@ -375,6 +392,26 @@ function submitExpense(){
           originalAmount:perNightOrig, originalCurrency:emst.currency, eurAmount:eurPerNight, lockedRate:rate,
           date:dateStr, tripId:emst.tripId||null, notes:emst.note||'', createdAt:Date.now()+i, venture:'personal', type:'expense' };
         persistExpense(id); // write each night individually — safe, never touches other records
+      }
+      closeModal(); renderMoney(); renderInsights();
+    });
+    return;
+  }
+  if(!emst.preTrip && emst.spreadRange && emst.dateEnd && emst.dateEnd>=emst.date){
+    var days=Math.round((new Date(emst.dateEnd)-new Date(emst.date))/86400000)+1;
+    if(days<1){ alert('End date must be on or after start date.'); return; }
+    fetchRate(emst.currency, function(rate){
+      var perDay=amt/days;
+      var eurPerDay=Math.round((emst.currency==='EUR'?perDay:perDay*rate)*100)/100;
+      var perDayOrig=Math.round(perDay*100)/100;
+      for(var i=0;i<days;i++){
+        var day=new Date(emst.date+'T12:00:00'); day.setDate(day.getDate()+i);
+        var dateStr=day.toISOString().slice(0,10);
+        var id=muid();
+        MS.expenses[id]={ id:id, title:(title.trim()||emst.category), category:emst.category, owner:emst.owner,
+          originalAmount:perDayOrig, originalCurrency:emst.currency, eurAmount:eurPerDay, lockedRate:rate,
+          date:dateStr, tripId:emst.tripId||null, notes:emst.note||'', createdAt:Date.now()+i, venture:'personal', type:'expense' };
+        persistExpense(id);
       }
       closeModal(); renderMoney(); renderInsights();
     });
