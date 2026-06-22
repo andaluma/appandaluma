@@ -333,11 +333,11 @@ function drawAddExpense(){
       }
       return '<div class="fg"><label class="flbl">Date</label>'+
         '<input type="date" class="fdate" value="'+e(m.date)+'" onchange="emst.date=this.value;drawAddExpense()">'+
-        '<label class="sdcheck"><input type="checkbox" '+(m.spreadRange?'checked':'')+' onchange="emst.spreadRange=this.checked;if(!emst.dateEnd)emst.dateEnd=emst.date;drawAddExpense()"> Spread over date range</label>'+
+        '<label class="sdcheck"><input type="checkbox" '+(m.spreadRange?'checked':'')+' onchange="emst.spreadRange=this.checked;drawAddExpense()"> Spread over date range</label>'+
         (m.spreadRange?
           '<div class="fg" style="margin-top:8px"><label class="flbl">End date (inclusive)</label>'+
-          '<input type="date" class="fdate" value="'+e(m.dateEnd||'')+'" onchange="emst.dateEnd=this.value;drawAddExpense()">'+
-          (days>0?'<div style="font-size:12px;color:var(--amber);margin-top:5px;font-weight:600">'+days+' day'+(days===1?'':'s')+perDayNote+'</div>':'')+
+          '<input type="date" class="fdate" value="'+e(m.dateEnd||'')+'" min="'+e(m.date||'')+'" onchange="emst.dateEnd=this.value;drawAddExpense()">'+
+          (days>0?'<div style="font-size:12px;color:var(--amber);margin-top:5px;font-weight:600">'+days+' day'+(days===1?'':'s')+perDayNote+'</div>':'<div style="font-size:12px;color:var(--muted);margin-top:5px">Pick an end date to spread the amount</div>')+
           '</div>':'')+
         '</div>';
     })()+
@@ -397,7 +397,9 @@ function submitExpense(){
     });
     return;
   }
-  if(!emst.preTrip && emst.spreadRange && emst.dateEnd && emst.dateEnd>=emst.date){
+  if(!emst.preTrip && emst.spreadRange){
+    if(!emst.dateEnd){ alert('Pick an end date to spread the amount.'); return; }
+    if(emst.dateEnd<emst.date){ alert('End date must be on or after start date.'); return; }
     var days=Math.round((new Date(emst.dateEnd)-new Date(emst.date))/86400000)+1;
     if(days<1){ alert('End date must be on or after start date.'); return; }
     fetchRate(emst.currency, function(rate){
