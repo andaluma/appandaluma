@@ -2,6 +2,7 @@
 var HABITS = [
   {id:'new_contact',    label:'New contact',              icon:'👤', days:[1,2,3,4,5], requiresLog:true},
   {id:'catchup_contact',label:'Catch up',                 icon:'💬', days:[1,2,3,4,5], requiresLog:true},
+  {id:'reading',        label:'30 min reading',           icon:'📚', days:[0,1,2,3,4,5,6], requiresLog:false, wildcard:true},
   {id:'newsletter',     label:'Newsletter page',          icon:'📰', days:[3],          requiresLog:false},
   {id:'reel_andaluma',  label:'Reel: Andaluma',           icon:'🎬', weekly:true,       requiresLog:false},
   {id:'reel_vae',       label:'Reel: VAE Testament',      icon:'🎬', weekly:true,       requiresLog:false},
@@ -9,9 +10,10 @@ var HABITS = [
 ];
 
 // ── STATE ─────────────────────────────────────────────────
-var habitData   = {};  // date-key → { habitId: {done, notes, contactId} }
-var contactData = {};  // contactId → contact object
-var habitsLoaded = false;
+var habitData        = {};
+var contactData      = {};
+var habitsLoaded     = false;
+var selectedHabitDate = td();
 
 // ── FIREBASE ─────────────────────────────────────────────
 function loadHabitsData(){
@@ -34,32 +36,37 @@ function findHabit(id){
   return null;
 }
 
-// Monday of the current week as YYYY-MM-DD
-function getWeekStart(){
-  var d=new Date();
-  var dow=d.getDay(); // 0=Sun
+function getWeekStartFor(dateStr){
+  var d=new Date((dateStr||td())+'T12:00:00');
+  var dow=d.getDay();
   var back=dow===0?6:dow-1;
   var m=new Date(d.getTime()-back*86400000);
   return m.getFullYear()+'-'+p2(m.getMonth()+1)+'-'+p2(m.getDate());
 }
 
-function getTodaysHabits(){
-  var dow=(new Date()).getDay();
+function getWeekStart(){ return getWeekStartFor(td()); }
+
+function getHabitsForDate(dateStr){
+  var dow=new Date((dateStr||td())+'T12:00:00').getDay();
   return HABITS.filter(function(h){
     if(h.weekly) return true;
     return h.days&&h.days.indexOf(dow)>=0;
   });
 }
 
-function isHabitDone(id){
+function getTodaysHabits(){ return getHabitsForDate(td()); }
+
+function isHabitDone(id, dateStr){
+  dateStr=dateStr||td();
   var h=findHabit(id); if(!h) return false;
-  var k=h.weekly?getWeekStart():td();
+  var k=h.weekly?getWeekStartFor(dateStr):dateStr;
   return !!(habitData[k]&&habitData[k][id]&&habitData[k][id].done);
 }
 
-function setHabitDone(id,done,extra){
+function setHabitDone(id, done, extra, dateStr){
+  dateStr=dateStr||td();
   var h=findHabit(id); if(!h||!habitsLoaded) return;
-  var k=h.weekly?getWeekStart():td();
+  var k=h.weekly?getWeekStartFor(dateStr):dateStr;
   if(!habitData[k]) habitData[k]={};
   if(!habitData[k][id]) habitData[k][id]={done:false,notes:''};
   habitData[k][id].done=done;
@@ -78,10 +85,29 @@ function getStreakDay(){
   return Math.min(Math.round((today-start)/86400000)+1, 90);
 }
 
-function getTodayProgress(){
-  var hab=getTodaysHabits();
-  var done=hab.filter(function(h){ return isHabitDone(h.id); }).length;
+function getProgressFor(dateStr){
+  var hab=getHabitsForDate(dateStr);
+  var done=hab.filter(function(h){ return isHabitDone(h.id, dateStr); }).length;
   return {done:done, total:hab.length};
+}
+
+function getTodayProgress(){ return getProgressFor(td()); }
+
+function formatHabitDate(dateStr){
+  if(dateStr===td()) return 'Today';
+  var d=new Date(dateStr+'T12:00:00');
+  var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return days[d.getDay()]+' '+d.getDate()+' '+months[d.getMonth()];
+}
+
+function shiftHabitDay(delta){
+  var d=new Date(selectedHabitDate+'T12:00:00');
+  d.setDate(d.getDate()+delta);
+  var next=d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+  if(next>td()) return;
+  selectedHabitDate=next;
+  renderHabits();
 }
 
 // ── BANNER + BADGE ────────────────────────────────────────
@@ -103,9 +129,10 @@ function renderHabits(){
   var el=document.getElementById('habits-view');
   if(!el||el.style.display==='none') return;
 
+  var isToday=selectedHabitDate===td();
   var day=getStreakDay();
-  var p=getTodayProgress();
-  var hab=getTodaysHabits();
+  var p=getProgressFor(selectedHabitDate);
+  var hab=getHabitsForDate(selectedHabitDate);
   var pct=Math.min(Math.round(day/90*100),100);
   var allDone=p.total>0&&p.done===p.total;
 
@@ -118,29 +145,36 @@ function renderHabits(){
   html+='</div>';
   html+='<div class="hab-score'+(allDone?' all-done':'')+'">'+
         '<div class="hab-score-num">'+p.done+'/'+p.total+'</div>'+
-        '<div class="hab-score-lbl">today</div></div>';
+        '<div class="hab-score-lbl">'+(isToday?'today':formatHabitDate(selectedHabitDate))+'</div></div>';
   html+='</div>';
 
+  // ── DATE NAV
+  html+='<div class="hab-date-nav">'+
+        '<button class="hab-date-btn" onclick="shiftHabitDay(-1)">‹</button>'+
+        '<span class="hab-date-lbl">'+(isToday?'Today':formatHabitDate(selectedHabitDate))+'</span>'+
+        '<button class="hab-date-btn" onclick="shiftHabitDay(1)" '+(isToday?'disabled':'')+'>›</button>'+
+        '</div>';
+
   // ── HABITS LIST
-  html+='<div class="hab-sec-title">Today\'s habits</div>';
   html+='<div class="hab-list">';
   if(!hab.length){
-    html+='<div class="hab-empty">No habits scheduled for today — enjoy the break 🌴</div>';
+    html+='<div class="hab-empty">No habits scheduled for this day.</div>';
   } else {
     hab.forEach(function(h){
-      var done=isHabitDone(h.id);
+      var done=isHabitDone(h.id, selectedHabitDate);
       html+='<div class="hab-row'+(done?' done':'')+'" onclick="toggleHabit(\''+h.id+'\')">';
       html+='<div class="hab-chk'+(done?' on':'')+'"></div>';
       html+='<div class="hab-row-lbl">'+h.icon+' '+h.label;
       if(h.weekly) html+=' <span class="hab-badge-weekly">weekly</span>';
+      if(h.wildcard) html+=' <span class="hab-badge-weekly" style="background:var(--forest)">bonus</span>';
       html+='</div>';
       html+='</div>';
     });
   }
   html+='</div>';
 
-  // ── CONTACT LOG
-  var cons=Object.values(contactData)
+  // ── CONTACT LOG (always shows full log regardless of selected date)
+  var cons=Object.keys(contactData).map(function(k){ return contactData[k]; })
     .sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); })
     .slice(0,30);
   var conCount=Object.keys(contactData).length;
@@ -177,10 +211,11 @@ function renderHabits(){
 // ── ACTIONS ──────────────────────────────────────────────
 function toggleHabit(id){
   var h=findHabit(id); if(!h) return;
-  if(!isHabitDone(id)&&h.requiresLog){
+  var done=isHabitDone(id, selectedHabitDate);
+  if(!done&&h.requiresLog){
     openContactModal(id);
   } else {
-    setHabitDone(id,!isHabitDone(id));
+    setHabitDone(id, !done, null, selectedHabitDate);
   }
 }
 
@@ -211,11 +246,11 @@ function submitContact(habitId){
 
   var cid='ct'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);
   var con={id:cid, name:name, type:habitId, where:where, outcome:outcome,
-           contactDate:td(), followUpDate:fu||null, createdAt:Date.now()};
+           contactDate:selectedHabitDate, followUpDate:fu||null, createdAt:Date.now()};
   contactData[cid]=con;
   if(db&&!offline) db.ref('contacts/'+cid).set(con);
 
-  setHabitDone(habitId,true,{notes:name, contactId:cid});
+  setHabitDone(habitId, true, {notes:name, contactId:cid}, selectedHabitDate);
 
   if(fu && typeof S!=='undefined' && typeof persist==='function'){
     var tid=uid();
