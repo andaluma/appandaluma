@@ -118,6 +118,7 @@ if('serviceWorker' in navigator){
 <!-- APP -->
 <div id="app" style="display:none;flex-direction:column;flex:1;min-height:0;height:100vh">
   <div id="hdr"></div>
+  <div id="habit-banner" onclick="switchTab('habits')" style="display:none;flex-shrink:0"></div>
 
   <!-- TASKS VIEW -->
   <div id="tasks-view" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">
@@ -139,6 +140,9 @@ if('serviceWorker' in navigator){
   <!-- CONVERTER VIEW -->
   <div id="converter-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding-bottom:80px;background:var(--cream)"></div>
 
+  <!-- HABITS VIEW -->
+  <div id="habits-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding-bottom:80px;background:var(--cream)"></div>
+
   <!-- BOTTOM NAV -->
   <div id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--dark);display:flex;border-top:1px solid rgba(255,255,255,0.08);z-index:60;padding-bottom:env(safe-area-inset-bottom,0)">
     <button class="nav-btn on" id="nav-tasks" onclick="switchTab('tasks')">
@@ -149,6 +153,10 @@ if('serviceWorker' in navigator){
     </button>
     <button class="nav-btn" id="nav-converter" onclick="switchTab('converter')">
       <div class="nav-icon">💱</div><div class="nav-lbl">Convert</div>
+    </button>
+    <button class="nav-btn" id="nav-habits" onclick="switchTab('habits')" style="position:relative">
+      <div class="nav-icon">🎯</div><div class="nav-lbl">Habits</div>
+      <span id="habit-badge" style="display:none;position:absolute;top:8px;right:12px;width:7px;height:7px;border-radius:50%;background:var(--coral);border:1.5px solid var(--dark)"></span>
     </button>
   </div>
 
@@ -169,7 +177,7 @@ if('serviceWorker' in navigator){
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 var _v = Date.now();
-['js/core.js','js/tasks.js','js/money.js','js/insights.js'].forEach(function(src){
+['js/core.js','js/tasks.js','js/money.js','js/insights.js','js/habits.js'].forEach(function(src){
   document.write('<script src="'+src+'?v='+_v+'"><\/script>');
 });
 </script>

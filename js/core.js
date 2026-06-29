@@ -77,6 +77,7 @@ function afterPin(){
       renderAll();
     });
     loadMoneyData();
+    loadHabitsData();
   }catch(ex){ db=null; rolloverPastTasks(); renderAll(); }
 }
 
@@ -240,7 +241,7 @@ function _switchTabUI(tab){
   // Always hide the insights overlay when switching nav tabs
   var iv=document.getElementById('insights-view');
   if(iv) iv.style.display='none';
-  ['tasks','money','converter'].forEach(function(t){
+  ['tasks','money','converter','habits'].forEach(function(t){
     var v = document.getElementById(t+'-view');
     var b = document.getElementById('nav-'+t);
     if(v) v.style.display = t===tab ? 'flex' : 'none';
@@ -252,6 +253,7 @@ function _switchTabUI(tab){
   else { fab.style.display='none'; mic.style.display='none'; }
   if(tab==='money') renderMoney();
   if(tab==='converter'){ if(!convRatesFetched) fetchConvRates(); else renderConverter(); }
+  if(tab==='habits') renderHabits();
 }
 
 function switchTab(tab) {
