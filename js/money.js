@@ -432,16 +432,16 @@ function submitExpense(){
 
 // ── EXCHANGE RATES ───────────────────────────────────────
 var rateCache = {};
-// Fallback rates: EUR per 1 unit of foreign currency (updated June 2026)
+// Fallback rates: EUR per 1 unit of foreign currency (updated July 2026)
 // Used when Frankfurter is offline OR for currencies Frankfurter does not cover
-// (AED, VND, PEN, KWD, BHD, SAR, QAR, COP, CLP, TWD, MNT, RUB, GEL)
+// (AED, VND, TWD, CNY, PEN, KWD, BHD, SAR, QAR, COP, CLP, MNT, RUB, GEL)
 var RATE_FALLBACK = {
-  USD:0.859, GBP:1.156, JPY:0.00539, KRW:0.000569, TWD:0.0277, CNY:0.127,
-  AED:0.234, VND:0.0000333, MXN:0.0496, CAD:0.621, PEN:0.232, AUD:0.616,
-  CHF:1.096, SGD:0.672, THB:0.0264, IDR:0.0000481, MYR:0.217, PHP:0.0139,
-  INR:0.00904, BRL:0.171, COP:0.000204, CLP:0.000909, TRY:0.0187, NOK:0.0927,
-  SEK:0.0927, DKK:0.134, NZD:0.511, ZAR:0.0528, HKD:0.110, SAR:0.229,
-  QAR:0.236, KWD:2.79, BHD:2.28, MNT:0.000249, RUB:0.0105, GEL:0.310,
+  USD:0.877, GBP:1.160, JPY:0.00540, KRW:0.000566, TWD:0.0270, CNY:0.127,
+  AED:0.239, VND:0.0000351, MXN:0.0502, CAD:0.617, PEN:0.236, AUD:0.604,
+  CHF:1.084, SGD:0.678, THB:0.02641, IDR:0.0000490, MYR:0.2148, PHP:0.01431,
+  INR:0.00927, BRL:0.1695, COP:0.000209, CLP:0.000924, TRY:0.01881, NOK:0.08841,
+  SEK:0.09014, DKK:0.1338, NZD:0.4966, ZAR:0.05361, HKD:0.1119, SAR:0.234,
+  QAR:0.241, KWD:2.85, BHD:2.33, MNT:0.000249, RUB:0.0105, GEL:0.310,
 };
 function fetchRate(currency, cb){
   if(currency==='EUR'){ cb(1); return; }

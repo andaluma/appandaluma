@@ -208,6 +208,28 @@ function renderHabits(){
   el.innerHTML=html;
 }
 
+// ── SHARED CRM CONFIG (mirrors crm.js) ───────────────────
+var HAB_CATS=[
+  {id:'re_partners',   label:'RE Partners',         color:'#0A7A88'},
+  {id:'re_clients',    label:'RE Clients',           color:'#E04F28'},
+  {id:'friends_money', label:'Friends w/ Money',     color:'#B83368'},
+  {id:'service',       label:'Service Providers',    color:'#C98A10'},
+  {id:'vae',           label:'VAE Testament',        color:'#2D5C3A'},
+  {id:'uae_pw',        label:'UAE Property Wills',   color:'#7A3D8A'},
+  {id:'glamping',      label:'Glamping/Hospitality', color:'#8A6A2A'},
+  {id:'others',        label:'Others',               color:'#7A6E5A'},
+];
+var HAB_LOCS  = ['Bali','Lombok','Saba','Emirates','Netherlands','Nomads'];
+var HAB_TEMPS = [
+  {id:'hot',    label:'Hot',     color:'#E04F28'},
+  {id:'warm',   label:'Warm',    color:'#C98A10'},
+  {id:'cold',   label:'Cold',    color:'#0A7A88'},
+  {id:'someday',label:'Someday', color:'#7A6E5A'},
+];
+
+// ── CONTACT MODAL STATE ───────────────────────────────────
+var hcms = {};
+
 // ── ACTIONS ──────────────────────────────────────────────
 function toggleHabit(id){
   var h=findHabit(id); if(!h) return;
@@ -221,28 +243,59 @@ function toggleHabit(id){
 
 function openContactModal(habitId){
   var h=findHabit(habitId);
-  openModal(
-    '<div class="mhandle"></div>'+
-    '<div class="mtitle">'+(h?h.label:'Log contact')+'</div>'+
-    '<div class="fg"><label class="flbl">Name *</label>'+
-    '<input type="text" class="finput" id="ct-name" placeholder="Who did you connect with?"></div>'+
-    '<div class="fg"><label class="flbl">Where</label>'+
-    '<input type="text" class="finput" id="ct-where" placeholder="LinkedIn, phone, event…"></div>'+
-    '<div class="fg"><label class="flbl">Outcome</label>'+
-    '<textarea class="finput" id="ct-outcome" placeholder="What happened?" style="height:80px;resize:none"></textarea></div>'+
-    '<div class="fg"><label class="flbl">Follow-up date <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">(optional)</span></label>'+
-    '<input type="date" class="fdate" id="ct-followup"></div>'+
-    '<button class="btn-pri" onclick="submitContact(\''+habitId+'\')">Save &amp; mark done</button>'
-  );
-  setTimeout(function(){ var n=document.getElementById('ct-name'); if(n) n.focus(); },80);
+  hcms={habitId:habitId, name:'', phone:'', where:'', outcome:'',
+        temperature:'warm', locations:[], categories:[], followUp:''};
+  openModal(buildHabitContactForm());
+  setTimeout(function(){ var n=document.getElementById('hct-name'); if(n) n.focus(); },80);
+}
+
+function buildHabitContactForm(){
+  var h=findHabit(hcms.habitId);
+  var html='<div class="mhandle"></div><div class="mtitle">'+(h?h.label:'Log contact')+'</div>';
+  html+='<div class="fg"><label class="flbl">Name *</label><input type="text" class="finput" id="hct-name" value="'+e(hcms.name||'')+'" placeholder="Full name"></div>';
+  html+='<div class="fg"><label class="flbl">Phone</label><input type="tel" class="finput" id="hct-phone" value="'+e(hcms.phone||'')+'" placeholder="+1 234 567 890"></div>';
+  html+='<div class="fg"><label class="flbl">Where / platform</label><input type="text" class="finput" id="hct-where" value="'+e(hcms.where||'')+'" placeholder="LinkedIn, event, call…"></div>';
+  html+='<div class="fg"><label class="flbl">Outcome</label><textarea class="finput" id="hct-outcome" style="height:72px;resize:none" placeholder="What happened?">'+e(hcms.outcome||'')+'</textarea></div>';
+  // Temperature
+  html+='<div class="fg"><label class="flbl">Temperature</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">';
+  HAB_TEMPS.forEach(function(t){
+    var on=hcms.temperature===t.id;
+    html+='<button style="background:'+(on?t.color:'white')+';color:'+(on?'white':'var(--muted)')+';border:1.5px solid '+(on?t.color:'var(--sand)')+';border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;font-family:inherit" onclick="hcms.temperature=\''+t.id+'\';document.getElementById(\'mcontent\').innerHTML=buildHabitContactForm()">'+t.label+'</button>';
+  });
+  html+='</div></div>';
+  // Locations
+  html+='<div class="fg"><label class="flbl">Location</label><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">';
+  HAB_LOCS.forEach(function(l){
+    var on=(hcms.locations||[]).indexOf(l)>=0;
+    html+='<button style="background:'+(on?'var(--dark)':'white')+';color:'+(on?'white':'var(--muted)')+';border:1.5px solid '+(on?'var(--dark)':'var(--sand)')+';border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;white-space:nowrap" onclick="hcmsToggle(\'locations\',\''+l+'\')">'+l+'</button>';
+  });
+  html+='</div></div>';
+  // Categories
+  html+='<div class="fg"><label class="flbl">Category</label><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">';
+  HAB_CATS.forEach(function(cat){
+    var on=(hcms.categories||[]).indexOf(cat.id)>=0;
+    html+='<button style="background:'+(on?cat.color+'25':'white')+';color:'+cat.color+';border:1.5px solid '+(on?cat.color:cat.color+'60')+';border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;font-family:inherit;white-space:nowrap" onclick="hcmsToggle(\'categories\',\''+cat.id+'\')">'+cat.label+'</button>';
+  });
+  html+='</div></div>';
+  html+='<div class="fg"><label class="flbl">Follow-up date <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">(optional)</span></label><input type="date" class="fdate" id="hct-followup" value="'+e(hcms.followUp||'')+'"></div>';
+  html+='<button class="btn-pri" onclick="submitContact(\''+hcms.habitId+'\')">Save &amp; mark done</button>';
+  return html;
+}
+
+function hcmsToggle(field, val){
+  hcms[field]=hcms[field]||[];
+  var idx=hcms[field].indexOf(val);
+  if(idx>=0) hcms[field].splice(idx,1); else hcms[field].push(val);
+  document.getElementById('mcontent').innerHTML=buildHabitContactForm();
 }
 
 function submitContact(habitId){
-  var name=((document.getElementById('ct-name')||{}).value||'').trim();
+  var name=((document.getElementById('hct-name')||{}).value||'').trim();
   if(!name){ alert('Enter a name.'); return; }
-  var where=((document.getElementById('ct-where')||{}).value||'').trim();
-  var outcome=((document.getElementById('ct-outcome')||{}).value||'').trim();
-  var fu=((document.getElementById('ct-followup')||{}).value||'');
+  var phone=((document.getElementById('hct-phone')||{}).value||'').trim();
+  var where=((document.getElementById('hct-where')||{}).value||'').trim();
+  var outcome=((document.getElementById('hct-outcome')||{}).value||'').trim();
+  var fu=((document.getElementById('hct-followup')||{}).value||'');
 
   var cid='ct'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);
   var con={id:cid, name:name, type:habitId, where:where, outcome:outcome,
@@ -250,22 +303,34 @@ function submitContact(habitId){
   contactData[cid]=con;
   if(db&&!offline) db.ref('contacts/'+cid).set(con);
 
-  // Auto-create or update CRM contact
+  // Create or update CRM contact with full data
   if(db&&!offline){
+    var commentText=(habitId==='catchup_contact'?'Catch-up':'New contact')+(where?' @ '+where:'')+(outcome?': '+outcome:'');
     db.ref('crm_contacts').orderByChild('name').equalTo(name).once('value',function(snap){
       var existing=snap.val();
       var existingId=existing?Object.keys(existing)[0]:null;
       if(existingId){
         var ec=existing[existingId];
         if(!ec.comments) ec.comments=[];
-        ec.comments.push({text:(habitId==='catchup_contact'?'Catch-up':'New contact')+' logged via Habits',createdAt:Date.now()});
-        ec.lastContact=td();
+        ec.comments.push({text:commentText,createdAt:Date.now()});
+        ec.lastContact=selectedHabitDate;
+        if(hcms.temperature) ec.temperature=hcms.temperature;
+        if(phone&&!ec.phone) ec.phone=phone;
+        if(hcms.locations&&hcms.locations.length){
+          ec.locations=(ec.locations||[]).concat(hcms.locations).filter(function(v,i,a){return a.indexOf(v)===i;});
+        }
+        if(hcms.categories&&hcms.categories.length){
+          ec.categories=(ec.categories||[]).concat(hcms.categories).filter(function(v,i,a){return a.indexOf(v)===i;});
+        }
         db.ref('crm_contacts/'+existingId).set(ec);
       } else {
-        db.ref('crm_contacts/'+cid).set({id:cid,name:name,phone:'',email:'',website:'',
-          locations:[],categories:[],temperature:'warm',
-          comments:[{text:(habitId==='new_contact'?'New contact':'Catch-up')+' logged via Habits',createdAt:Date.now()}],
-          lastContact:td(),nextContact:'',habitContactId:cid,createdAt:Date.now()});
+        db.ref('crm_contacts/'+cid).set({
+          id:cid, name:name, phone:phone, email:'', website:'',
+          locations:hcms.locations||[], categories:hcms.categories||[],
+          temperature:hcms.temperature||'warm',
+          comments:[{text:commentText,createdAt:Date.now()}],
+          lastContact:selectedHabitDate, nextContact:'', habitContactId:cid, createdAt:Date.now()
+        });
       }
     });
   }
@@ -288,7 +353,7 @@ function openEditContact(cid){
   var c=contactData[cid]; if(!c) return;
   openModal(
     '<div class="mhandle"></div>'+
-    '<div class="mtitle">Edit contact</div>'+
+    '<div class="mtitle">Edit contact log</div>'+
     '<div class="fg"><label class="flbl">Name</label>'+
     '<input type="text" class="finput" id="ct-name" value="'+e(c.name||'')+'"></div>'+
     '<div class="fg"><label class="flbl">Where</label>'+
