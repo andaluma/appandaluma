@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="#1A1208"/>
+
+  <!-- Person silhouette - head -->
+  <circle cx="220" cy="178" r="88" fill="white"/>
+  <!-- Person silhouette - body -->
+  <path d="M 52 448 C 52 300 388 300 388 448 Z" fill="white"/>
+
+  <!-- Coral badge circle (bottom-right) -->
+  <circle cx="374" cy="358" r="72" fill="#E04F28"/>
+  <!-- Plus sign -->
+  <rect x="358" y="324" width="32" height="68" rx="6" fill="white"/>
+  <rect x="340" y="342" width="68" height="32" rx="6" fill="white"/>
+</svg>
