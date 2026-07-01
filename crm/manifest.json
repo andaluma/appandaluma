@@ -1,0 +1,9 @@
+{
+  "name": "Andaluma Contacts",
+  "short_name": "Contacts",
+  "start_url": "/crm/",
+  "display": "standalone",
+  "background_color": "#1A1208",
+  "theme_color": "#1A1208",
+  "orientation": "portrait"
+}

@@ -250,6 +250,26 @@ function submitContact(habitId){
   contactData[cid]=con;
   if(db&&!offline) db.ref('contacts/'+cid).set(con);
 
+  // Auto-create or update CRM contact
+  if(db&&!offline){
+    db.ref('crm_contacts').orderByChild('name').equalTo(name).once('value',function(snap){
+      var existing=snap.val();
+      var existingId=existing?Object.keys(existing)[0]:null;
+      if(existingId){
+        var ec=existing[existingId];
+        if(!ec.comments) ec.comments=[];
+        ec.comments.push({text:(habitId==='catchup_contact'?'Catch-up':'New contact')+' logged via Habits',createdAt:Date.now()});
+        ec.lastContact=td();
+        db.ref('crm_contacts/'+existingId).set(ec);
+      } else {
+        db.ref('crm_contacts/'+cid).set({id:cid,name:name,phone:'',email:'',website:'',
+          locations:[],categories:[],temperature:'warm',
+          comments:[{text:(habitId==='new_contact'?'New contact':'Catch-up')+' logged via Habits',createdAt:Date.now()}],
+          lastContact:td(),nextContact:'',habitContactId:cid,createdAt:Date.now()});
+      }
+    });
+  }
+
   setHabitDone(habitId, true, {notes:name, contactId:cid}, selectedHabitDate);
 
   if(fu && typeof S!=='undefined' && typeof persist==='function'){

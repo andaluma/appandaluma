@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Contacts">
+<meta name="theme-color" content="#1A1208">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Andaluma Contacts</title>
+<link rel="manifest" href="/crm/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/crm/css/crm.css">
+</head>
+<body>
+
+<!-- PIN SCREEN -->
+<div id="pin-screen" style="display:none">
+  <div class="pin-logo">Contacts</div>
+  <div class="pin-sub">Andaluma · Private</div>
+  <div class="pin-dots">
+    <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
+  </div>
+  <div class="pin-grid">
+    <button class="pkey" data-n="1"><span>1</span></button>
+    <button class="pkey" data-n="2"><span>2</span><span class="pkey-sub">ABC</span></button>
+    <button class="pkey" data-n="3"><span>3</span><span class="pkey-sub">DEF</span></button>
+    <button class="pkey" data-n="4"><span>4</span><span class="pkey-sub">GHI</span></button>
+    <button class="pkey" data-n="5"><span>5</span><span class="pkey-sub">JKL</span></button>
+    <button class="pkey" data-n="6"><span>6</span><span class="pkey-sub">MNO</span></button>
+    <button class="pkey" data-n="7"><span>7</span><span class="pkey-sub">PQRS</span></button>
+    <button class="pkey" data-n="8"><span>8</span><span class="pkey-sub">TUV</span></button>
+    <button class="pkey" data-n="9"><span>9</span><span class="pkey-sub">WXYZ</span></button>
+    <button class="pkey" data-n="" style="opacity:0;pointer-events:none"></button>
+    <button class="pkey" data-n="0"><span>0</span></button>
+    <button class="pkey" data-n="del" style="font-size:20px">⌫</button>
+  </div>
+  <div id="pin-error"></div>
+</div>
+
+<!-- CRM APP -->
+<div id="crm-app" style="display:none">
+
+  <!-- Header -->
+  <div id="crm-hdr">
+    <div class="crm-hdr-title">Contacts</div>
+    <div class="crm-hdr-actions">
+      <button class="crm-hdr-btn" onclick="openCatManager()">Tags</button>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div id="crm-search">
+    <input type="search" class="crm-search-input" placeholder="Search name, email, phone…"
+      oninput="crmFilter.search=this.value;renderCRM()">
+  </div>
+
+  <!-- Filters -->
+  <div id="crm-filters"></div>
+
+  <!-- List -->
+  <div id="crm-list"></div>
+
+  <!-- FAB -->
+  <button id="crm-fab" onclick="openAddContact()">+</button>
+
+</div>
+
+<!-- MODAL -->
+<div id="crm-modal" onclick="bgClose(event)" style="display:none">
+  <div id="crm-modal-content"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="/crm/js/crm.js"></script>
+</body>
+</html>
