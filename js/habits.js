@@ -260,7 +260,7 @@ function buildHabitContactForm(){
   html+='<div class="fg"><label class="flbl">Temperature</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">';
   HAB_TEMPS.forEach(function(t){
     var on=hcms.temperature===t.id;
-    html+='<button style="background:'+(on?t.color:'white')+';color:'+(on?'white':'var(--muted)')+';border:1.5px solid '+(on?t.color:'var(--sand)')+';border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;font-family:inherit" onclick="hcms.temperature=\''+t.id+'\';document.getElementById(\'mcontent\').innerHTML=buildHabitContactForm()">'+t.label+'</button>';
+    html+='<button style="background:'+(on?t.color:'white')+';color:'+(on?'white':'var(--muted)')+';border:1.5px solid '+(on?t.color:'var(--sand)')+';border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;font-family:inherit" onclick="hcmsTempPick(\''+t.id+'\')">'+t.label+'</button>';
   });
   html+='</div></div>';
   // Locations
@@ -282,7 +282,18 @@ function buildHabitContactForm(){
   return html;
 }
 
+function hcmsSync(){
+  var n=document.getElementById('hct-name');    if(n)  hcms.name    =n.value;
+  var p=document.getElementById('hct-phone');   if(p)  hcms.phone   =p.value;
+  var w=document.getElementById('hct-where');   if(w)  hcms.where   =w.value;
+  var o=document.getElementById('hct-outcome'); if(o)  hcms.outcome =o.value;
+  var f=document.getElementById('hct-followup');if(f)  hcms.followUp=f.value;
+}
+
+function hcmsTempPick(id){ hcmsSync(); hcms.temperature=id; document.getElementById('mcontent').innerHTML=buildHabitContactForm(); }
+
 function hcmsToggle(field, val){
+  hcmsSync();
   hcms[field]=hcms[field]||[];
   var idx=hcms[field].indexOf(val);
   if(idx>=0) hcms[field].splice(idx,1); else hcms[field].push(val);
@@ -339,9 +350,9 @@ function submitContact(habitId){
 
   if(fu && typeof S!=='undefined' && typeof persist==='function'){
     var tid=uid();
-    S.tasks[tid]={id:tid, text:'Follow up: '+name, date:fu,
+    S.tasks[tid]={id:tid, title:'Follow up: '+name, date:fu,
                   owner:S.owner==='both'?'andre':S.owner,
-                  venture:'personal', done:false, createdAt:Date.now()};
+                  venture:'personal', status:'todo', createdAt:Date.now()};
     persist();
     if(typeof renderAll==='function') renderAll();
   }

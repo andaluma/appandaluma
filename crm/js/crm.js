@@ -262,7 +262,7 @@ function buildFormHTML(){
   html+='<div class="fg"><label class="flbl">Temperature</label><div class="crm-temp-sel">';
   CRM_TEMPS.forEach(function(t){
     var on=cms.temperature===t.id;
-    html+='<button class="crm-temp-opt'+(on?' on':'')+'" style="'+(on?'background:'+t.color+';color:white;border-color:'+t.color:'')+'" onclick="cms.temperature=\''+t.id+'\';document.getElementById(\'crm-modal-content\').innerHTML=buildFormHTML()">'+t.label+'</button>';
+    html+='<button class="crm-temp-opt'+(on?' on':'')+'" style="'+(on?'background:'+t.color+';color:white;border-color:'+t.color:'')+'" onclick="cmsTempPick(\''+t.id+'\')">'+t.label+'</button>';
   });
   html+='</div></div>';
   // Locations
@@ -296,12 +296,24 @@ function buildFormHTML(){
   return html;
 }
 
+function cmsSync(){
+  var n=document.getElementById('cf-name');     if(n)  cms.name        =n.value;
+  var p=document.getElementById('cf-phone');    if(p)  cms.phone       =p.value;
+  var em=document.getElementById('cf-email');   if(em) cms.email       =em.value;
+  var w=document.getElementById('cf-website');  if(w)  cms.website     =w.value;
+  var l=document.getElementById('cf-last');     if(l)  cms.lastContact =l.value;
+  var nx=document.getElementById('cf-next');    if(nx) cms.nextContact =nx.value;
+}
+
 function cmsToggle(field,val){
+  cmsSync();
   cms[field]=cms[field]||[];
   var idx=cms[field].indexOf(val);
   if(idx>=0) cms[field].splice(idx,1); else cms[field].push(val);
   document.getElementById('crm-modal-content').innerHTML=buildFormHTML();
 }
+
+function cmsTempPick(id){ cmsSync(); cms.temperature=id; document.getElementById('crm-modal-content').innerHTML=buildFormHTML(); }
 
 function submitContact(){
   var name=((document.getElementById('cf-name')||{}).value||'').trim();
@@ -404,7 +416,7 @@ function saveNewCat(){
 function createPlannerTask(text, date, crmId){
   if(!crmDB) return;
   var tid='t'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);
-  crmDB.ref('tasks/'+tid).set({id:tid,text:text,date:date,owner:'andre',venture:'personal',done:false,createdAt:Date.now(),crmContactId:crmId||null});
+  crmDB.ref('tasks/'+tid).set({id:tid,title:text,date:date,owner:'andre',venture:'personal',status:'todo',createdAt:Date.now(),crmContactId:crmId||null});
 }
 
 // ── MODAL ─────────────────────────────────────────────────
