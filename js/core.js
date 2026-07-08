@@ -13,7 +13,7 @@ var db=null,offline=false,gcalToken=null,mst={};
 
 var VCOL={andaluma:'#E04F28',vae:'#0A7A88',baraca:'#C98A10',personal:'#B83368','andaluma2':'#E04F28'};
 
-var TZS=[{l:'NL',z:'Europe/Amsterdam',bg:'rgba(224,79,40,0.25)'},{l:'DXB',z:'Asia/Dubai',bg:'rgba(201,138,16,0.25)'},{l:'KR',z:'Asia/Seoul',bg:'rgba(10,122,136,0.25)'}];
+var TZS=[{l:'NL',z:'Europe/Amsterdam',bg:'rgba(224,79,40,0.25)'},{l:'PER',z:'America/Lima',bg:'rgba(201,138,16,0.25)'},{l:'KR',z:'Asia/Seoul',bg:'rgba(10,122,136,0.25)'}];
 function tzTime(z){try{return new Date().toLocaleTimeString('en-GB',{timeZone:z,hour:'2-digit',minute:'2-digit',hour12:false});}catch(e){return'--:--';}}
 
 // ── CATEGORY CONFIG ───────────────────────────────────────
