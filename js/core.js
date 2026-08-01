@@ -79,7 +79,8 @@ function afterPin(){
     });
     loadMoneyData();
     loadHabitsData();
-  }catch(ex){ db=null; rolloverPastTasks(); renderAll(); }
+    loadGroceriesData();
+  }catch(ex){ db=null; rolloverPastTasks(); renderAll(); loadGroceriesData(); }
 }
 
 // ── PIN FUNCTIONS ────────────────────────────────────────
@@ -242,7 +243,7 @@ function _switchTabUI(tab){
   // Always hide the insights overlay when switching nav tabs
   var iv=document.getElementById('insights-view');
   if(iv) iv.style.display='none';
-  ['tasks','money','converter','habits'].forEach(function(t){
+  ['tasks','money','converter','habits','groceries'].forEach(function(t){
     var v = document.getElementById(t+'-view');
     var b = document.getElementById('nav-'+t);
     if(v) v.style.display = t===tab ? 'flex' : 'none';
@@ -255,6 +256,7 @@ function _switchTabUI(tab){
   if(tab==='money') renderMoney();
   if(tab==='converter'){ if(!convRatesFetched) fetchConvRates(); else renderConverter(); }
   if(tab==='habits') renderHabits();
+  if(tab==='groceries') renderGroceries();
 }
 
 function switchTab(tab) {
