@@ -31,6 +31,7 @@ var CATS = {
   'Work & business':        {icon:'💼', color:'#2D5C3A'},
   'Vehicle':                {icon:'🚗', color:'#7A6E5A'},
   'Family support':         {icon:'❤️', color:'#B83368'},
+  'School':                 {icon:'🎓', color:'#1B3D6B'},
   'Others':                 {icon:'•',  color:'#7A6E5A'},
 };
 

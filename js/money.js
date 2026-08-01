@@ -250,6 +250,26 @@ function inferTripCurrency(tripId){
   return best||null;
 }
 
+// Every Mon-Fri date between start and end, inclusive of both ends.
+// Used by the School category, where a monthly fee is paid but the cost only
+// belongs on days the kids actually attend. Returns [] on an invalid range.
+// The form preview and the save path both call this, so the number you are
+// shown and the number of records written can never drift apart.
+function schoolDays(startStr, endStr){
+  var out = [];
+  if(!startStr || !endStr || endStr < startStr) return out;
+  // Midday avoids the day slipping when a DST boundary falls inside the range.
+  var d = new Date(startStr+'T12:00:00'), end = new Date(endStr+'T12:00:00');
+  while(d <= end){
+    var dow = d.getDay();
+    if(dow >= 1 && dow <= 5){
+      out.push(d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate()));
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return out;
+}
+
 function openAddExpense(){
   var defCur = inferTripCurrency(MS.activeTripId) || 'EUR';
   emst = {
@@ -258,6 +278,7 @@ function openAddExpense(){
     tripId: MS.activeTripId||'', preTrip:false,
     checkIn: MS.moneyDate||'', checkOut:'',
     spreadRange:false, dateEnd:'',
+    schoolStart: MS.moneyDate||'', schoolEnd:'',
     _firstOpen: true,   // focus the amount field only on first open, not on chip redraws
   };
   drawAddExpense();
@@ -321,6 +342,31 @@ function drawAddExpense(){
           '<div class="fg"><label class="flbl">Check-out date</label>'+
           '<input type="date" class="fdate" value="'+e(m.checkOut||'')+'" onchange="emst.checkOut=this.value;drawAddExpense()">'+
           (nights>0?'<div style="font-size:12px;color:var(--amber);margin-top:5px;font-weight:600">'+nights+' night'+(nights===1?'':'s')+perNightNote+'</div>':'')+
+          '</div>';
+      }
+      if(m.category==='School'){
+        var sd = schoolDays(m.schoolStart, m.schoolEnd);
+        var perSchoolNote = '';
+        if(sd.length>0 && parseFloat(m.amount)>0){
+          perSchoolNote = ' · '+m.currency+' '+(parseFloat(m.amount)/sd.length).toFixed(2)+'/day';
+        }
+        var schoolHint;
+        if(!m.schoolStart || !m.schoolEnd){
+          schoolHint = '<div style="font-size:12px;color:var(--muted);margin-top:5px">Pick both dates to spread the amount over school days</div>';
+        } else if(m.schoolEnd < m.schoolStart){
+          schoolHint = '<div style="font-size:12px;color:var(--coral);margin-top:5px;font-weight:600">Last day must be on or after the first day</div>';
+        } else if(sd.length===0){
+          schoolHint = '<div style="font-size:12px;color:var(--coral);margin-top:5px;font-weight:600">No weekdays in that range</div>';
+        } else {
+          schoolHint = '<div style="font-size:12px;color:var(--amber);margin-top:5px;font-weight:600">'+
+            sd.length+' school day'+(sd.length===1?'':'s')+perSchoolNote+
+            '</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Weekdays only, Mon to Fri. Weekends are skipped.</div>';
+        }
+        return '<div class="fg"><label class="flbl">First school day</label>'+
+          '<input type="date" class="fdate" value="'+e(m.schoolStart||'')+'" onchange="emst.schoolStart=this.value;drawAddExpense()"></div>'+
+          '<div class="fg"><label class="flbl">Last school day (inclusive)</label>'+
+          '<input type="date" class="fdate" value="'+e(m.schoolEnd||'')+'" min="'+e(m.schoolStart||'')+'" onchange="emst.schoolEnd=this.value;drawAddExpense()">'+
+          schoolHint+
           '</div>';
       }
       var days=0, perDayNote='';
@@ -393,6 +439,26 @@ function submitExpense(){
           date:dateStr, tripId:emst.tripId||null, notes:emst.note||'', createdAt:Date.now()+i, venture:'personal', type:'expense' };
         persistExpense(id); // write each night individually — safe, never touches other records
       }
+      closeModal(); renderMoney(); renderInsights();
+    });
+    return;
+  }
+  if(emst.category==='School' && !emst.preTrip){
+    if(!emst.schoolStart || !emst.schoolEnd){ alert('Enter the first and last school day.'); return; }
+    if(emst.schoolEnd < emst.schoolStart){ alert('Last school day must be on or after the first.'); return; }
+    var sdays = schoolDays(emst.schoolStart, emst.schoolEnd);
+    if(!sdays.length){ alert('That range contains no weekdays.'); return; }
+    fetchRate(emst.currency, function(rate){
+      var perDay = amt/sdays.length;
+      var eurPerDay = Math.round((emst.currency==='EUR' ? perDay : perDay*rate)*100)/100;
+      var perDayOrig = Math.round(perDay*100)/100;
+      sdays.forEach(function(dateStr, i){
+        var id = muid();
+        MS.expenses[id] = { id:id, title:(title.trim()||'School'), category:'School', owner:emst.owner,
+          originalAmount:perDayOrig, originalCurrency:emst.currency, eurAmount:eurPerDay, lockedRate:rate,
+          date:dateStr, tripId:emst.tripId||null, notes:emst.note||'', createdAt:Date.now()+i, venture:'personal', type:'expense' };
+        persistExpense(id); // write each day individually, same as Accommodation
+      });
       closeModal(); renderMoney(); renderInsights();
     });
     return;
