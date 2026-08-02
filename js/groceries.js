@@ -134,6 +134,7 @@ var grocLoaded  = false;
 var grocQuery   = '';
 var gms         = {};   // new-item modal state
 var grocPicks   = {};   // ticked rows in the "add from recent" sheet
+var grocSecOpen = {};   // which aisles are expanded there, kept across reopens
 
 // ── FIREBASE ──────────────────────────────────────────────
 function loadGroceriesData(){
@@ -507,42 +508,85 @@ function openGrocRecent(){
   openModal(buildGrocRecent());
 }
 
+// Grouped by aisle, collapsed by default. Eleven headers fit on one screen, so
+// you get the whole map at a glance and open only the aisles you need, instead
+// of scrolling one flat list of sixty items.
 function buildGrocRecent(){
-  var items = Object.keys(grocCatalog).map(function(k){ return grocCatalog[k]; })
-    .filter(function(it){ return (it.timesBought||0) > 0; })
-    .sort(function(a,b){ return grocScore(b)-grocScore(a); })
-    .slice(0,60);
+  var all = Object.keys(grocCatalog).map(function(k){ return grocCatalog[k]; })
+    .filter(function(it){ return (it.timesBought||0) > 0; });
 
   var html = '<div class="mhandle"></div><div class="mtitle">Add from recent</div>';
-  if(!items.length){
+  if(!all.length){
     html += '<div class="groc-empty" style="padding:24px 20px">Nothing remembered yet.<br>'+
       'Once you tick items off and tap <strong>Done shopping</strong>, they show up here.</div>'+
       '<button class="btn-pri" onclick="closeModal()">Close</button><div style="height:16px"></div>';
     return html;
   }
 
-  html += '<div class="groc-recent-sub">Your usual shop, most likely first. '+
-    'Tick what you need.</div><div class="groc-recent-list">';
-  items.forEach(function(it){
-    var c = grocCat(it.category);
-    var on = !!grocPicks[it.id];
-    var onList = !!grocFindListRow(it.name);
-    html += '<div class="groc-rec'+(on?' on':'')+'" onclick="grocPick(\''+e(it.id)+'\')">'+
-      '<button class="groc-chk'+(on?' on':'')+'">'+(on?'✓':'')+'</button>'+
-      '<div class="groc-rec-body">'+
-        '<div class="groc-rec-name">'+e(it.name)+
-          (onList?'<span class="groc-rec-already">on list</span>':'')+'</div>'+
-        '<div class="groc-rec-meta">'+c.icon+' '+e(c.label)+' · bought '+(it.timesBought||0)+'×'+
-          (it.lastBought?' · '+grocAgo(it.lastBought):'')+'</div>'+
-      '</div></div>';
+  var anyOpen = GROC_CATS.some(function(c){ return grocSecOpen[c.id]; });
+  html += '<div class="groc-recent-sub">'+
+    '<span>Your usual shop, by aisle. Tap an aisle to open it.</span>'+
+    '<button class="groc-expand-all" onclick="grocAllSections('+(anyOpen?'false':'true')+')">'+
+      (anyOpen?'Collapse all':'Expand all')+'</button></div>';
+
+  html += '<div class="groc-recent-list">';
+  GROC_CATS.forEach(function(c){
+    var items = all.filter(function(it){ return (it.category||'other')===c.id; })
+      .sort(function(a,b){ return grocScore(b)-grocScore(a); });
+    if(!items.length) return;
+    var open = !!grocSecOpen[c.id];
+    var picked = items.filter(function(it){ return grocPicks[it.id]; }).length;
+
+    html += '<div class="groc-rec-sec">'+
+      '<div class="groc-rec-hd" onclick="grocSecToggle(\''+c.id+'\')">'+
+        '<span class="groc-rec-hd-ic">'+c.icon+'</span>'+
+        '<span class="groc-rec-hd-lbl" style="color:'+c.color+'">'+e(c.label)+'</span>'+
+        '<span class="groc-rec-hd-n" id="grn-'+c.id+'">'+grocSecCount(picked, items.length)+'</span>'+
+        '<span class="groc-rec-hd-ar'+(open?' open':'')+'" id="gra-'+c.id+'">›</span>'+
+      '</div>'+
+      '<div class="groc-rec-items" id="grb-'+c.id+'" style="display:'+(open?'block':'none')+'">';
+
+    items.forEach(function(it){
+      var on = !!grocPicks[it.id];
+      var onList = !!grocFindListRow(it.name);
+      html += '<div class="groc-rec'+(on?' on':'')+'" id="grr-'+e(it.id)+'" '+
+          'onclick="grocPick(\''+e(it.id)+'\')">'+
+        '<button class="groc-chk'+(on?' on':'')+'">'+(on?'✓':'')+'</button>'+
+        '<div class="groc-rec-body">'+
+          '<div class="groc-rec-name">'+e(it.name)+
+            (onList?'<span class="groc-rec-already">on list</span>':'')+'</div>'+
+          '<div class="groc-rec-meta">bought '+(it.timesBought||0)+'×'+
+            (it.lastBought?' · '+grocAgo(it.lastBought):'')+'</div>'+
+        '</div></div>';
+    });
+    html += '</div></div>';
   });
   html += '</div>';
 
-  var n = Object.keys(grocPicks).length;
-  html += '<button class="btn-pri" onclick="addGrocPicks()"'+(n?'':' disabled style="opacity:.45"')+'>'+
-    (n ? 'Add '+n+' item'+(n===1?'':'s') : 'Select items to add')+'</button>'+
-    '<div style="height:16px"></div>';
+  html += '<button class="btn-pri" id="groc-add-btn" onclick="addGrocPicks()">'+
+    grocAddBtnLabel()+'</button><div style="height:16px"></div>';
   return html;
+}
+
+function grocSecCount(picked, total){
+  return picked>0 ? picked+' / '+total : ''+total;
+}
+function grocAddBtnLabel(){
+  var n = Object.keys(grocPicks).length;
+  return n ? 'Add '+n+' item'+(n===1?'':'s') : 'Select items to add';
+}
+
+function grocSecToggle(cid){
+  grocSecOpen[cid] = !grocSecOpen[cid];
+  var body = document.getElementById('grb-'+cid);
+  var arrow = document.getElementById('gra-'+cid);
+  if(body)  body.style.display = grocSecOpen[cid] ? 'block' : 'none';
+  if(arrow) arrow.className = 'groc-rec-hd-ar'+(grocSecOpen[cid]?' open':'');
+}
+
+function grocAllSections(open){
+  GROC_CATS.forEach(function(c){ grocSecOpen[c.id] = !!open; });
+  document.getElementById('mcontent').innerHTML = buildGrocRecent();
 }
 
 function grocAgo(ts){
@@ -554,10 +598,33 @@ function grocAgo(ts){
   return Math.round(d/30)+' months ago';
 }
 
+// Touches only the three things that changed: the row, its aisle count, and the
+// footer button. Rebuilding the sheet here would throw away your scroll position
+// and close every section you had opened, on every single tap.
 function grocPick(cid){
-  if(grocPicks[cid]) delete grocPicks[cid];
-  else grocPicks[cid] = true;
-  document.getElementById('mcontent').innerHTML = buildGrocRecent();
+  var it = grocCatalog[cid]; if(!it) return;
+  var on = !grocPicks[cid];
+  if(on) grocPicks[cid] = true; else delete grocPicks[cid];
+
+  var row = document.getElementById('grr-'+cid);
+  if(row){
+    row.className = 'groc-rec'+(on?' on':'');
+    var box = row.querySelector('.groc-chk');
+    if(box){ box.className = 'groc-chk'+(on?' on':''); box.textContent = on?'✓':''; }
+  }
+
+  var catId = it.category||'other';
+  var lbl = document.getElementById('grn-'+catId);
+  if(lbl){
+    var inCat = Object.keys(grocCatalog).map(function(k){ return grocCatalog[k]; })
+      .filter(function(x){ return (x.category||'other')===catId && (x.timesBought||0)>0; });
+    var picked = inCat.filter(function(x){ return grocPicks[x.id]; }).length;
+    lbl.textContent = grocSecCount(picked, inCat.length);
+    lbl.className = 'groc-rec-hd-n'+(picked>0?' has':'');
+  }
+
+  var btn = document.getElementById('groc-add-btn');
+  if(btn) btn.textContent = grocAddBtnLabel();
 }
 
 function addGrocPicks(){
