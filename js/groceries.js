@@ -135,9 +135,14 @@ var grocQuery   = '';
 var gms         = {};   // new-item modal state
 var grocPicks   = {};   // ticked rows in the "add from recent" sheet
 var grocSecOpen = {};   // which aisles are expanded there, kept across reopens
+var grocSort    = 'suggested';   // how the recent sheet orders items inside an aisle
 
 // ── FIREBASE ──────────────────────────────────────────────
 function loadGroceriesData(){
+  try{
+    var savedSort = localStorage.getItem('andaluma-groc-sort');
+    if(savedSort) grocSort = savedSort;
+  }catch(ex){}
   if(!db || offline){
     // Offline: fall back to the last known list so a shop with no signal
     // still shows something useful.
@@ -205,6 +210,41 @@ function grocFindListRow(name){
 function grocScore(it){
   var days = it.lastBought ? (Date.now()-it.lastBought)/86400000 : 999;
   return (it.timesBought||0)*10 - Math.min(days, 400);
+}
+
+// How items are ordered inside each aisle of the recent sheet.
+//   suggested  the blend above, what you are most likely to want
+//   bought     purely how often, ignoring when
+//   az         alphabetical, for when you know the name and just want to find it
+// Every option falls back to alphabetical on a tie so the order never wobbles
+// between renders.
+var GROC_SORTS = [
+  {id:'suggested', label:'Suggested'},
+  {id:'bought',    label:'Most bought'},
+  {id:'az',        label:'A-Z'},
+];
+
+function grocNameCmp(a,b){
+  return String(a.name||'').localeCompare(String(b.name||''), undefined, {sensitivity:'base'});
+}
+
+function grocSortFn(){
+  if(grocSort === 'az') return grocNameCmp;
+  if(grocSort === 'bought') return function(a,b){
+    var d = (b.timesBought||0) - (a.timesBought||0);
+    return d !== 0 ? d : grocNameCmp(a,b);
+  };
+  return function(a,b){
+    var d = grocScore(b) - grocScore(a);
+    return d !== 0 ? d : grocNameCmp(a,b);
+  };
+}
+
+function grocSetSort(id){
+  if(grocSort === id) return;
+  grocSort = id;
+  lss('andaluma-groc-sort', id);
+  document.getElementById('mcontent').innerHTML = buildGrocRecent();
 }
 
 // "2×" for loose pieces, "500 g" for anything measured. A single piece
@@ -529,10 +569,15 @@ function buildGrocRecent(){
     '<button class="groc-expand-all" onclick="grocAllSections('+(anyOpen?'false':'true')+')">'+
       (anyOpen?'Collapse all':'Expand all')+'</button></div>';
 
+  html += '<div class="groc-sortbar">'+GROC_SORTS.map(function(s){
+    return '<button class="groc-sort'+(grocSort===s.id?' on':'')+'" '+
+      'onclick="grocSetSort(\''+s.id+'\')">'+s.label+'</button>';
+  }).join('')+'</div>';
+
+  var cmp = grocSortFn();
   html += '<div class="groc-recent-list">';
   GROC_CATS.forEach(function(c){
-    var items = all.filter(function(it){ return (it.category||'other')===c.id; })
-      .sort(function(a,b){ return grocScore(b)-grocScore(a); });
+    var items = all.filter(function(it){ return (it.category||'other')===c.id; }).sort(cmp);
     if(!items.length) return;
     var open = !!grocSecOpen[c.id];
     var picked = items.filter(function(it){ return grocPicks[it.id]; }).length;

@@ -485,6 +485,9 @@ html{height:100%;height:-webkit-fill-available;overflow-x:hidden;width:100%}body
 .groc-chip.on{background:var(--dark);border-color:var(--dark);color:#fff;}
 .groc-recent-sub{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 20px 10px;font-size:12px;color:var(--muted);line-height:1.5;}
 .groc-expand-all{background:none;border:1.5px solid var(--sand);border-radius:16px;padding:5px 11px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.groc-sortbar{display:flex;gap:5px;padding:0 20px 12px;}
+.groc-sort{flex:1;background:#fff;border:1.5px solid var(--sand);border-radius:9px;padding:8px 4px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.groc-sort.on{background:var(--dark);border-color:var(--dark);color:#fff;}
 .groc-recent-list{max-height:56vh;overflow-y:auto;padding:0 20px 4px;}
 .groc-rec-sec{border-bottom:1px solid var(--sand);}
 .groc-rec-sec:last-child{border-bottom:none;}
