@@ -30,6 +30,103 @@ var GROC_CATS = [
 ];
 var GROC_UNITS = ['pcs','g','kg','ml','L','pack','bunch','box'];
 
+// ── SEED CATALOG ──────────────────────────────────────────
+// Recovered from the WhatsApp shopping lists, Dec 2025 to Jul 2026, which were
+// a mix of English, Spanish and Dutch. Spanish names are folded into their
+// English equivalent rather than kept as duplicates: palta = avocado,
+// avena = oats, piña = pineapple, sponche = sponge, guantes = gloves,
+// molde = sandwich loaf.
+//
+// Format: name | aisle | unit | times bought | days since last bought
+//
+// The counts are how often each item actually appeared across those lists, so
+// the "add from recent" sheet is useful on day one instead of after a month of
+// use. Bread, eggs and soda water top it because they genuinely recur most.
+//
+// Durables at the bottom carry 0 buys on purpose. The recent sheet only shows
+// items bought at least once, so a laptop or a bike stays out of the weekly
+// reminder while still autocompleting if you type it.
+var GROC_SEED = [
+  // Produce
+  'Potato|produce|kg|4|12',      'Banana|produce|pcs|2|13',
+  'Red onion|produce|pcs|2|4',   'White onion|produce|pcs|1|13',
+  'Pineapple|produce|pcs|3|13',  'Avocado|produce|pcs|3|4',
+  'Tomato|produce|pcs|2|12',     'Papaya|produce|pcs|1|13',
+  'Carrot|produce|pcs|1|18',     'Ginger|produce|pcs|1|12',
+  'Lime|produce|pcs|1|4',        'Frying banana|produce|pcs|1|13',
+  'Fruit (mixed)|produce|pcs|3|4','Mixed berries|produce|pcs|1|11',
+  // Bakery
+  'Bread|bakery|pcs|5|4',        'Ciabatta|bakery|pcs|1|18',
+  'Sandwich bread|bakery|pcs|1|18',
+  // Dairy and eggs
+  'Milk|dairy|L|3|18',           'Chocolate milk|dairy|L|1|18',
+  'Butter|dairy|pcs|3|4',        'Eggs|dairy|pcs|4|4',
+  // Meat and fish
+  'Chicken|meatfish|kg|3|4',     'Minced meat|meatfish|kg|1|19',
+  'Pork|meatfish|kg|1|19',       'Ham|meatfish|pcs|1|19',
+  'Hotdog|meatfish|pcs|1|19',    'Meat|meatfish|kg|3|4',
+  // Pantry
+  'Rice|pantry|g|1|13',          'Pasta|pantry|pcs|2|13',
+  'Flour|pantry|g|2|13',         'Sugar|pantry|g|2|18',
+  'Olive oil|pantry|pcs|3|18',   'Salt|pantry|pcs|2|12',
+  'Tomato sauce|pantry|pcs|2|19','Tuna|pantry|pcs|2|19',
+  'Lentils|pantry|pcs|1|19',     'Beans|pantry|pcs|1|4',
+  'Oats|pantry|pcs|2|4',         'Peanut butter|pantry|pcs|1|13',
+  'Honey|pantry|pcs|1|4',        'Soy sauce|pantry|pcs|1|4',
+  'Tortillas|pantry|pcs|3|4',    'Baking powder|pantry|pcs|1|7',
+  'Food colouring|pantry|pcs|1|4',
+  // Snacks
+  'Dried mango|snacks|pcs|2|18', 'Chips|snacks|pcs|1|150',
+  // Drinks
+  'Soda water|drinks|L|5|4',
+  // Household
+  'Toilet paper|household|pcs|2|12','Kitchen paper|household|pcs|1|4',
+  'Detergent|household|pcs|2|150', 'Dish soap|household|pcs|1|220',
+  'Sponge|household|pcs|1|220',    'Plastic gloves|household|pcs|1|220',
+  'A4 paper|household|pcs|1|202',  'Washing line rope|household|pcs|1|150',
+  'Washing clips|household|pcs|1|150',
+  // Personal care
+  'Shower cap|care|pcs|1|220',   'Kids toothbrushes|care|pcs|1|4',
+  // One-offs: typeable, but kept out of the recent sheet by the zero count
+  'Floaties|other|pcs|0|0',      'Kids bathroom stool|other|pcs|0|0',
+  'Laptop stand|other|pcs|0|0',  'Hangers|other|pcs|0|0',
+  'Storage box|other|pcs|0|0',   'Gas cooker|other|pcs|0|0',
+  'Bicycle seat|other|pcs|0|0',  'Bicycle|other|pcs|0|0',
+  'Towels|other|pcs|0|0',        'Cutting board|other|pcs|0|0',
+  'SIM card|other|pcs|0|0',      'Desk chair|other|pcs|0|0',
+  'Laptop|other|pcs|0|0',
+];
+var GROC_SEED_VERSION = 1;
+var grocSeedTried = false;
+
+// Runs once, only into an empty catalog. If there is already real history the
+// version marker is set and nothing is written, so this can never overwrite
+// items you have built up yourself.
+function grocMaybeSeed(){
+  if(grocSeedTried || !db || offline) return;
+  grocSeedTried = true;
+  db.ref('groceries/seedVersion').once('value', function(snap){
+    if((snap.val()||0) >= GROC_SEED_VERSION) return;
+    if(Object.keys(grocCatalog).length){
+      db.ref('groceries/seedVersion').set(GROC_SEED_VERSION);
+      return;
+    }
+    var batch = {}, now = Date.now();
+    GROC_SEED.forEach(function(row){
+      var p = row.split('|');
+      var id = 'seed_'+p[0].toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+      var times = parseInt(p[3],10)||0;
+      batch[id] = {
+        id:id, name:p[0], category:p[1], unit:p[2],
+        timesBought: times,
+        lastBought: times>0 ? now - (parseInt(p[4],10)||0)*86400000 : 0
+      };
+    });
+    db.ref('groceries/catalog').update(batch);
+    db.ref('groceries/seedVersion').set(GROC_SEED_VERSION);
+  });
+}
+
 // ── STATE ─────────────────────────────────────────────────
 var grocCatalog = {};
 var grocList    = {};
@@ -55,6 +152,7 @@ function loadGroceriesData(){
   db.ref('groceries/catalog').on('value',function(snap){
     grocCatalog = snap.val()||{};
     lss('andaluma-groc-catalog', JSON.stringify(grocCatalog));
+    grocMaybeSeed();   // first run only, and only into an empty catalog
     if(grocLoaded) renderGrocList();
   });
   db.ref('groceries/list').on('value',function(snap){
