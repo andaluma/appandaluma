@@ -501,18 +501,49 @@ var rateCache = {};
 // Fallback rates: EUR per 1 unit of foreign currency (updated July 2026)
 // Used when Frankfurter is offline OR for currencies Frankfurter does not cover
 // (AED, VND, TWD, CNY, PEN, KWD, BHD, SAR, QAR, COP, CLP, MNT, RUB, GEL)
+// Used only when the live feed cannot be reached, and permanently for the
+// currencies the ECB does not publish. Values below refreshed 2026-08-13 against
+// the live feed dated 2026-08-12.
+//
+// Entries marked "unverified" have no live source anywhere in the app, so they
+// drift silently and can only be corrected by hand. Check them before trusting a
+// conversion in one of those currencies.
 var RATE_FALLBACK = {
-  USD:0.877, GBP:1.160, JPY:0.00540, KRW:0.000566, TWD:0.0270, CNY:0.127,
-  AED:0.239, VND:0.0000351, MXN:0.0502, CAD:0.617, PEN:0.236, AUD:0.604,
-  CHF:1.084, SGD:0.678, THB:0.02641, IDR:0.0000490, MYR:0.2148, PHP:0.01431,
-  INR:0.00927, BRL:0.1695, COP:0.000209, CLP:0.000924, TRY:0.01881, NOK:0.08841,
-  SEK:0.09014, DKK:0.1338, NZD:0.4966, ZAR:0.05361, HKD:0.1119, SAR:0.234,
-  QAR:0.241, KWD:2.85, BHD:2.33, MNT:0.000249, RUB:0.0105, GEL:0.310,
+  USD:0.8662,   GBP:1.1715,   JPY:0.005445, KRW:0.000611,
+  CNY:0.1285,   MXN:0.05077,  CAD:0.6220,   AUD:0.6125,
+  CHF:1.0677,   SGD:0.6772,   THB:0.02620,  IDR:0.00004854,
+  MYR:0.2120,   PHP:0.014148, INR:0.0090852,BRL:0.1680,
+  TRY:0.018137, NOK:0.091441, SEK:0.090938, DKK:0.13377,
+  NZD:0.50826,  ZAR:0.053686, HKD:0.11038,
+  // Hard-pegged to the dollar. Derived live from USD at runtime (see USD_PEGS),
+  // so these are only a last resort if even the USD lookup fails.
+  AED:0.23587,  SAR:0.23098,  QAR:0.23796,  BHD:2.30367,
+  // Basket peg, moves a little. Not derivable, review occasionally.
+  KWD:2.824,
+  // Unverified: no live source. Last set by hand, treat with caution.
+  TWD:0.0270, VND:0.0000351, PEN:0.236, COP:0.000209,
+  CLP:0.000924, MNT:0.000249, RUB:0.0105, GEL:0.310,
 };
+
+// Gulf currencies hold a fixed peg to the dollar, so their euro rate can be
+// derived from the live USD rate rather than sitting in the table going stale.
+// Values are units of the currency per 1 USD.
+var USD_PEGS = { AED:3.6725, SAR:3.75, QAR:3.64, BHD:0.376 };
 function fetchRate(currency, cb){
   if(currency==='EUR'){ cb(1); return; }
   if(rateCache[currency]){ cb(rateCache[currency]); return; }
-  fetch('https://api.frankfurter.app/latest?from='+currency+'&to=EUR')
+  // Pegged currencies: take the live dollar rate and divide by the peg, so they
+  // track reality instead of drifting on a hardcoded number. USD itself is never
+  // in USD_PEGS, so this cannot recurse.
+  if(USD_PEGS[currency]){
+    fetchRate('USD', function(usd){
+      var r = usd / USD_PEGS[currency];
+      if(r > 0){ rateCache[currency] = r; cb(r); }
+      else cb(RATE_FALLBACK[currency] || 1);
+    });
+    return;
+  }
+  fetch('https://api.frankfurter.dev/v1/latest?from='+currency+'&to=EUR')
     .then(function(r){ return r.json(); })
     .then(function(data){
       var rate = data.rates && data.rates.EUR ? data.rates.EUR : null;
@@ -670,6 +701,36 @@ function getFixedAmountForMonth(fx, monthKey){
   return (fx.confirmedMonths && fx.confirmedMonths[monthKey]) ? fx.confirmedMonths[monthKey] : 0;
 }
 
+function fxMonthKey(d){ return d.getFullYear()+'-'+(('0'+(d.getMonth()+1)).slice(-2)); }
+
+function fxMonthLabel(k){
+  var d = new Date(parseInt(k.substr(0,4),10), parseInt(k.substr(5,2),10)-1, 1);
+  return d.toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+}
+
+// Every month this soft fixed expense is active but still has no amount, oldest
+// first. A soft expense is meant to carry a figure for every month it runs, so a
+// month left blank is a gap in the totals, not a month that was skipped.
+// Capped at 24 months back so an old startDate cannot produce an unusable list.
+function fxUnconfirmedMonths(fx){
+  if(!fx || fx.fixedType !== 'soft') return [];
+  var now = new Date();
+  var curKey = fxMonthKey(now);
+  var oldest = new Date(now.getFullYear(), now.getMonth()-23, 1);
+  var startKey = (fx.startDate||'').substr(0,7);
+  var d = oldest;
+  if(startKey && startKey > fxMonthKey(oldest)){
+    d = new Date(parseInt(startKey.substr(0,4),10), parseInt(startKey.substr(5,2),10)-1, 1);
+  }
+  var out = [];
+  while(fxMonthKey(d) <= curKey){
+    var k = fxMonthKey(d);
+    if(fxOccurrencesInMonth(fx,k) > 0 && !(fx.confirmedMonths && fx.confirmedMonths[k])) out.push(k);
+    d = new Date(d.getFullYear(), d.getMonth()+1, 1);
+  }
+  return out;
+}
+
 function isFixedConfirmedForMonth(fx, monthKey){
   var occ = fxOccurrencesInMonth(fx, monthKey);
   if(!occ) return true; // not active this month → treat as confirmed (no pending dot)
@@ -702,7 +763,9 @@ function renderFixedSection(){
   var monthKey=getCurrentMonthKey();
   var items=Object.values(MS.fixedExpenses).sort(function(a,b){return(a.createdAt||0)-(b.createdAt||0);});
   var total=items.reduce(function(s,fx){return s+getFixedAmountForMonth(fx,monthKey);},0);
-  var hasUnconfirmed=items.some(function(fx){return fx.fixedType==='soft'&&!isFixedConfirmedForMonth(fx,monthKey);});
+  // Any outstanding month counts, not just the current one, otherwise a gap in
+  // an earlier month stays invisible forever.
+  var hasUnconfirmed=items.some(function(fx){return fxUnconfirmedMonths(fx).length>0;});
   var html='<div class="fixed-section"><div class="fixed-hdr">'+
     '<div class="fixed-hdr-title">Monthly Fixed'+(total?'<span style="font-weight:400;color:var(--dark)"> €'+total.toFixed(0)+'</span>':'')+
     (hasUnconfirmed?'<span style="color:var(--amber);font-size:8px">●</span>':'')+'</div>'+
@@ -725,8 +788,17 @@ function renderFixedSection(){
         html+='<div class="fixed-item'+(pending?' soft-pending':'')+'" onclick="editFixed(\''+e(fx.id)+'\')">';
         html+='<div class="fixed-icon" style="background:'+cat.color+'22">'+cat.icon+'</div>';
         html+='<div class="fixed-body"><div class="fixed-name">'+e(fx.name)+'</div><div class="fixed-sub">'+e(fx.category)+' · '+(isHard?periodLbl:'varies')+'</div></div>';
-        if(pending) html+='<button class="fixed-confirm-btn" onclick="event.stopPropagation();confirmSoftFixed(\''+e(fx.id)+'\')">Confirm</button>';
-        else html+='<div class="fixed-amt" style="color:'+(isHard?'var(--muted)':'var(--teal)')+'">'+amtStr+'</div>';
+        var back=isHard?[]:fxUnconfirmedMonths(fx);
+        if(pending){
+          // This month needs a figure, so confirming is the primary action.
+          html+='<button class="fixed-confirm-btn" onclick="event.stopPropagation();confirmSoftFixed(\''+e(fx.id)+'\')">Confirm'+
+            (back.length>1?' ('+back.length+')':'')+'</button>';
+        } else {
+          html+='<div class="fixed-amt" style="color:'+(isHard?'var(--muted)':'var(--teal)')+'">'+amtStr+'</div>';
+          // This month is done but earlier ones are not. Keep the amount visible
+          // and hang a tappable count beside it.
+          if(back.length) html+='<button class="fixed-back-btn" title="'+back.length+' earlier month'+(back.length===1?'':'s')+' without an amount" onclick="event.stopPropagation();confirmSoftFixed(\''+e(fx.id)+'\')">'+back.length+'</button>';
+        }
         html+='</div>';
       });
     }
@@ -810,24 +882,76 @@ function submitFixed(){
   });
 }
 
-function confirmSoftFixed(id){
+var fxcs = {};   // confirm-amount modal state
+
+function confirmSoftFixed(id, monthKey){
   var fx=MS.fixedExpenses[id]; if(!fx) return;
-  var monthKey=getCurrentMonthKey();
-  var prevEur=fx.confirmedMonths&&Object.values(fx.confirmedMonths).slice(-1)[0];
-  // Suggest last confirmed EUR value; currency defaults to original currency if set
-  var defCur=fx.originalCurrency||'EUR';
-  openModal('<div class="mhandle"></div><div class="mtitle">'+e(fx.name)+'</div>'+
-    '<div style="font-size:13px;color:var(--muted);margin-bottom:18px">'+new Date().toLocaleDateString('en-GB',{month:'long',year:'numeric'})+'</div>'+
-    '<div class="fg"><label class="flbl">Amount this month</label>'+
-    '<div style="display:flex;gap:8px">'+
-    '<input type="number" class="finput" id="fx-confirm-amt" placeholder="0.00" step="0.01" inputmode="decimal"'+(prevEur?' value="'+prevEur+'"':'')+' autofocus style="flex:1">'+
-    '<select class="finput" id="fx-confirm-cur" style="width:88px">'+fxCurrencyOpts(defCur)+'</select>'+
-    '</div></div>'+
-    '<button class="btn-pri" onclick="submitConfirmSoft(\''+id+'\',\''+monthKey+'\')">Confirm</button>');
+  var months=fxUnconfirmedMonths(fx);
+  // Editing an already-confirmed month is a valid way in, so make sure a
+  // specifically requested month is offered even though it is not outstanding.
+  if(monthKey && months.indexOf(monthKey)<0) months=months.concat([monthKey]).sort();
+  if(!months.length) months=[getCurrentMonthKey()];
+  // With no month asked for, start on the oldest outstanding one so a backlog
+  // clears front to back.
+  fxcs = {
+    id:id,
+    monthKey: monthKey || months[0],
+    months: months,
+    cur: fx.originalCurrency||'EUR',
+    amt: undefined
+  };
+  openModal(buildConfirmSoft());
 }
 
-function submitConfirmSoft(id,monthKey){
-  var fx=MS.fixedExpenses[id]; if(!fx) return;
+function buildConfirmSoft(){
+  var fx=MS.fixedExpenses[fxcs.id]; if(!fx) return '';
+  var months=fxcs.months;
+  // Prefill with this month's own figure when re-editing, otherwise suggest the
+  // most recently confirmed one. Stored figures are always EUR, so when one is
+  // used as the prefill the currency has to read EUR or the number and the label
+  // would disagree.
+  var thisMonthEur=fx.confirmedMonths&&fx.confirmedMonths[fxcs.monthKey];
+  var prevEur=fx.confirmedMonths&&Object.values(fx.confirmedMonths).slice(-1)[0];
+  var storedVal=thisMonthEur||prevEur;
+  var val, curSel;
+  if(fxcs.amt!==undefined){ val=fxcs.amt; curSel=fxcs.cur; }
+  else if(storedVal){ val=storedVal; curSel='EUR'; }
+  else { val=''; curSel=fxcs.cur; }
+  var chips=months.map(function(k){
+    return '<button class="fx-mchip'+(k===fxcs.monthKey?' on':'')+'" '+
+      'onclick="fxPickMonth(\''+k+'\')">'+fxMonthLabel(k)+'</button>';
+  }).join('');
+  return '<div class="mhandle"></div><div class="mtitle">'+e(fx.name)+'</div>'+
+    (months.length>1
+      ? '<div class="fx-backlog">'+months.length+' months still need an amount. '+
+        'Confirm one and the next opens automatically.</div>'
+      : '<div class="fx-backlog one">'+fxMonthLabel(months[0])+'</div>')+
+    (months.length>1
+      ? '<div class="fg"><label class="flbl">Which month</label>'+
+        '<div class="fx-mchips">'+chips+'</div></div>'
+      : '')+
+    '<div class="fg"><label class="flbl">Amount for '+fxMonthLabel(fxcs.monthKey)+'</label>'+
+    '<div style="display:flex;gap:8px">'+
+    '<input type="number" class="finput" id="fx-confirm-amt" placeholder="0.00" step="0.01" '+
+      'inputmode="decimal" value="'+e(val)+'" autofocus style="flex:1">'+
+    '<select class="finput" id="fx-confirm-cur" style="width:88px">'+fxCurrencyOpts(curSel)+'</select>'+
+    '</div></div>'+
+    '<button class="btn-pri" onclick="submitConfirmSoft()">Confirm '+fxMonthLabel(fxcs.monthKey)+'</button>'+
+    '<div style="height:14px"></div>';
+}
+
+// Carry whatever is typed across a month switch, so picking a different chip
+// does not wipe the amount field.
+function fxPickMonth(k){
+  var a=document.getElementById('fx-confirm-amt'); if(a) fxcs.amt=a.value;
+  var c=document.getElementById('fx-confirm-cur'); if(c) fxcs.cur=c.value;
+  fxcs.monthKey=k;
+  document.getElementById('mcontent').innerHTML=buildConfirmSoft();
+}
+
+function submitConfirmSoft(){
+  var fx=MS.fixedExpenses[fxcs.id]; if(!fx) return;
+  var monthKey=fxcs.monthKey;
   var amt=parseFloat((document.getElementById('fx-confirm-amt')||{}).value||0);
   if(!amt){alert('Enter an amount.');return;}
   var currency=(document.getElementById('fx-confirm-cur')||{}).value||'EUR';
@@ -835,7 +959,17 @@ function submitConfirmSoft(id,monthKey){
     var eurAmt=currency==='EUR'?amt:Math.round(amt*rate*100)/100;
     if(!fx.confirmedMonths) fx.confirmedMonths={};
     fx.confirmedMonths[monthKey]=eurAmt;
-    persistMoney(); closeModal(); renderMoneyContent();
+    persistMoney();
+    // Roll straight on to the next outstanding month rather than closing and
+    // making the user reopen the sheet for every month of a backlog.
+    var left=fxUnconfirmedMonths(fx);
+    if(left.length){
+      fxcs={id:fx.id, monthKey:left[0], months:left, cur:currency, amt:undefined};
+      document.getElementById('mcontent').innerHTML=buildConfirmSoft();
+    } else {
+      closeModal();
+    }
+    renderMoneyContent();
   });
 }
 
@@ -843,6 +977,8 @@ function editFixed(id){
   var fx=MS.fixedExpenses[id]; if(!fx) return;
   var monthKey=getCurrentMonthKey();
   var softUnconfirmed=fx.fixedType==='soft'&&!isFixedConfirmedForMonth(fx,monthKey);
+  // Outstanding months other than the current one, offered as their own action.
+  var earlierGaps=fxUnconfirmedMonths(fx).filter(function(k){ return k!==monthKey; });
   var amtLabel=fx.fixedType==='hard'
     ? (fx.originalCurrency&&fx.originalCurrency!=='EUR'
         ? fx.originalCurrency+' '+(fx.originalAmount||0).toFixed(2)+' · €'+(fx.amount||0).toFixed(2)
@@ -853,8 +989,9 @@ function editFixed(id){
     '<div style="font-size:11px;color:var(--muted);margin-bottom:20px">'+e(fx.category)+' · '+amtLabel+'</div>'+
     '<div class="alist">'+
     '<div class="aitem" onclick="closeModal();setTimeout(function(){openEditFixed(\''+id+'\')},80)"><div class="aicon" style="background:var(--sand);color:var(--dark)">✏️</div>Edit</div>'+
-    (softUnconfirmed?'<div class="aitem" onclick="closeModal();setTimeout(function(){confirmSoftFixed(\''+id+'\')},80)"><div class="aicon" style="background:rgba(201,138,16,0.08);color:var(--amber)">✓</div>Confirm this month</div>':'')+
-    (fx.fixedType==='soft'&&!softUnconfirmed?'<div class="aitem" onclick="closeModal();setTimeout(function(){confirmSoftFixed(\''+id+'\')},80)"><div class="aicon" style="background:rgba(10,122,136,0.08);color:var(--teal)">↺</div>Edit this month\'s amount</div>':'')+
+    (softUnconfirmed?'<div class="aitem" onclick="closeModal();setTimeout(function(){confirmSoftFixed(\''+id+'\',\''+monthKey+'\')},80)"><div class="aicon" style="background:rgba(201,138,16,0.08);color:var(--amber)">✓</div>Confirm this month</div>':'')+
+    (fx.fixedType==='soft'&&!softUnconfirmed?'<div class="aitem" onclick="closeModal();setTimeout(function(){confirmSoftFixed(\''+id+'\',\''+monthKey+'\')},80)"><div class="aicon" style="background:rgba(10,122,136,0.08);color:var(--teal)">↺</div>Edit this month\'s amount</div>':'')+
+    (earlierGaps.length?'<div class="aitem" onclick="closeModal();setTimeout(function(){confirmSoftFixed(\''+id+'\')},80)"><div class="aicon" style="background:rgba(201,138,16,0.08);color:var(--amber)">↩</div>Fill '+earlierGaps.length+' earlier month'+(earlierGaps.length===1?'':'s')+'</div>':'')+
     '<div class="aitem danger" onclick="deleteFixed(\''+id+'\')"><div class="aicon" style="background:rgba(192,57,43,0.08);color:#C0392B">🗑</div>Delete</div></div>');
 }
 
@@ -977,7 +1114,7 @@ function fetchConvRates(){
     if(!convRates[c]) convRates[c] = 1 / RATE_FALLBACK[c];
   });
   convRates['EUR'] = 1;
-  fetch('https://api.frankfurter.app/latest?base=EUR')
+  fetch('https://api.frankfurter.dev/v1/latest?base=EUR')
     .then(function(r){ return r.json(); })
     .then(function(data){
       var fresh = data.rates || {};
