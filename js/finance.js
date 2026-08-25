@@ -473,7 +473,7 @@ function finRenderIncomeRow(inc){
     '<div class="fin-inc-av" style="background:'+avColor+'">'+av+'</div>'+
     '<div class="fin-inc-body">'+
     '<div class="fin-inc-title">'+e(inc.description||inc.client||'Income')+
-    (isProj?' <span class="fin-badge-projected">projected</span>':' <span class="fin-badge-actual">actual</span>')+'</div>'+
+    (isProj?' <span class="fin-badge-projected">estimated</span>':' <span class="fin-badge-actual">confirmed</span>')+'</div>'+
     '<div class="fin-inc-meta">'+e(inc.client||'')+(acc?' · '+acc.l:'')+(inc.paymentType?' · '+inc.paymentType:'')+'</div>'+
     '</div>'+
     '<div class="fin-inc-amt">'+
@@ -501,25 +501,24 @@ function finConfirmIncome(id){
 // ── ADD INCOME MODAL ──────────────────────────────────────
 var fims = {}; // Add-Income modal state
 function finOpenAddIncome(prefill){
-  var mk = finMonth;
-  var lastWeekBoundary = (finDaysInMonth(mk) - new Date().getDate()) <= 3 && finIsCurrentMonth(mk);
   fims = Object.assign({
     person:'andre', type:'projected', amount:'', currency:'EUR', description:'', client:'',
-    paymentType:'hourly', hoursWorked:'', depositedTo:'andre-wise', month: mk, assignNext:false
+    paymentType:'hourly', hoursWorked:'', depositedTo:'andre-wise', period: finMonth
   }, prefill||{});
   openModal(finBuildAddIncomeForm());
-  fims._lastWeekBoundary = lastWeekBoundary;
   setTimeout(function(){ var n=document.getElementById('fin-desc'); if(n) n.focus(); },80);
 }
 function finBuildAddIncomeForm(){
   var html = '<div class="mhandle"></div><div class="mtitle">Add income</div>';
+  html += '<div class="fg"><label class="flbl">For period</label>'+
+    '<input type="month" class="finput" id="fin-period" value="'+e(fims.period)+'" onchange="finFimsSync();fims.period=this.value"></div>';
   html += '<div class="fg"><label class="flbl">Person</label><div class="vgrid">'+
     ['andre','daniella'].map(function(p){
       return '<button class="vchip'+(fims.person===p?' on':'')+'" onclick="finFimsSet(\'person\',\''+p+'\')">'+(p==='andre'?'André':'Daniella')+'</button>';
     }).join('')+'</div></div>';
   html += '<div class="fg"><label class="flbl">Type</label><div class="vgrid">'+
     ['projected','actual'].map(function(t){
-      return '<button class="vchip'+(fims.type===t?' on':'')+'" onclick="finFimsSet(\'type\',\''+t+'\')">'+(t==='projected'?'Projected':'Actual')+'</button>';
+      return '<button class="vchip'+(fims.type===t?' on':'')+'" onclick="finFimsSet(\'type\',\''+t+'\')">'+(t==='projected'?'Estimated':'Confirmed')+'</button>';
     }).join('')+'</div></div>';
   html += '<div class="fg"><label class="flbl">Description</label><input type="text" class="finput" id="fin-desc" value="'+e(fims.description)+'" placeholder="What is this for?"></div>';
   html += '<div class="fg"><label class="flbl">Client</label><input type="text" class="finput" id="fin-client" value="'+e(fims.client)+'" placeholder="Client / source"></div>';
@@ -537,12 +536,6 @@ function finBuildAddIncomeForm(){
   html += '<div class="fg"><label class="flbl">Deposited to</label><select class="finput" id="fin-deposit">'+
     FIN_DEPOSIT_ACCOUNTS.map(function(a){return '<option value="'+a.id+'"'+(fims.depositedTo===a.id?' selected':'')+'>'+a.l+'</option>';}).join('')+
     '</select></div>';
-  if(fims._lastWeekBoundary){
-    html += '<div class="fg"><label class="flbl">Assign to</label><div class="vgrid">'+
-      '<button class="vchip'+(!fims.assignNext?' on':'')+'" onclick="finFimsSet(\'assignNext\',false)">This month</button>'+
-      '<button class="vchip'+(fims.assignNext?' on':'')+'" onclick="finFimsSet(\'assignNext\',true)">Next month</button>'+
-      '</div></div>';
-  }
   html += '<button class="btn-pri" onclick="finSaveIncome()">Save income</button>';
   return html;
 }
@@ -554,12 +547,12 @@ function finFimsSync(){
   var a=document.getElementById('fin-amount'); if(a) fims.amount=a.value;
   var cur=document.getElementById('fin-currency'); if(cur) fims.currency=cur.value;
   var dep=document.getElementById('fin-deposit'); if(dep) fims.depositedTo=dep.value;
+  var per=document.getElementById('fin-period'); if(per && per.value) fims.period=per.value;
 }
 function finSaveIncome(){
   finFimsSync();
   var amt = parseFloat(fims.amount)||0;
   if(amt<=0){ alert('Enter an amount.'); return; }
-  var month = fims.assignNext ? finShiftMonth(finMonth, 1) : finMonth;
   var now = new Date();
   var id = 'inc'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);
   var record = {
@@ -567,7 +560,7 @@ function finSaveIncome(){
     amount: amt, currency: fims.currency, amountEUR: finToEUR(amt, fims.currency),
     description: fims.description||'', client: fims.client||'',
     paymentType: fims.paymentType, hoursWorked: fims.hoursWorked?parseFloat(fims.hoursWorked):null,
-    month: month, week: finIsoWeekKey(now),
+    month: fims.period, week: finIsoWeekKey(now),
     depositedTo: fims.depositedTo,
     confirmedAt: fims.type==='actual' ? Date.now() : null,
     createdAt: Date.now()
