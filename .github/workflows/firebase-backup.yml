@@ -16,10 +16,11 @@ jobs:
         run: |
           DATE=$(date +%Y-%m-%d)
 
-          # Fetch all three nodes from Firebase and save to temp files
+          # Fetch all four nodes from Firebase and save to temp files
           curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/expenses.json" > /tmp/expenses.json
           curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/trips.json" > /tmp/trips.json
           curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/tasks.json" > /tmp/tasks.json
+          curl -s "https://andaluma-planner-default-rtdb.firebaseio.com/fixedExpenses.json" > /tmp/fixedExpenses.json
 
           # Combine into one backup file using Python
           python3 - << 'PYEOF'
@@ -31,6 +32,8 @@ jobs:
               trips = json.load(f)
           with open('/tmp/tasks.json') as f:
               tasks = json.load(f)
+          with open('/tmp/fixedExpenses.json') as f:
+              fixedExpenses = json.load(f)
 
           date = datetime.date.today().isoformat()
           backup = {
@@ -39,6 +42,7 @@ jobs:
               'expenses': expenses,
               'trips': trips,
               'tasks': tasks,
+              'fixedExpenses': fixedExpenses,
           }
 
           filename = 'backups/andaluma-backup-' + date + '.json'
@@ -49,6 +53,7 @@ jobs:
           print('Expenses: ' + str(len(expenses or {})))
           print('Trips: ' + str(len(trips or {})))
           print('Tasks: ' + str(len(tasks or {})))
+          print('Fixed expenses: ' + str(len(fixedExpenses or {})))
           PYEOF
 
       - name: Commit backup
