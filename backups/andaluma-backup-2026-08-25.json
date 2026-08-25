@@ -62011,5 +62011,126 @@
       "text": "Follow up: Anne Hotel Hoi AN",
       "venture": "personal"
     }
+  },
+  "fixedExpenses": {
+    "fxmq04bsfgpt8u": {
+      "amount": 13.16,
+      "category": "Insurance & subscriptions",
+      "createdAt": 1780615219372,
+      "fixedType": "hard",
+      "id": "fxmq04bsfgpt8u",
+      "lockedRate": 0.877,
+      "name": "Canva",
+      "originalAmount": 15,
+      "originalCurrency": "USD",
+      "period": "monthly",
+      "startDate": "2026-07-05"
+    },
+    "fxmq04o6rgsxrg": {
+      "amount": 18,
+      "category": "Insurance & subscriptions",
+      "createdAt": 1780615797820,
+      "fixedType": "hard",
+      "id": "fxmq04o6rgsxrg",
+      "lockedRate": 1,
+      "name": "Anthropic",
+      "originalAmount": 18,
+      "originalCurrency": "EUR",
+      "period": "monthly",
+      "startDate": "2026-07-01"
+    },
+    "fxmq0ayczv1giq": {
+      "amount": 107.75,
+      "category": "Insurance & subscriptions",
+      "createdAt": 1780626350187,
+      "fixedType": "hard",
+      "id": "fxmq0ayczv1giq",
+      "lockedRate": 0.859,
+      "name": "Safetywing",
+      "originalAmount": 125.44,
+      "originalCurrency": "USD",
+      "period": "4weekly",
+      "startDate": "2026-03-06"
+    },
+    "fxmqger1batanf": {
+      "amount": 7.43,
+      "category": "Insurance & subscriptions",
+      "createdAt": 1781600185802,
+      "fixedType": "hard",
+      "id": "fxmqger1batanf",
+      "lockedRate": 0.859,
+      "name": "Spotify",
+      "originalAmount": 8.65,
+      "originalCurrency": "USD",
+      "period": "monthly",
+      "startDate": "2026-05-21"
+    },
+    "fxmqgf2hpgktrt": {
+      "amount": 6.99,
+      "category": "Insurance & subscriptions",
+      "createdAt": 1781600720164,
+      "fixedType": "hard",
+      "id": "fxmqgf2hpgktrt",
+      "lockedRate": 1,
+      "name": "Netflix",
+      "originalAmount": 6.99,
+      "originalCurrency": "EUR",
+      "period": "monthly",
+      "startDate": "2026-06-01"
+    },
+    "fxmr1ysm8avlb8": {
+      "amount": 14.6,
+      "category": "Work & business",
+      "createdAt": 1782903641510,
+      "fixedType": "hard",
+      "id": "fxmr1ysm8avlb8",
+      "lockedRate": 0.859,
+      "name": "Systeme",
+      "originalAmount": 17,
+      "originalCurrency": "USD",
+      "period": "monthly",
+      "startDate": "2026-07-01"
+    },
+    "fxmr2007sk959n": {
+      "amount": 6.8,
+      "category": "Insurance & subscriptions",
+      "createdAt": 1782905675637,
+      "fixedType": "hard",
+      "id": "fxmr2007sk959n",
+      "lockedRate": 1,
+      "name": "Google Workspace VB.nl",
+      "originalAmount": 6.8,
+      "originalCurrency": "EUR",
+      "period": "monthly",
+      "startDate": "2026-07-01"
+    },
+    "fxmr4eplp4h1hx": {
+      "amount": 0,
+      "category": "Family support",
+      "confirmedMonths": {
+        "2026-06": 453.88,
+        "2026-07": 459.55,
+        "2026-08": 453.88
+      },
+      "createdAt": 1783051307032,
+      "fixedType": "soft",
+      "id": "fxmr4eplp4h1hx",
+      "name": "Enfermeras Emilio",
+      "period": "monthly",
+      "startDate": "2026-06-30"
+    },
+    "fxmseosvh2knmq": {
+      "amount": 70,
+      "category": "Insurance & subscriptions",
+      "createdAt": 1785849699926,
+      "fixedType": "hard",
+      "id": "fxmseosvh2knmq",
+      "lockedRate": 1,
+      "name": "Revolut Ultra",
+      "originalAmount": 70,
+      "originalCurrency": "EUR",
+      "period": "monthly",
+      "startDate": "2026-06-26"
+    }
   }
 }
