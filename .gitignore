@@ -3,3 +3,5 @@ appandaluma-main/
 appandaluma-main.zip
 desktop.ini
 *.patch
+reports/node_modules/
+reports/output/

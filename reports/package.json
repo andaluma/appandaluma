@@ -1,0 +1,11 @@
+{
+  "name": "andaluma-reports",
+  "private": true,
+  "description": "Standalone report generators for the Andaluma Planner money data. Isolated from the main app on purpose — it has no build step and this shouldn't add one.",
+  "scripts": {
+    "spending": "node spending-by-category.js"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  }
+}
