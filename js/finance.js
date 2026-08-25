@@ -163,12 +163,46 @@ function finMonthsRemainingInYear(){
   if(now.getFullYear() < FIN_YEAR) return 12;
   return 12 - now.getMonth(); // inclusive of current month (getMonth is 0-indexed)
 }
+// How much of the €13,500 "extra" pool has already been banked in months
+// that are now fully over — confirmed income only, whatever each of those
+// months cleared above the €3,000 survival line (never negative per month).
+// A month with no logged income contributes 0, not a penalty — we just
+// don't know, so it's treated as neutral, not as a miss.
+function finBankedExtraFromCompletedMonths(){
+  var curKey = finCurrentMonthKey();
+  var byMonth = {};
+  Object.values(FS.income).forEach(function(i){
+    if(i.type !== 'actual') return;
+    if(!i.month || i.month.substr(0,4) !== String(FIN_YEAR)) return;
+    if(i.month >= curKey) return; // only fully-completed months count
+    byMonth[i.month] = (byMonth[i.month]||0) + (i.amountEUR||0);
+  });
+  var total = 0;
+  Object.keys(byMonth).forEach(function(mk){
+    total += Math.max(byMonth[mk] - FIN_SURVIVAL_TARGET, 0);
+  });
+  return total;
+}
+// Extra needed per month, from here to the end of the year, adjusted for
+// what's already banked. A shortfall in an earlier month raises this for
+// every month that follows; a strong month eases it. This is what makes a
+// missed August target actually show up in September's number instead of
+// silently disappearing.
 function finExtraPerMonth(){
   var months = finMonthsRemainingInYear();
   if(months <= 0) return 0;
-  return FIN_YEAR_EXTRA_NEEDED / months;
+  var remaining = Math.max(FIN_YEAR_EXTRA_NEEDED - finBankedExtraFromCompletedMonths(), 0);
+  return remaining / months;
 }
 function finFullTarget(){ return FIN_SURVIVAL_TARGET + finExtraPerMonth(); }
+function finRenderBankedNote(){
+  var curKey = finCurrentMonthKey();
+  if(curKey <= FIN_YEAR+'-01') return ''; // no completed months yet to report on
+  var banked = finBankedExtraFromCompletedMonths();
+  var remaining = Math.max(FIN_YEAR_EXTRA_NEEDED - banked, 0);
+  return '<div class="fin-target-banked-note">€'+fmtEUR(banked)+' of the €'+fmtEUR(FIN_YEAR_EXTRA_NEEDED)+
+    ' already banked from earlier months — €'+fmtEUR(remaining)+' left, which is why the monthly figure above moves.</div>';
+}
 
 // ── MONTH DATA AGGREGATION ────────────────────────────────
 function finIncomeForMonth(mk){ return Object.values(FS.income).filter(function(i){ return i.month === mk; }); }
@@ -283,6 +317,7 @@ function renderFinance(){
     '<div class="fin-target-num">€'+fmtEUR(fullTarget)+'</div>'+
     '<div class="fin-target-sub">€'+fmtEUR(FIN_SURVIVAL_TARGET)+' survival + €'+fmtEUR(finExtraPerMonth())+' extra '+
     '(€'+fmtEUR(FIN_YEAR_EXTRA_NEEDED)+' ÷ '+monthsRem+' month'+(monthsRem===1?'':'s')+' left in '+FIN_YEAR+')</div>'+
+    finRenderBankedNote()+
     '</div>';
 
   // ── Two target progress cards (Survival / Full target)

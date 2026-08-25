@@ -432,6 +432,7 @@ html{height:100%;height:-webkit-fill-available;overflow-x:hidden;width:100%}body
 .fin-target-eyebrow{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px}
 .fin-target-num{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--dark);line-height:1.1}
 .fin-target-sub{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+.fin-target-banked-note{font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.5;font-style:italic}
 
 .fin-target-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .fin-target-card{background:var(--dark);border-radius:14px;padding:14px}
