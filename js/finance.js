@@ -19,6 +19,8 @@ var FIN_DEPOSIT_ACCOUNTS = [
   { id: 'daniella-wise', l: 'Daniella · Wise' },
   { id: 'andre-revolut', l: 'André · Revolut' },
   { id: 'daniella-revolut', l: 'Daniella · Revolut' },
+  { id: 'andre-global66', l: 'André · Global66' },
+  { id: 'daniella-global66', l: 'Daniella · Global66' },
   { id: 'andaluma', l: 'Andaluma' }
 ];
 
