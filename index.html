@@ -145,6 +145,11 @@ if('serviceWorker' in navigator){
   <!-- GROCERIES VIEW -->
   <div id="groceries-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding-bottom:80px;background:var(--cream)"></div>
 
+  <!-- FINANCE VIEW -->
+  <div id="finance-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding-bottom:80px;background:var(--cream)">
+    <div id="finance-root"></div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <div id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:var(--dark);display:flex;border-top:1px solid rgba(255,255,255,0.08);z-index:60;padding-bottom:env(safe-area-inset-bottom,0)">
     <button class="nav-btn on" id="nav-tasks" onclick="switchTab('tasks')">
@@ -159,6 +164,9 @@ if('serviceWorker' in navigator){
     <button class="nav-btn" id="nav-groceries" onclick="switchTab('groceries')" style="position:relative">
       <div class="nav-icon">🛒</div><div class="nav-lbl">Shop</div>
       <span id="groc-badge" style="display:none;position:absolute;top:8px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--coral);border:1.5px solid var(--dark)"></span>
+    </button>
+    <button class="nav-btn" id="nav-finance" onclick="switchTab('finance')">
+      <div class="nav-icon">📈</div><div class="nav-lbl">Finance</div>
     </button>
   </div>
 
@@ -179,7 +187,7 @@ if('serviceWorker' in navigator){
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 var _v = Date.now();
-['js/core.js','js/tasks.js','js/money.js','js/insights.js','js/habits.js','js/groceries.js'].forEach(function(src){
+['js/core.js','js/tasks.js','js/money.js','js/insights.js','js/habits.js','js/groceries.js','js/finance.js'].forEach(function(src){
   document.write('<script src="'+src+'?v='+_v+'"><\/script>');
 });
 </script>

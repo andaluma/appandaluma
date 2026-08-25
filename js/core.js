@@ -48,7 +48,7 @@ var MS = {
 function init(){
   if(ls('andaluma-auth') !== 'ok'){
     document.getElementById('pin-screen').style.display='flex';
-    document.getElementById('setup').style.display='none';
+    var setup=document.getElementById('setup'); if(setup) setup.style.display='none';
     document.getElementById('app').style.display='none';
     return;
   }
@@ -66,21 +66,32 @@ function afterPin(){
     appId:'1:87759928843:web:052df60638080d9ad9110e'
   };
   lss('andaluma-fb', JSON.stringify(fbConfig));
-  loadLocal();
+  // Standalone pages (currently: finance.html) set this before loading
+  // core.js to skip the full app's tabs/listeners — they only need Firebase
+  // init, PIN, and their own data.
+  var standalone = (typeof STANDALONE_PAGE !== 'undefined' && STANDALONE_PAGE);
+  if(!standalone) loadLocal();
   boot();
   try{
     if(!firebase.apps.length) firebase.initializeApp(fbConfig);
     db = firebase.database();
-    db.ref('tasks').on('value',function(snap){
-      S.tasks=snap.val()||{};
-      lss('andaluma-tasks',JSON.stringify(S.tasks));
-      rolloverPastTasks();
-      renderAll();
-    });
-    loadMoneyData();
-    loadHabitsData();
-    loadGroceriesData();
-  }catch(ex){ db=null; rolloverPastTasks(); renderAll(); loadGroceriesData(); }
+    if(!standalone){
+      db.ref('tasks').on('value',function(snap){
+        S.tasks=snap.val()||{};
+        lss('andaluma-tasks',JSON.stringify(S.tasks));
+        rolloverPastTasks();
+        renderAll();
+      });
+      loadMoneyData();
+      loadHabitsData();
+      loadGroceriesData();
+    }
+    if(typeof loadFinanceData==='function') loadFinanceData();
+  }catch(ex){
+    db=null;
+    if(!standalone){ rolloverPastTasks(); renderAll(); loadGroceriesData(); }
+    if(typeof loadFinanceData==='function') loadFinanceData();
+  }
 }
 
 // ── PIN FUNCTIONS ────────────────────────────────────────
@@ -183,11 +194,18 @@ function startFB(cfg){
 }
 
 function boot(){
-  document.getElementById('setup').style.display='none';
+  var setup=document.getElementById('setup'); if(setup) setup.style.display='none';
   var app=document.getElementById('app');
   app.style.display='flex';app.style.height='100%';app.style.flexDirection='column';
-  renderAll();
-  setInterval(renderHdr,30000);
+  var standalone = (typeof STANDALONE_PAGE !== 'undefined' && STANDALONE_PAGE);
+  if(standalone){
+    // Standalone pages render their own (static) header — core.js's renderHdr()
+    // lives in tasks.js, which standalone pages don't load.
+    if(typeof renderFinance==='function') renderFinance();
+  } else {
+    renderAll();
+    setInterval(renderHdr,30000);
+  }
 }
 
 function persist(){if(db&&!offline)db.ref('tasks').set(S.tasks);else lss('andaluma-tasks',JSON.stringify(S.tasks));}
@@ -243,7 +261,7 @@ function _switchTabUI(tab){
   // Always hide the insights overlay when switching nav tabs
   var iv=document.getElementById('insights-view');
   if(iv) iv.style.display='none';
-  ['tasks','money','converter','groceries'].forEach(function(t){
+  ['tasks','money','converter','groceries','finance'].forEach(function(t){
     var v = document.getElementById(t+'-view');
     var b = document.getElementById('nav-'+t);
     if(v) v.style.display = t===tab ? 'flex' : 'none';
@@ -256,6 +274,7 @@ function _switchTabUI(tab){
   if(tab==='money') renderMoney();
   if(tab==='converter'){ if(!convRatesFetched) fetchConvRates(); else renderConverter(); }
   if(tab==='groceries') renderGroceries();
+  if(tab==='finance' && typeof renderFinance==='function') renderFinance();
 }
 
 // ── HABITS-IN-TASKS TOGGLE ────────────────────────────────
