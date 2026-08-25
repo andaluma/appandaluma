@@ -357,6 +357,10 @@ html{height:100%;height:-webkit-fill-available;overflow-x:hidden;width:100%}body
 .finput:focus,.fdate:focus{border-color:var(--coral)}
 .vgrid{display:flex;gap:7px;flex-wrap:wrap}
 .vchip{padding:9px 16px;border-radius:20px;border:2px solid var(--sand);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;background:white;color:#1A1208;transition:all 0.1s;min-width:80px;text-align:center}
+/* Generic selected state for vchips that aren't venture-colored (e.g. the
+   Finance module's Person/Type/Payment-type pickers) — venture chips below
+   override this via the higher-specificity [data-v] rules. */
+.vchip.on{background:var(--dark);color:white;border-color:var(--dark)}
 .vchip.on[data-v=andaluma]{background:#E04F28 !important;color:#FFFFFF !important;border-color:#E04F28}
 .vchip.on[data-v=vae]{background:#0A7A88 !important;color:#FFFFFF !important;border-color:#0A7A88}
 .vchip.on[data-v=baraca]{background:#C98A10 !important;color:#FFFFFF !important;border-color:#C98A10}
