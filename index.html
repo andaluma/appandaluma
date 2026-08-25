@@ -118,12 +118,14 @@ if('serviceWorker' in navigator){
 <!-- APP -->
 <div id="app" style="display:none;flex-direction:column;flex:1;min-height:0;height:100vh">
   <div id="hdr"></div>
-  <div id="habit-banner" onclick="switchTab('habits')" style="display:none;flex-shrink:0"></div>
+  <div id="habit-banner" onclick="openHabitsFromBanner()" style="display:none;flex-shrink:0"></div>
 
   <!-- TASKS VIEW -->
   <div id="tasks-view" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden">
     <div id="owner-wrap"></div>
     <div id="week-wrap"></div>
+    <!-- HABITS (folded in from the old Habits tab — toggled via the header button in owner-wrap) -->
+    <div id="habits-view" style="display:none;flex-direction:column;flex-shrink:0;max-height:46vh;overflow-y:auto;background:var(--cream)"></div>
     <div id="day-view" style="flex:1;overflow-y:auto;padding-bottom:80px"></div>
   </div>
 
@@ -140,9 +142,6 @@ if('serviceWorker' in navigator){
   <!-- CONVERTER VIEW -->
   <div id="converter-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding-bottom:80px;background:var(--cream)"></div>
 
-  <!-- HABITS VIEW -->
-  <div id="habits-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding-bottom:80px;background:var(--cream)"></div>
-
   <!-- GROCERIES VIEW -->
   <div id="groceries-view" style="display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;padding-bottom:80px;background:var(--cream)"></div>
 
@@ -156,10 +155,6 @@ if('serviceWorker' in navigator){
     </button>
     <button class="nav-btn" id="nav-converter" onclick="switchTab('converter')">
       <div class="nav-icon">💱</div><div class="nav-lbl">Convert</div>
-    </button>
-    <button class="nav-btn" id="nav-habits" onclick="switchTab('habits')" style="position:relative">
-      <div class="nav-icon">🎯</div><div class="nav-lbl">Habits</div>
-      <span id="habit-badge" style="display:none;position:absolute;top:8px;right:12px;width:7px;height:7px;border-radius:50%;background:var(--coral);border:1.5px solid var(--dark)"></span>
     </button>
     <button class="nav-btn" id="nav-groceries" onclick="switchTab('groceries')" style="position:relative">
       <div class="nav-icon">🛒</div><div class="nav-lbl">Shop</div>

@@ -243,7 +243,7 @@ function _switchTabUI(tab){
   // Always hide the insights overlay when switching nav tabs
   var iv=document.getElementById('insights-view');
   if(iv) iv.style.display='none';
-  ['tasks','money','converter','habits','groceries'].forEach(function(t){
+  ['tasks','money','converter','groceries'].forEach(function(t){
     var v = document.getElementById(t+'-view');
     var b = document.getElementById('nav-'+t);
     if(v) v.style.display = t===tab ? 'flex' : 'none';
@@ -255,8 +255,32 @@ function _switchTabUI(tab){
   else { fab.style.display='none'; mic.style.display='none'; }
   if(tab==='money') renderMoney();
   if(tab==='converter'){ if(!convRatesFetched) fetchConvRates(); else renderConverter(); }
-  if(tab==='habits') renderHabits();
   if(tab==='groceries') renderGroceries();
+}
+
+// ── HABITS-IN-TASKS TOGGLE ────────────────────────────────
+// Habits used to be their own tab (nav-habits, #habits-view as a sibling
+// view). It's now a collapsible section inside the Tasks tab, toggled from
+// the header button in owner-wrap. All rendering logic still lives in
+// js/habits.js and still targets #habits-view — only its location in the
+// DOM and how its visibility is triggered have changed.
+var habitsOpenInTasks = false;
+
+function toggleHabitsInTasks(){
+  habitsOpenInTasks = !habitsOpenInTasks;
+  var el = document.getElementById('habits-view');
+  var btn = document.getElementById('habits-toggle-btn');
+  if(el) el.style.display = habitsOpenInTasks ? 'flex' : 'none';
+  if(btn) btn.className = 'habits-toggle-btn'+(habitsOpenInTasks?' on':'');
+  if(habitsOpenInTasks && typeof renderHabits==='function') renderHabits();
+}
+
+// Entry point from the top-of-app habit reminder banner.
+function openHabitsFromBanner(){
+  if(currentTab!=='tasks') switchTab('tasks');
+  if(!habitsOpenInTasks) toggleHabitsInTasks();
+  var el = document.getElementById('habits-view');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function switchTab(tab) {

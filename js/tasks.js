@@ -169,7 +169,20 @@ function renderHdr(){
 function renderOwner(){
   var os=[{id:'andre',l:'André'},{id:'daniella',l:'Daniella'},{id:'both',l:'Both'}];
   var btns=os.map(function(o){return'<button class="obtn'+(S.owner===o.id?' on':'')+'" data-o="'+o.id+'" onclick="setOwner(\''+o.id+'\')">'+o.l+'</button>';}).join('');
+  btns+=renderHabitsToggleBtn();
   document.getElementById('owner-wrap').innerHTML='<div class="owner-bar">'+btns+'</div>';
+}
+
+// Habits toggle button, folded into the Tasks header. Habit progress comes
+// from js/habits.js (getTodayProgress) — habits.js itself is untouched.
+function renderHabitsToggleBtn(){
+  var rem=0;
+  if(typeof getTodayProgress==='function'){
+    var p=getTodayProgress();
+    rem=p.total-p.done;
+  }
+  var badge=rem>0?'<span class="habits-toggle-badge"></span>':'';
+  return '<button id="habits-toggle-btn" class="habits-toggle-btn'+(typeof habitsOpenInTasks!=='undefined'&&habitsOpenInTasks?' on':'')+'" onclick="toggleHabitsInTasks()">🎯 Habits'+badge+'</button>';
 }
 
 function renderWeek(){

@@ -101,6 +101,20 @@ html{height:100%;height:-webkit-fill-available;overflow-x:hidden;width:100%}body
 .obtn[data-o=daniella].on{background:var(--berry);color:white}
 .obtn[data-o=both].on{background:var(--teal);color:white}
 
+/* ── HABITS TOGGLE (folded into Tasks header) ── */
+.habits-toggle-btn{
+  flex:0 0 auto;position:relative;padding:8px 12px;border:none;border-radius:8px;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.07);
+  transition:all 0.12s;white-space:nowrap;
+}
+.habits-toggle-btn.on{background:var(--coral);color:white}
+.habits-toggle-badge{
+  position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;
+  background:var(--coral);border:1.5px solid var(--dark);
+}
+.habits-toggle-btn.on .habits-toggle-badge{border-color:var(--coral);background:white}
+
 /* ── WEEK STRIP ── */
 #week-wrap{
   display:flex;align-items:center;gap:2px;padding:10px 10px;
