@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Andaluma Kids">
+<meta name="theme-color" content="#E04F28">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Andaluma Kids</title>
+<link rel="manifest" href="/kids/manifest.json">
+<link rel="apple-touch-icon" href="/kids/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/kids/css/kids.css">
+</head>
+<body>
+
+<div id="kids-app">
+
+  <!-- PICKER SCREEN -->
+  <div id="picker-screen">
+    <div class="app-header">
+      <div class="wordmark">
+        <span class="tiles"><span></span><span></span><span></span><span></span></span>
+        <span class="name">andaluma kids</span>
+      </div>
+      <button class="parent-gate-btn" type="button" onclick="showPinScreen()" aria-label="Parent area, PIN required">
+        <span class="ring">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+            <rect x="5" y="11" width="14" height="9" rx="2.5" stroke="#8C7F68" stroke-width="1.8"/>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#8C7F68" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </span>
+        Parents
+      </button>
+    </div>
+
+    <p class="prompt">Who&rsquo;s learning today?</p>
+    <p class="prompt-sub">Tap your name to start</p>
+
+    <div class="cards" id="profile-cards"><!-- filled by renderPicker() --></div>
+  </div>
+
+  <!-- HOME SHELL (placeholder until Phase 1 builds the real skill map) -->
+  <div id="home-screen" hidden>
+    <div id="home-companion"><!-- filled by showHome() --></div>
+    <h2 id="home-greeting"></h2>
+    <p>Your learning map is on its way here next — for now this just says hello and remembers you came by today.</p>
+    <button class="back-link" type="button" onclick="showPicker()">&larr; Back to profiles</button>
+  </div>
+
+  <!-- PARENT DASHBOARD (placeholder shell until Phase 4) -->
+  <div id="parent-dashboard">
+    <div class="app-header">
+      <div class="wordmark">
+        <span class="tiles"><span></span><span></span><span></span><span></span></span>
+        <span class="name">andaluma kids &middot; parents</span>
+      </div>
+      <button class="back-link" type="button" onclick="showPicker()">Done</button>
+    </div>
+    <h2 style="margin-top:24px;">Parent dashboard</h2>
+    <p class="sub">Read-only. Levels, streaks, and accuracy trends land here in Phase 4.</p>
+    <div class="dash-cards" id="dash-cards"><!-- filled by renderDashboard() --></div>
+    <p class="dash-note">This is a placeholder shell for Phase 0 — it confirms the parent gate works and reads real streak data, nothing more yet.</p>
+  </div>
+
+</div>
+
+<!-- PIN SCREEN (parent gate) -->
+<div id="pin-screen" hidden>
+  <div class="pin-logo">Andaluma Kids</div>
+  <div class="pin-sub">Parents only</div>
+  <div class="pin-dots">
+    <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
+  </div>
+  <div class="pin-grid">
+    <button class="pkey" data-n="1">1</button>
+    <button class="pkey" data-n="2">2</button>
+    <button class="pkey" data-n="3">3</button>
+    <button class="pkey" data-n="4">4</button>
+    <button class="pkey" data-n="5">5</button>
+    <button class="pkey" data-n="6">6</button>
+    <button class="pkey" data-n="7">7</button>
+    <button class="pkey" data-n="8">8</button>
+    <button class="pkey" data-n="9">9</button>
+    <button class="pkey" data-n="" style="opacity:0;pointer-events:none"></button>
+    <button class="pkey" data-n="0">0</button>
+    <button class="pkey" data-n="del">&#9003;</button>
+  </div>
+  <div id="pin-error"></div>
+  <button class="pin-cancel" type="button" onclick="hidePinScreen()">Cancel</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="/kids/js/kids.js"></script>
+</body>
+</html>
