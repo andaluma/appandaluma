@@ -41,6 +41,7 @@ var MS = {
   expenses: {},
   fixedExpenses: {},
   activeTripId: null,
+  defaultTripId: null, // explicitly pinned trip (settings/money) — wins over the date-based auto-pick
   moneyDate: td(),
 };
 

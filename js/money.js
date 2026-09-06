@@ -14,8 +14,15 @@ var moneyDataLoaded = false;
 
 function loadMoneyData(){
   if(db && !offline){
-    var _t=false, _e=false, _f=false;
-    function _checkLoaded(){ if(_t&&_e&&_f) moneyDataLoaded=true; }
+    var _t=false, _e=false, _f=false, _s=false;
+    function _checkLoaded(){ if(_t&&_e&&_f&&_s) moneyDataLoaded=true; }
+    db.ref('settings/money').on('value', function(snap){
+      var v = snap.val()||{};
+      MS.defaultTripId = v.defaultTripId||null;
+      if(!_s){ _s=true; _checkLoaded(); }
+      if(!MS.activeTripId) autoSelectTrip();
+      renderMoney();
+    });
     db.ref('trips').on('value', function(snap){
       MS.trips = snap.val()||{};
       if(!_t){ _t=true; _checkLoaded(); }
@@ -35,6 +42,20 @@ function loadMoneyData(){
   } else {
     moneyDataLoaded = true; // offline mode — no Firebase writes anyway
   }
+}
+
+// Persists the explicitly-pinned default trip. Lives under settings/money
+// (not trips/<id>) so picking a default never touches the trip record
+// itself — same reasoning as fixedExpenses being its own node.
+function persistDefaultTrip(){
+  if(db && !offline) db.ref('settings/money').update({defaultTripId: MS.defaultTripId});
+}
+
+function setDefaultTrip(id){
+  MS.defaultTripId = id;
+  MS.activeTripId = id;
+  persistDefaultTrip();
+  renderMoney();
 }
 
 // Saves trips + fixedExpenses. Expenses are written individually via persistExpense/removeExpense.
@@ -92,7 +113,10 @@ function renderTripBar(){
   var html = '<div class="trip-bar">';
   visible.forEach(function(t){
     var on = t.id === MS.activeTripId;
-    html += '<button class="trip-chip'+(on?' on':'')+'" onclick="setActiveTrip(\''+e(t.id)+'\')">'+e(t.name)+'</button>';
+    var isDefault = t.id === MS.defaultTripId;
+    html += '<button class="trip-chip'+(on?' on':'')+'" style="position:relative" onclick="setActiveTrip(\''+e(t.id)+'\')">'+e(t.name)+
+      '<span class="trip-pin'+(isDefault?' on':'')+'" title="'+(isDefault?'Default trip':'Set as default trip')+'" onclick="event.stopPropagation();setDefaultTrip(\''+e(t.id)+'\')">📌</span>'+
+      '</button>';
   });
   html += '<button class="trip-chip add" onclick="openAddTrip()">+ Trip</button>';
   if(hiddenCount > 0 || showPastTrips){
@@ -107,6 +131,13 @@ function renderTripBar(){
 function isBizTrip(t){ return t.name && /business/i.test(t.name); }
 
 function autoSelectTrip(){
+  // An explicitly pinned default always wins over the date-based guess below
+  // (which is inherently ambiguous once two trips overlap, e.g. one still
+  // "ongoing" with no end date while a new one has already started).
+  if(MS.defaultTripId && MS.trips[MS.defaultTripId]){
+    MS.activeTripId = MS.defaultTripId;
+    return;
+  }
   var today = td();
   var trips = Object.values(MS.trips);
   var travel = trips.filter(function(t){ return !isBizTrip(t); });

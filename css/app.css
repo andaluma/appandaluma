@@ -221,6 +221,8 @@ html{height:100%;height:-webkit-fill-available;overflow-x:hidden;width:100%}body
 .trip-chip{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.5);border:none;border-radius:16px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .trip-chip.on{background:var(--amber);color:white}
 .trip-chip.add{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.3);border:1px dashed rgba(255,255,255,0.15)}
+.trip-pin{display:inline-block;margin-left:5px;font-size:10px;opacity:0.25;filter:grayscale(1);vertical-align:middle}
+.trip-pin.on{opacity:1;filter:none}
 .trip-chip.past-toggle{background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.3);border:1px solid rgba(255,255,255,0.1);font-size:10px}
 
 /* ── CURRENCY CONVERTER ── */
