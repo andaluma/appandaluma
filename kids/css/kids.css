@@ -107,7 +107,7 @@ button{font-family:inherit;cursor:pointer}
 .kid-meta{font-size:12.5px;color:var(--muted);margin:0 0 14px;}
 .go-pill{
   margin-top:auto;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;
-  border-radius:999px;padding:9px 22px;color:#fff;
+  border-radius:999px;padding:13px 24px;min-height:44px;color:#fff;
 }
 .profile-card.luka .go-pill{background:linear-gradient(100deg, var(--comet-violet), var(--comet-ember));}
 .profile-card.maia .go-pill{background:linear-gradient(100deg, var(--stella-magenta), var(--stella-gold));}
@@ -117,7 +117,7 @@ button{font-family:inherit;cursor:pointer}
 #home-screen .companion{width:140px;height:140px;}
 #home-screen h2{font-family:'Baloo 2',sans-serif;font-size:clamp(24px,3.4vw,32px);}
 #home-screen p{color:var(--muted);max-width:40ch;font-size:14.5px;line-height:1.6;}
-.back-link{background:none;border:none;color:var(--coral);font-weight:700;font-size:14px;margin-top:8px;}
+.back-link{background:none;border:none;color:var(--coral);font-weight:700;font-size:14px;margin-top:8px;padding:12px 10px;min-height:44px;}
 
 /* ── PIN SCREEN ── */
 #pin-screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--ink);gap:0;z-index:50;}
@@ -154,7 +154,7 @@ button{font-family:inherit;cursor:pointer}
 .home-greeting{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:clamp(20px,2.8vw,26px);}
 .subject-tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
 .subject-tab{
-  border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;
+  border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:12px 18px;min-height:44px;
   font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13.5px;color:var(--muted);
 }
 .subject-tab.on.luka{background:var(--comet-violet);border-color:var(--comet-violet);color:#fff;}
@@ -229,7 +229,19 @@ button{font-family:inherit;cursor:pointer}
 #session-complete-screen{position:fixed;inset:0;background:var(--app-bg);z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px;}
 #complete-title{font-family:'Baloo 2',sans-serif;font-size:clamp(24px,3.4vw,30px);}
 #complete-recap{color:var(--muted);max-width:38ch;font-size:14.5px;line-height:1.6;margin-bottom:10px;}
-#complete-continue{border:none;font-size:15px;padding:12px 30px;background:var(--coral);color:#fff;}
+#complete-continue{border:none;font-size:15px;padding:13px 30px;min-height:44px;background:var(--coral);color:#fff;}
+
+/* ── CELEBRATION MOTION (mastery only — a brief pop, then settle) ── */
+@keyframes kids-pop{
+  0%{transform:scale(0.6);opacity:0;}
+  60%{transform:scale(1.12);opacity:1;}
+  100%{transform:scale(1);opacity:1;}
+}
+#complete-companion .companion{animation:kids-pop .5s cubic-bezier(.34,1.56,.64,1);}
+.skill-node.mastered .node-badge{display:inline-block;animation:kids-pop .4s cubic-bezier(.34,1.56,.64,1);}
+@media (prefers-reduced-motion: reduce){
+  #complete-companion .companion, .skill-node.mastered .node-badge{animation:none;}
+}
 
 /* ── EXERCISE PROMPTS (match-select variants) ── */
 .prompt-big-text{
@@ -260,7 +272,7 @@ button{font-family:inherit;cursor:pointer}
 }
 .seq-tile.used{opacity:.25;}
 .replay-btn{
-  border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;
+  border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:12px 18px;min-height:44px;
   font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;
 }
 

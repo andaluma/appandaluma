@@ -46,6 +46,7 @@ var SequenceTap = {
     document.getElementById('exercise-feedback').textContent = correct
       ? 'Got it!'
       : 'Nice try — the order is ' + correctOrder.join(', ') + '.';
+    correct ? Sound.correct() : Sound.miss();
     window.finishExercise(correct);
   }
 };

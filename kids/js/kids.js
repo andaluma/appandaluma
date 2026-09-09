@@ -52,6 +52,50 @@ function findProfile(id){
   return null;
 }
 
+// ── SOUND ─────────────────────────────────────────────────
+// Plain oscillator tones, no audio files — fits the no-build stack.
+// A miss gets one short neutral tone, never a buzzer: same no-red-X
+// rule as the visuals, just in sound.
+var Sound = {
+  ctx: null,
+  ensure: function(){
+    if(!Sound.ctx){
+      try{ Sound.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(ex){ /* no Web Audio support — sound is a nice-to-have, never required */ }
+    }
+    return Sound.ctx;
+  },
+  tone: function(freq, duration, gain, delay){
+    setTimeout(function(){
+      var ctx = Sound.ensure();
+      if(!ctx) return;
+      try{
+        var osc = ctx.createOscillator();
+        var g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        g.gain.value = gain;
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start();
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.stop(ctx.currentTime + duration);
+      }catch(ex){ /* ignore */ }
+    }, delay || 0);
+  },
+  correct: function(){
+    Sound.tone(523.25, 0.12, 0.09, 0);   // C5
+    Sound.tone(659.25, 0.15, 0.09, 90);  // E5 — a small two-note "got it"
+  },
+  miss: function(){
+    Sound.tone(330, 0.16, 0.05, 0); // one soft, neutral tone — not descending, not a buzzer
+  },
+  mastered: function(){
+    Sound.tone(523.25, 0.12, 0.09, 0);   // C
+    Sound.tone(659.25, 0.12, 0.09, 100); // E
+    Sound.tone(784, 0.22, 0.09, 200);    // G — a little three-note fanfare
+  }
+};
+
 // ── COMPANION ART ─────────────────────────────────────────
 function companionSvg(companionId, size){
   size = size || 118;
@@ -381,6 +425,7 @@ function updateStreak(profileId){
 function endSession(mastered){
   var p = findProfile(currentProfileId);
   updateStreak(currentProfileId);
+  if(mastered) Sound.mastered();
   document.getElementById('exercise-screen').hidden = true;
   document.getElementById('complete-companion').innerHTML = companionSvg(p.companionId, 130);
   document.getElementById('complete-title').textContent = mastered

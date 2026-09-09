@@ -75,6 +75,7 @@ var MatchSelect = {
     document.getElementById('exercise-feedback').textContent = correct
       ? 'Got it!'
       : 'Nice try — it&rsquo;s ' + item.answer + '.';
+    correct ? Sound.correct() : Sound.miss();
     window.finishExercise(correct);
   }
 };

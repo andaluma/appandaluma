@@ -77,6 +77,7 @@ var SpellTiles = {
     document.getElementById('exercise-feedback').textContent = correct
       ? 'Got it!'
       : 'Nice try — it&rsquo;s ' + (SpellTiles._item.words ? SpellTiles._item.words.join(' ') : target) + '.';
+    correct ? Sound.correct() : Sound.miss();
     window.finishExercise(correct);
   }
 };
