@@ -236,11 +236,41 @@ function closeTopicPreview(){
 }
 
 // ── SESSION / EXERCISE RUNNER ────────────────────────────────
+function currentProgressRecordFor(topicId){
+  var p = findProfile(currentProfileId);
+  return (kidsProgress[p.id] && kidsProgress[p.id][currentSubjectId] && kidsProgress[p.id][currentSubjectId][topicId]) || Mastery.blank();
+}
+function persistProgress(topicId, progress){
+  var p = findProfile(currentProfileId);
+  kidsProgress[p.id] = kidsProgress[p.id] || {};
+  kidsProgress[p.id][currentSubjectId] = kidsProgress[p.id][currentSubjectId] || {};
+  kidsProgress[p.id][currentSubjectId][topicId] = progress;
+  if(kidsDB){
+    kidsDB.ref('kids_progress/' + p.id + '/' + currentSubjectId + '/' + topicId).set(progress);
+  }
+}
+// Due-for-review topics in this subject, one sampled exercise each —
+// mixed roughly 1-in-4 into the session by SessionBuilder.build.
+function buildReviewPool(subjectTopics, excludeTopicId){
+  var now = Date.now();
+  var pool = [];
+  subjectTopics.forEach(function(t){
+    if(t.id === excludeTopicId) return;
+    var progress = currentProgressRecordFor(t.id);
+    if(progress.status === 'mastered' && Scheduler.isDue(progress, now)){
+      var ex = t.exercises[Math.floor(Math.random() * t.exercises.length)];
+      pool.push({exercise: ex, topicId: t.id, isReview: true});
+    }
+  });
+  return pool;
+}
 function startSession(topicId){
   closeTopicPreview();
   var p = findProfile(currentProfileId);
-  currentTopic = findTopic(CONTENT[p.id][currentSubjectId], topicId);
-  currentQueue = SessionBuilder.build(currentTopic);
+  var subjectTopics = CONTENT[p.id][currentSubjectId];
+  currentTopic = findTopic(subjectTopics, topicId);
+  var reviewPool = buildReviewPool(subjectTopics, topicId);
+  currentQueue = SessionBuilder.build(currentTopic, reviewPool);
   currentQueueIdx = 0;
   currentSessionStats = {correct:0, total:0};
   document.getElementById('exercise-topic-title').textContent = currentTopic.title;
@@ -249,17 +279,20 @@ function startSession(topicId){
   document.getElementById('exercise-screen').hidden = false;
   renderCurrentExercise();
 }
-function currentProgressRecord(){
-  var p = findProfile(currentProfileId);
-  return (kidsProgress[p.id] && kidsProgress[p.id][currentSubjectId] && kidsProgress[p.id][currentSubjectId][currentTopic.id]) || Mastery.blank();
-}
 function renderCurrentExercise(){
-  var label = Mastery.progressLabel(currentProgressRecord(), currentTopic.masteryRule);
-  document.getElementById('exercise-progress').innerHTML = ExerciseUI.renderProgress(label.done, label.total);
-  document.getElementById('exercise-body').innerHTML = ExerciseUI.render(currentQueue[currentQueueIdx]);
+  var item = currentQueue[currentQueueIdx];
+  if(item.isReview){
+    var reviewTopic = findTopic(CONTENT[findProfile(currentProfileId).id][currentSubjectId], item.topicId);
+    document.getElementById('exercise-progress').innerHTML = ExerciseUI.renderReviewBadge(reviewTopic.title);
+  } else {
+    var label = Mastery.progressLabel(currentProgressRecordFor(currentTopic.id), currentTopic.masteryRule);
+    document.getElementById('exercise-progress').innerHTML = ExerciseUI.renderProgress(label.done, label.total);
+  }
+  document.getElementById('exercise-body').innerHTML = ExerciseUI.render(item.exercise);
 }
 function onAnswerTap(n){
-  var exercise = currentQueue[currentQueueIdx];
+  var item = currentQueue[currentQueueIdx];
+  var exercise = item.exercise;
   var correct = (n === exercise.count);
   currentSessionStats.total++;
   if(correct) currentSessionStats.correct++;
@@ -274,20 +307,40 @@ function onAnswerTap(n){
     ? 'Got it!'
     : 'It’s ' + exercise.count + ' — let’s look again next time.';
 
-  var p = findProfile(currentProfileId);
-  var progress = Mastery.evaluate(currentProgressRecord(), correct, currentTopic.masteryRule, Date.now());
-  if(progress.justMastered) Scheduler.stampOnMastery(progress, Date.now());
-  kidsProgress[p.id] = kidsProgress[p.id] || {};
-  kidsProgress[p.id][currentSubjectId] = kidsProgress[p.id][currentSubjectId] || {};
-  kidsProgress[p.id][currentSubjectId][currentTopic.id] = progress;
-  if(kidsDB){
-    kidsDB.ref('kids_progress/' + p.id + '/' + currentSubjectId + '/' + currentTopic.id).set(progress);
+  var justMastered = false;
+  if(item.isReview){
+    var reviewProgress = currentProgressRecordFor(item.topicId);
+    Scheduler.advanceReview(reviewProgress, correct, Date.now());
+    persistProgress(item.topicId, reviewProgress);
+  } else {
+    var progress = Mastery.evaluate(currentProgressRecordFor(currentTopic.id), correct, currentTopic.masteryRule, Date.now());
+    if(progress.justMastered) Scheduler.stampOnMastery(progress, Date.now());
+    persistProgress(currentTopic.id, progress);
+    justMastered = progress.justMastered;
+
+    // Adaptive difficulty: a miss brings this exact exercise back a few
+    // slots later in the same session, instead of only relying on
+    // reaching the end of the pool again.
+    if(!correct && !justMastered && currentQueue.length < SessionBuilder.MAX_EXERCISES){
+      var reinsertAt = Math.min(currentQueueIdx + 3, currentQueue.length);
+      currentQueue.splice(reinsertAt, 0, {exercise: exercise, topicId: currentTopic.id, isReview: false});
+    }
   }
 
   setTimeout(function(){
-    if(progress.justMastered){ endSession(true); return; }
+    if(justMastered){ endSession(true); return; }
     currentQueueIdx++;
-    if(currentQueueIdx >= currentQueue.length){ endSession(false); return; }
+    if(currentQueueIdx >= currentQueue.length){
+      // Struggling: not mastered yet and there's session room left —
+      // give more reps instead of ending on an unfinished topic.
+      if(currentSessionStats.total < SessionBuilder.MAX_EXERCISES){
+        currentQueue = currentQueue.concat(SessionBuilder.extend(currentTopic));
+        renderCurrentExercise();
+        return;
+      }
+      endSession(false);
+      return;
+    }
     renderCurrentExercise();
   }, 1100);
 }

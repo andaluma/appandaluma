@@ -13,6 +13,10 @@ var ExerciseUI = {
     return '<div class="mastery-progress">' + dots + '</div>';
   },
 
+  renderReviewBadge: function(topicTitle){
+    return '<div class="review-badge">&#8635; Quick review &middot; ' + topicTitle + '</div>';
+  },
+
   render: function(exercise){
     var stars = '';
     for(var i = 0; i < exercise.count; i++) stars += this.star;

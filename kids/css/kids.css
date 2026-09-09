@@ -193,6 +193,10 @@ button{font-family:inherit;cursor:pointer}
 .mastery-progress{display:flex;gap:6px;margin:6px 0 10px;}
 .mp-dot{width:11px;height:11px;border-radius:50%;background:var(--line);}
 .mp-dot.filled{background:var(--sunshine);}
+.review-badge{
+  font-size:12px;font-weight:700;color:#7A5300;background:var(--sunshine-soft);
+  border-radius:999px;padding:5px 12px;margin:6px 0 10px;
+}
 #exercise-companion{margin:2px 0;}
 .star-cluster{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:320px;margin:10px 0 6px;min-height:96px;align-items:center;}
 .exercise-prompt{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px;margin:6px 0 18px;}
