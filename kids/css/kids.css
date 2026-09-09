@@ -243,3 +243,7 @@ button{font-family:inherit;cursor:pointer}
   border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;
   font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;
 }
+
+/* ── MATCH-SELECT: star-dot option grid (recognition direction) ── */
+.opt-stars{display:grid;grid-template-columns:repeat(5,1fr);gap:3px;justify-content:center;}
+.opt-star-dot{width:8px;height:8px;border-radius:50%;background:var(--sunshine);}

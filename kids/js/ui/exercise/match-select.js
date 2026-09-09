@@ -42,10 +42,21 @@ var MatchSelect = {
     if(prompt.kind === 'stars') return 'How many?';
     if(prompt.kind === 'equation') return 'What&rsquo;s the answer?';
     if(prompt.kind === 'picture') return 'Which one?';
+    if(prompt.kind === 'numeral' && MatchSelect._item.options[0].kind === 'stars') return 'Which shows this many?';
     return 'Tap the match';
   },
   _optionLabel: function(opt){
-    return opt.kind === 'picture' ? ExerciseUI.icon(opt.value) : opt.value;
+    if(opt.kind === 'picture') return ExerciseUI.icon(opt.value);
+    if(opt.kind === 'stars') return MatchSelect._miniDots(opt.value);
+    return opt.value;
+  },
+  // Small dot grid (not full star shapes) so up to ~10 fit legibly
+  // inside a single option button — a five-frame layout reads faster
+  // at a glance than a scattered cluster at this size.
+  _miniDots: function(n){
+    var dots = '';
+    for(var i = 0; i < n; i++) dots += '<span class="opt-star-dot"></span>';
+    return '<span class="opt-stars">' + dots + '</span>';
   },
 
   tap: function(idx){
