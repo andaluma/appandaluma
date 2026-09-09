@@ -1,8 +1,6 @@
 // ── CONFIG ────────────────────────────────────────────────
-// Same Firebase PROJECT as the Planner/CRM (andaluma-planner), but its own
-// registered Firebase APP — register a new Web app for "Andaluma Kids" in
-// the andaluma-planner Firebase console and paste its appId below.
-// TODO(André): replace KIDS_APP_ID with the real value once registered.
+// Same Firebase PROJECT as the Planner/CRM (andaluma-planner), its own
+// registered Firebase APP ("Andaluma Kids", appId below).
 var fbConfig = {
   apiKey:'AIzaSyAeYXakpwzgmbl0_Spf2phpBlXjYe_9STA',
   authDomain:'andaluma-planner.firebaseapp.com',
@@ -10,7 +8,7 @@ var fbConfig = {
   projectId:'andaluma-planner',
   storageBucket:'andaluma-planner.firebasestorage.app',
   messagingSenderId:'87759928843',
-  appId:'REPLACE_WITH_KIDS_APP_ID'
+  appId:'1:87759928843:web:8a0281d7ff900173d9110e'
 };
 
 // Static profile metadata — two fixed children, no authoring UI needed,
