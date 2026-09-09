@@ -16,11 +16,13 @@ var fbConfig = {
 var PROFILES = [
   {
     id:'luka', name:'Luka', birthYear:2019, companionId:'comet',
-    companionName:'Comet', subjectsLabel:'Math &middot; Reading &middot; Writing'
+    companionName:'Comet', subjectsLabel:'Math &middot; Reading &middot; Writing',
+    subjects:[{id:'math',label:'Math'},{id:'reading',label:'Reading'},{id:'writing',label:'Writing'}]
   },
   {
     id:'maia', name:'Maia', birthYear:2021, companionId:'stella',
-    companionName:'Stella', subjectsLabel:'Counting &middot; Letters'
+    companionName:'Stella', subjectsLabel:'Counting &middot; Letters',
+    subjects:[{id:'math',label:'Counting'},{id:'letters',label:'Letters'}]
   }
 ];
 
@@ -28,7 +30,13 @@ var PROFILES = [
 var kidsDB = null;
 var kidsStreaks = {};  // {profileId: {current, longest, lastActiveDate}}
 var kidsDoneToday = {}; // {profileId: bool}
+var kidsProgress = {}; // {profileId: {subjectId: {topicId: progressRecord}}}
 var currentProfileId = null;
+var currentSubjectId = null;
+var currentTopic = null;
+var currentQueue = [];
+var currentQueueIdx = 0;
+var currentSessionStats = {correct:0, total:0};
 
 // ── UTILS ─────────────────────────────────────────────────
 function kp2(n){ return n<10?'0'+n:''+n; }
@@ -149,11 +157,160 @@ function showPicker(){
   document.getElementById('parent-dashboard').style.display = 'none';
 }
 function showHome(id){
+  currentProfileId = id;
   var p = findProfile(id);
-  document.getElementById('home-companion').innerHTML = companionSvg(p.companionId, 140);
-  document.getElementById('home-greeting').textContent = 'Hi ' + p.name + '!';
   document.getElementById('picker-screen').hidden = true;
   document.getElementById('home-screen').hidden = false;
+  var streak = (kidsStreaks[id] && kidsStreaks[id].current) || 0;
+  document.getElementById('home-streak').innerHTML = '<span class="streak-pill">&#9733; ' + streak + ' day streak</span>';
+  selectSubjectTab(p.subjects[0].id);
+}
+
+function selectSubjectTab(subjectId){
+  currentSubjectId = subjectId;
+  var p = findProfile(currentProfileId);
+  var tabs = p.subjects.map(function(s){
+    var on = s.id === subjectId ? ' on ' + p.id : '';
+    return '<button class="subject-tab' + on + '" type="button" onclick="selectSubjectTab(\'' + s.id + '\')">' + s.label + '</button>';
+  }).join('');
+
+  var body = '<div class="home-hdr">' +
+    '<div class="home-companion-mini">' + companionSvg(p.companionId, 64) + '</div>' +
+    '<h2 class="home-greeting">Hi ' + p.name + '!</h2>' +
+    '</div>' +
+    '<div class="subject-tabs">' + tabs + '</div>';
+
+  var topics = CONTENT[p.id] && CONTENT[p.id][subjectId];
+  if(!topics){
+    body += '<div class="coming-soon">' + p.companionName + ' is still learning this subject &mdash; it\'s coming in a later phase.</div>';
+    document.getElementById('home-body').innerHTML = body;
+    return;
+  }
+
+  if(kidsDB && !(kidsProgress[p.id] && kidsProgress[p.id][subjectId])){
+    kidsDB.ref('kids_progress/' + p.id + '/' + subjectId).on('value', function(snap){
+      kidsProgress[p.id] = kidsProgress[p.id] || {};
+      kidsProgress[p.id][subjectId] = snap.val() || {};
+      if(currentProfileId === p.id && currentSubjectId === subjectId) renderMap();
+    });
+  }
+  body += '<div id="map-container">' + mapHtml(topics, p) + '</div>';
+  document.getElementById('home-body').innerHTML = body;
+}
+
+function mapHtml(topics, p){
+  var progress = (kidsProgress[p.id] && kidsProgress[p.id][currentSubjectId]) || {};
+  return MapUI.render(topics, progress, p.id);
+}
+function renderMap(){
+  var el = document.getElementById('map-container');
+  if(!el) return;
+  var p = findProfile(currentProfileId);
+  var topics = CONTENT[p.id][currentSubjectId];
+  el.innerHTML = mapHtml(topics, p);
+}
+
+// ── TOPIC PREVIEW ────────────────────────────────────────────
+function findTopic(topics, id){
+  for(var i=0;i<topics.length;i++) if(topics[i].id===id) return topics[i];
+  return null;
+}
+function onTopicNodeClick(topicId){
+  var p = findProfile(currentProfileId);
+  var topics = CONTENT[p.id][currentSubjectId];
+  var topic = findTopic(topics, topicId);
+  var progress = (kidsProgress[p.id] && kidsProgress[p.id][currentSubjectId] && kidsProgress[p.id][currentSubjectId][topicId]) || null;
+  var status = Mastery.statusFor(topic, kidsProgress[p.id] && kidsProgress[p.id][currentSubjectId]);
+  var body =
+    '<div class="sheet-handle-companion">' + companionSvg(p.companionId, 90) + '</div>' +
+    '<h3>' + topic.title + '</h3>' +
+    (status === 'mastered'
+      ? '<p>' + p.companionName + ' says you&rsquo;ve got this one! Tap to practice again any time.</p>'
+      : '<p>Count the stars and tap the matching number.</p>') +
+    '<button class="go-pill ' + p.id + '" type="button" onclick="startSession(\'' + topicId + '\')">Start</button>';
+  document.getElementById('topic-preview-content').innerHTML = body;
+  document.getElementById('topic-preview').hidden = false;
+}
+function closeTopicPreview(){
+  document.getElementById('topic-preview').hidden = true;
+}
+
+// ── SESSION / EXERCISE RUNNER ────────────────────────────────
+function startSession(topicId){
+  closeTopicPreview();
+  var p = findProfile(currentProfileId);
+  currentTopic = findTopic(CONTENT[p.id][currentSubjectId], topicId);
+  currentQueue = SessionBuilder.build(currentTopic);
+  currentQueueIdx = 0;
+  currentSessionStats = {correct:0, total:0};
+  document.getElementById('exercise-topic-title').textContent = currentTopic.title;
+  document.getElementById('exercise-companion').innerHTML = companionSvg(p.companionId, 72);
+  document.getElementById('home-screen').hidden = true;
+  document.getElementById('exercise-screen').hidden = false;
+  renderCurrentExercise();
+}
+function currentProgressRecord(){
+  var p = findProfile(currentProfileId);
+  return (kidsProgress[p.id] && kidsProgress[p.id][currentSubjectId] && kidsProgress[p.id][currentSubjectId][currentTopic.id]) || Mastery.blank();
+}
+function renderCurrentExercise(){
+  var label = Mastery.progressLabel(currentProgressRecord(), currentTopic.masteryRule);
+  document.getElementById('exercise-progress').innerHTML = ExerciseUI.renderProgress(label.done, label.total);
+  document.getElementById('exercise-body').innerHTML = ExerciseUI.render(currentQueue[currentQueueIdx]);
+}
+function onAnswerTap(n){
+  var exercise = currentQueue[currentQueueIdx];
+  var correct = (n === exercise.count);
+  currentSessionStats.total++;
+  if(correct) currentSessionStats.correct++;
+
+  document.querySelectorAll('#opt-row .opt-btn').forEach(function(btn){
+    btn.disabled = true;
+    var btnN = parseInt(btn.getAttribute('data-n'));
+    if(btnN === exercise.count) btn.classList.add('correct');
+    else if(btnN === n) btn.classList.add('miss');
+  });
+  document.getElementById('exercise-feedback').textContent = correct
+    ? 'Got it!'
+    : 'It’s ' + exercise.count + ' — let’s look again next time.';
+
+  var p = findProfile(currentProfileId);
+  var progress = Mastery.evaluate(currentProgressRecord(), correct, currentTopic.masteryRule, Date.now());
+  if(progress.justMastered) Scheduler.stampOnMastery(progress, Date.now());
+  kidsProgress[p.id] = kidsProgress[p.id] || {};
+  kidsProgress[p.id][currentSubjectId] = kidsProgress[p.id][currentSubjectId] || {};
+  kidsProgress[p.id][currentSubjectId][currentTopic.id] = progress;
+  if(kidsDB){
+    kidsDB.ref('kids_progress/' + p.id + '/' + currentSubjectId + '/' + currentTopic.id).set(progress);
+  }
+
+  setTimeout(function(){
+    if(progress.justMastered){ endSession(true); return; }
+    currentQueueIdx++;
+    if(currentQueueIdx >= currentQueue.length){ endSession(false); return; }
+    renderCurrentExercise();
+  }, 1100);
+}
+function endSession(mastered){
+  var p = findProfile(currentProfileId);
+  document.getElementById('exercise-screen').hidden = true;
+  document.getElementById('complete-companion').innerHTML = companionSvg(p.companionId, 130);
+  document.getElementById('complete-title').textContent = mastered
+    ? currentTopic.title + ' mastered!'
+    : 'Nice practice!';
+  document.getElementById('complete-recap').textContent = mastered
+    ? p.companionName + ' says the next topic just unlocked. ' + currentSessionStats.correct + ' of ' + currentSessionStats.total + ' correct this round.'
+    : 'You got ' + currentSessionStats.correct + ' of ' + currentSessionStats.total + ' — every try teaches ' + p.companionName + ' something. Come back soon to keep going.';
+  document.getElementById('session-complete-screen').hidden = false;
+}
+function exitExercise(){
+  document.getElementById('exercise-screen').hidden = true;
+  document.getElementById('home-screen').hidden = false;
+}
+function closeSessionComplete(){
+  document.getElementById('session-complete-screen').hidden = true;
+  document.getElementById('home-screen').hidden = false;
+  renderMap();
 }
 function renderDashboard(){
   var html = PROFILES.map(function(p){

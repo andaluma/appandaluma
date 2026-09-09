@@ -43,12 +43,13 @@
     <div class="cards" id="profile-cards"><!-- filled by renderPicker() --></div>
   </div>
 
-  <!-- HOME SHELL (placeholder until Phase 1 builds the real skill map) -->
+  <!-- HOME SHELL: subject tabs + skill map (real for Maia · Math, "coming soon" elsewhere) -->
   <div id="home-screen" hidden>
-    <div id="home-companion"><!-- filled by showHome() --></div>
-    <h2 id="home-greeting"></h2>
-    <p>Your learning map is on its way here next — for now this just says hello and remembers you came by today.</p>
-    <button class="back-link" type="button" onclick="showPicker()">&larr; Back to profiles</button>
+    <div class="app-header">
+      <button class="back-link" type="button" onclick="showPicker()">&larr; Profiles</button>
+      <div id="home-streak"></div>
+    </div>
+    <div id="home-body"><!-- filled by showHome() --></div>
   </div>
 
   <!-- PARENT DASHBOARD (placeholder shell until Phase 4) -->
@@ -66,6 +67,30 @@
     <p class="dash-note">This is a placeholder shell for Phase 0 — it confirms the parent gate works and reads real streak data, nothing more yet.</p>
   </div>
 
+</div>
+
+<!-- TOPIC PREVIEW SHEET -->
+<div id="topic-preview" hidden onclick="if(event.target===this) closeTopicPreview()">
+  <div class="sheet-content" id="topic-preview-content"><!-- filled by openTopicPreview() --></div>
+</div>
+
+<!-- EXERCISE RUNNER -->
+<div id="exercise-screen" hidden>
+  <div class="exercise-hdr">
+    <button class="back-link" type="button" onclick="exitExercise()">&times; Stop</button>
+    <span id="exercise-topic-title"></span>
+  </div>
+  <div id="exercise-progress"><!-- filled by ExerciseUI.renderProgress() --></div>
+  <div id="exercise-companion"><!-- reacting companion --></div>
+  <div id="exercise-body"><!-- filled by ExerciseUI.render() --></div>
+</div>
+
+<!-- SESSION COMPLETE -->
+<div id="session-complete-screen" hidden>
+  <div id="complete-companion"></div>
+  <h2 id="complete-title"></h2>
+  <p id="complete-recap"></p>
+  <button class="go-pill" id="complete-continue" type="button" onclick="closeSessionComplete()">Back to map</button>
 </div>
 
 <!-- PIN SCREEN (parent gate) -->
@@ -95,6 +120,12 @@
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="/kids/js/content/math-maia.js"></script>
+<script src="/kids/js/engine/mastery.js"></script>
+<script src="/kids/js/engine/scheduler.js"></script>
+<script src="/kids/js/engine/session.js"></script>
+<script src="/kids/js/ui/map.js"></script>
+<script src="/kids/js/ui/exercise.js"></script>
 <script src="/kids/js/kids.js"></script>
 </body>
 </html>
