@@ -1,8 +1,9 @@
 // ── EXERCISE TYPE: spell-tiles ───────────────────────────────
 // Hear and/or see a prompt, tap letter tiles in order to spell it.
-// Covers Luka's word-writing; phrase-writing chains this across word
-// slots (later phase). Audio uses the browser's built-in
-// SpeechSynthesisUtterance — see the plan's Decisions on why.
+// Covers Luka's word-writing. item.answer is a single word; item.words
+// is an array for phrase-writing — slots render grouped per word, but
+// the completion check is still just "did the flat tap sequence match
+// the joined target," so no new exercise type was needed for phrases.
 var SpellTiles = {
   _item: null,
   _picked: '',
@@ -16,13 +17,24 @@ var SpellTiles = {
     return SpellTiles._html();
   },
 
+  _target: function(){
+    var item = SpellTiles._item;
+    return item.words ? item.words.join('') : item.answer;
+  },
+
   _html: function(){
     var item = SpellTiles._item;
-    var answer = item.answer;
-    var slots = '';
-    for(var i = 0; i < answer.length; i++){
-      slots += '<span class="seq-slot">' + (SpellTiles._picked[i] || '') + '</span>';
-    }
+    var words = item.words || [item.answer];
+    var picked = SpellTiles._picked;
+    var pos = 0;
+    var groups = words.map(function(word){
+      var slots = '';
+      for(var i = 0; i < word.length; i++){
+        slots += '<span class="seq-slot">' + (picked[pos] || '') + '</span>';
+        pos++;
+      }
+      return '<span class="seq-word-group">' + slots + '</span>';
+    }).join('');
     var bank = item.letterBank.map(function(letter, idx){
       var used = SpellTiles._used[idx];
       return '<button class="seq-tile' + (used ? ' used' : '') + '" type="button" ' +
@@ -35,7 +47,7 @@ var SpellTiles = {
     return (
       imageHtml + replayBtn +
       '<p class="exercise-prompt">Spell it</p>' +
-      '<div class="seq-slots">' + slots + '</div>' +
+      '<div class="seq-slots seq-slots-grouped">' + groups + '</div>' +
       '<div class="seq-bank">' + bank + '</div>' +
       '<p class="exercise-feedback" id="exercise-feedback"></p>'
     );
@@ -44,7 +56,8 @@ var SpellTiles = {
   replay: function(){
     try{
       if('speechSynthesis' in window){
-        var u = new SpeechSynthesisUtterance(SpellTiles._item.prompt.word);
+        var item = SpellTiles._item;
+        var u = new SpeechSynthesisUtterance(item.words ? item.words.join(' ') : item.prompt.word);
         u.rate = 0.85;
         window.speechSynthesis.speak(u);
       }
@@ -56,14 +69,14 @@ var SpellTiles = {
     SpellTiles._used[idx] = true;
     SpellTiles._picked += SpellTiles._item.letterBank[idx];
     document.getElementById('exercise-body').innerHTML = SpellTiles._html();
-    var answer = SpellTiles._item.answer;
-    if(SpellTiles._picked.length < answer.length) return;
+    var target = SpellTiles._target();
+    if(SpellTiles._picked.length < target.length) return;
 
-    var correct = (SpellTiles._picked === answer);
+    var correct = (SpellTiles._picked === target);
     document.querySelectorAll('.seq-tile').forEach(function(b){ b.disabled = true; });
     document.getElementById('exercise-feedback').textContent = correct
       ? 'Got it!'
-      : 'Nice try — it&rsquo;s spelled ' + answer + '.';
+      : 'Nice try — it&rsquo;s ' + (SpellTiles._item.words ? SpellTiles._item.words.join(' ') : target) + '.';
     window.finishExercise(correct);
   }
 };

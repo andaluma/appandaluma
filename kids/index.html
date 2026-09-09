@@ -74,6 +74,18 @@
   <div class="sheet-content" id="topic-preview-content"><!-- filled by openTopicPreview() --></div>
 </div>
 
+<!-- READING PASSAGE (precedes comprehension questions) -->
+<div id="passage-screen" hidden>
+  <div class="exercise-hdr">
+    <button class="back-link" type="button" onclick="exitPassage()">&times; Stop</button>
+    <span>Reading</span>
+  </div>
+  <div id="passage-companion"></div>
+  <div id="passage-icon" class="prompt-picture"></div>
+  <div id="passage-text"></div>
+  <button class="go-pill luka" type="button" onclick="beginExercises()">I&rsquo;m done reading</button>
+</div>
+
 <!-- EXERCISE RUNNER -->
 <div id="exercise-screen" hidden>
   <div class="exercise-hdr">
@@ -122,6 +134,9 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="/kids/js/content/math-maia.js"></script>
 <script src="/kids/js/content/letters-maia.js"></script>
+<script src="/kids/js/content/math-luka.js"></script>
+<script src="/kids/js/content/writing-luka.js"></script>
+<script src="/kids/js/content/reading-luka.js"></script>
 <script src="/kids/js/engine/mastery.js"></script>
 <script src="/kids/js/engine/scheduler.js"></script>
 <script src="/kids/js/engine/session.js"></script>

@@ -183,8 +183,8 @@ button{font-family:inherit;cursor:pointer}
 .sheet-content h3{font-family:'Baloo 2',sans-serif;font-size:22px;margin-bottom:6px;}
 .sheet-content p{color:var(--muted);font-size:13.5px;margin-bottom:18px;}
 .sheet-content .go-pill{border:none;font-size:15px;padding:11px 30px;}
-.sheet-content .go-pill.maia{background:linear-gradient(100deg,var(--stella-magenta),var(--stella-gold));color:#fff;}
-.sheet-content .go-pill.luka{background:linear-gradient(100deg,var(--comet-violet),var(--comet-ember));color:#fff;}
+.go-pill.maia{background:linear-gradient(100deg,var(--stella-magenta),var(--stella-gold));color:#fff;border:none;}
+.go-pill.luka{background:linear-gradient(100deg,var(--comet-violet),var(--comet-ember));color:#fff;border:none;}
 
 /* ── EXERCISE RUNNER ── */
 #exercise-screen{position:fixed;inset:0;background:var(--app-bg);z-index:70;display:flex;flex-direction:column;align-items:center;padding:20px;}
@@ -211,6 +211,14 @@ button{font-family:inherit;cursor:pointer}
 .opt-btn:disabled{pointer-events:none;}
 .exercise-feedback{min-height:22px;margin-top:16px;font-weight:700;font-size:14.5px;color:var(--muted);}
 
+/* ── READING PASSAGE ── */
+#passage-screen{position:fixed;inset:0;background:var(--app-bg);z-index:70;display:flex;flex-direction:column;align-items:center;padding:20px;text-align:center;}
+#passage-screen .exercise-hdr{width:100%;max-width:560px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+#passage-screen .exercise-hdr span{font-family:'Baloo 2',sans-serif;font-weight:700;color:var(--muted);font-size:13.5px;}
+#passage-companion{margin:4px 0;}
+#passage-text{max-width:38ch;margin:10px 0 26px;}
+#passage-text p{font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:600;color:var(--ink);line-height:1.6;margin-bottom:6px;}
+
 /* ── SESSION COMPLETE ── */
 #session-complete-screen{position:fixed;inset:0;background:var(--app-bg);z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px;}
 #complete-title{font-family:'Baloo 2',sans-serif;font-size:clamp(24px,3.4vw,30px);}
@@ -225,9 +233,15 @@ button{font-family:inherit;cursor:pointer}
 .prompt-letter{font-size:56px;}
 .prompt-word{font-size:30px;}
 .prompt-picture{margin:10px 0 6px;min-height:56px;display:flex;align-items:center;justify-content:center;}
+.prompt-question-text{
+  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:20px;color:var(--ink);
+  max-width:36ch;margin:8px auto 6px;line-height:1.4;
+}
 
 /* ── SEQUENCE / SPELLING TILES (sequence-tap, spell-tiles) ── */
-.seq-slots{display:flex;gap:8px;margin:6px 0 18px;}
+.seq-slots{display:flex;gap:8px;margin:6px 0 18px;flex-wrap:wrap;justify-content:center;}
+.seq-slots-grouped{gap:16px;}
+.seq-word-group{display:flex;gap:8px;}
 .seq-slot{
   width:52px;height:52px;border-radius:12px;border:2px dashed var(--line);
   display:flex;align-items:center;justify-content:center;

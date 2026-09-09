@@ -273,9 +273,32 @@ function startSession(topicId){
   currentQueue = SessionBuilder.build(currentTopic, reviewPool);
   currentQueueIdx = 0;
   currentSessionStats = {correct:0, total:0};
+  document.getElementById('home-screen').hidden = true;
+  if(currentTopic.passage){
+    showPassageScreen(currentTopic.passage);
+  } else {
+    beginExercises();
+  }
+}
+// A reading topic shows its short passage once, before the normal
+// comprehension-question queue — a content wrapper, not a fourth
+// exercise type.
+function showPassageScreen(passage){
+  var p = findProfile(currentProfileId);
+  document.getElementById('passage-companion').innerHTML = companionSvg(p.companionId, 80);
+  document.getElementById('passage-icon').innerHTML = passage.iconId ? ExerciseUI.icon(passage.iconId) : '';
+  document.getElementById('passage-text').innerHTML = passage.sentences.map(function(s){ return '<p>' + s + '</p>'; }).join('');
+  document.getElementById('passage-screen').hidden = false;
+}
+function exitPassage(){
+  document.getElementById('passage-screen').hidden = true;
+  document.getElementById('home-screen').hidden = false;
+}
+function beginExercises(){
+  var p = findProfile(currentProfileId);
+  document.getElementById('passage-screen').hidden = true;
   document.getElementById('exercise-topic-title').textContent = currentTopic.title;
   document.getElementById('exercise-companion').innerHTML = companionSvg(p.companionId, 72);
-  document.getElementById('home-screen').hidden = true;
   document.getElementById('exercise-screen').hidden = false;
   renderCurrentExercise();
 }

@@ -35,6 +35,9 @@ var MatchSelect = {
     if(prompt.kind === 'word'){
       return '<div class="prompt-big-text prompt-word">' + prompt.value + '</div>';
     }
+    if(prompt.kind === 'question'){
+      return '<p class="prompt-question-text">' + prompt.value + '</p>';
+    }
     // numeral, equation
     return '<div class="prompt-big-text">' + prompt.value + '</div>';
   },
@@ -42,6 +45,7 @@ var MatchSelect = {
     if(prompt.kind === 'stars') return 'How many?';
     if(prompt.kind === 'equation') return 'What&rsquo;s the answer?';
     if(prompt.kind === 'picture') return 'Which one?';
+    if(prompt.kind === 'question') return 'Tap the answer';
     if(prompt.kind === 'numeral' && MatchSelect._item.options[0].kind === 'stars') return 'Which shows this many?';
     return 'Tap the match';
   },
