@@ -290,22 +290,14 @@ function renderCurrentExercise(){
   }
   document.getElementById('exercise-body').innerHTML = ExerciseUI.render(item.exercise);
 }
-function onAnswerTap(n){
+// Called by whichever exercise renderer (match-select, sequence-tap,
+// spell-tiles) just finished — it already showed its own feedback and
+// disabled its own inputs. Everything from here is type-agnostic:
+// mastery, persistence, adaptive requeue, review scheduling, pacing.
+function finishExercise(correct){
   var item = currentQueue[currentQueueIdx];
-  var exercise = item.exercise;
-  var correct = (n === exercise.count);
   currentSessionStats.total++;
   if(correct) currentSessionStats.correct++;
-
-  document.querySelectorAll('#opt-row .opt-btn').forEach(function(btn){
-    btn.disabled = true;
-    var btnN = parseInt(btn.getAttribute('data-n'));
-    if(btnN === exercise.count) btn.classList.add('correct');
-    else if(btnN === n) btn.classList.add('miss');
-  });
-  document.getElementById('exercise-feedback').textContent = correct
-    ? 'Got it!'
-    : 'It’s ' + exercise.count + ' — let’s look again next time.';
 
   var justMastered = false;
   if(item.isReview){
@@ -323,7 +315,7 @@ function onAnswerTap(n){
     // reaching the end of the pool again.
     if(!correct && !justMastered && currentQueue.length < SessionBuilder.MAX_EXERCISES){
       var reinsertAt = Math.min(currentQueueIdx + 3, currentQueue.length);
-      currentQueue.splice(reinsertAt, 0, {exercise: exercise, topicId: currentTopic.id, isReview: false});
+      currentQueue.splice(reinsertAt, 0, {exercise: item.exercise, topicId: currentTopic.id, isReview: false});
     }
   }
 

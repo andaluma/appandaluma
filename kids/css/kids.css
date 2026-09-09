@@ -216,3 +216,30 @@ button{font-family:inherit;cursor:pointer}
 #complete-title{font-family:'Baloo 2',sans-serif;font-size:clamp(24px,3.4vw,30px);}
 #complete-recap{color:var(--muted);max-width:38ch;font-size:14.5px;line-height:1.6;margin-bottom:10px;}
 #complete-continue{border:none;font-size:15px;padding:12px 30px;background:var(--coral);color:#fff;}
+
+/* ── EXERCISE PROMPTS (match-select variants) ── */
+.prompt-big-text{
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:44px;color:var(--ink);
+  margin:14px 0 6px;min-height:56px;display:flex;align-items:center;justify-content:center;
+}
+.prompt-letter{font-size:56px;}
+.prompt-word{font-size:30px;}
+.prompt-picture{margin:10px 0 6px;min-height:56px;display:flex;align-items:center;justify-content:center;}
+
+/* ── SEQUENCE / SPELLING TILES (sequence-tap, spell-tiles) ── */
+.seq-slots{display:flex;gap:8px;margin:6px 0 18px;}
+.seq-slot{
+  width:52px;height:52px;border-radius:12px;border:2px dashed var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;background:#fff;
+}
+.seq-bank{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:420px;}
+.seq-tile{
+  min-width:52px;height:52px;padding:0 12px;border-radius:12px;border:2px solid var(--line);background:#fff;
+  font-family:'Baloo 2',sans-serif;font-weight:800;font-size:20px;color:var(--ink);
+}
+.seq-tile.used{opacity:.25;}
+.replay-btn{
+  border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 16px;
+  font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;
+}
