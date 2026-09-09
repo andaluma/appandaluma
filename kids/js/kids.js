@@ -40,7 +40,12 @@ var currentSessionStats = {correct:0, total:0};
 
 // ── UTILS ─────────────────────────────────────────────────
 function kp2(n){ return n<10?'0'+n:''+n; }
-function kToday(){ var d=new Date(); return d.getFullYear()+'-'+kp2(d.getMonth()+1)+'-'+kp2(d.getDate()); }
+function kDateOffset(days){
+  var d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.getFullYear()+'-'+kp2(d.getMonth()+1)+'-'+kp2(d.getDate());
+}
+function kToday(){ return kDateOffset(0); }
 function kAge(birthYear){ return new Date().getFullYear()-birthYear; }
 function findProfile(id){
   for(var i=0;i<PROFILES.length;i++) if(PROFILES[i].id===id) return PROFILES[i];
@@ -161,8 +166,7 @@ function showHome(id){
   var p = findProfile(id);
   document.getElementById('picker-screen').hidden = true;
   document.getElementById('home-screen').hidden = false;
-  var streak = (kidsStreaks[id] && kidsStreaks[id].current) || 0;
-  document.getElementById('home-streak').innerHTML = '<span class="streak-pill">&#9733; ' + streak + ' day streak</span>';
+  renderHomeStreak();
   selectSubjectTab(p.subjects[0].id);
 }
 
@@ -359,8 +363,24 @@ function finishExercise(correct){
     renderCurrentExercise();
   }, 1100);
 }
+// A real session just happened — count it toward today's streak.
+// Runs at most once per profile per day; a gap of a day or more
+// restarts the count instead of accusing anyone of "breaking" one.
+function updateStreak(profileId){
+  var today = kToday();
+  var prev = kidsStreaks[profileId] || {current:0, longest:0, lastActiveDate:null};
+  if(prev.lastActiveDate === today) return;
+  var newCurrent = (prev.lastActiveDate === kDateOffset(-1)) ? (prev.current || 0) + 1 : 1;
+  var updated = {current: newCurrent, longest: Math.max(prev.longest || 0, newCurrent), lastActiveDate: today};
+  kidsStreaks[profileId] = updated;
+  if(kidsDB) kidsDB.ref('kids_streaks/' + profileId).set(updated);
+  renderPicker(); // reflect immediately, don't wait on a DB round-trip
+  // home-screen is hidden during a session — closeSessionComplete()
+  // calls renderHomeStreak() once it's shown again.
+}
 function endSession(mastered){
   var p = findProfile(currentProfileId);
+  updateStreak(currentProfileId);
   document.getElementById('exercise-screen').hidden = true;
   document.getElementById('complete-companion').innerHTML = companionSvg(p.companionId, 130);
   document.getElementById('complete-title').textContent = mastered
@@ -379,16 +399,94 @@ function closeSessionComplete(){
   document.getElementById('session-complete-screen').hidden = true;
   document.getElementById('home-screen').hidden = false;
   renderMap();
+  renderHomeStreak();
+}
+function renderHomeStreak(){
+  var streak = (kidsStreaks[currentProfileId] && kidsStreaks[currentProfileId].current) || 0;
+  document.getElementById('home-streak').innerHTML = '<span class="streak-pill">&#9733; ' + streak + ' day streak</span>';
+}
+// Dashboard reads every subject a profile has, not just whichever tab
+// was last opened — attach any progress listeners that selectSubjectTab
+// hasn't gotten to yet, then render once the (already-cached) data is
+// in kidsProgress. Firebase listeners are async, so this renders with
+// whatever's loaded so far and re-renders as more comes in.
+function loadAllProgress(){
+  if(!kidsDB) return;
+  PROFILES.forEach(function(p){
+    p.subjects.forEach(function(s){
+      if(!CONTENT[p.id] || !CONTENT[p.id][s.id]) return;
+      if(kidsProgress[p.id] && kidsProgress[p.id][s.id]) return;
+      kidsDB.ref('kids_progress/' + p.id + '/' + s.id).on('value', function(snap){
+        kidsProgress[p.id] = kidsProgress[p.id] || {};
+        kidsProgress[p.id][s.id] = snap.val() || {};
+        if(document.getElementById('parent-dashboard').style.display !== 'none') renderDashboard();
+      });
+    });
+  });
+}
+// Per-subject summary: current topic, mastered count, 7-day accuracy,
+// and topics that could use more practice (an active topic where the
+// last few attempts are under 60% — never called "failing").
+function subjectSummary(profileId, subjectId){
+  var topics = CONTENT[profileId] && CONTENT[profileId][subjectId];
+  if(!topics) return null;
+  var progress = (kidsProgress[profileId] && kidsProgress[profileId][subjectId]) || {};
+  var masteredCount = 0, currentTopicTitle = null;
+  var weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  var weekAttempts = [];
+  var stuck = [];
+  topics.forEach(function(t){
+    var p = progress[t.id];
+    var status = Mastery.statusFor(t, progress);
+    if(status === 'mastered') masteredCount++;
+    else if(status === 'active' && !currentTopicTitle) currentTopicTitle = t.title;
+    if(p && p.attempts && p.attempts.length){
+      p.attempts.forEach(function(a){ if(a.ts >= weekAgo) weekAttempts.push(a); });
+      if(status === 'active' && p.attempts.length >= 4){
+        var recent = p.attempts.slice(-6);
+        var acc = recent.filter(function(a){ return a.correct; }).length / recent.length;
+        if(acc < 0.6) stuck.push(t.title);
+      }
+    }
+  });
+  if(!currentTopicTitle) currentTopicTitle = (masteredCount === topics.length) ? 'All mastered!' : topics[0].title;
+  var accuracy = weekAttempts.length
+    ? Math.round(100 * weekAttempts.filter(function(a){ return a.correct; }).length / weekAttempts.length)
+    : null;
+  return {
+    masteredCount: masteredCount, totalTopics: topics.length,
+    currentTopicTitle: currentTopicTitle,
+    accuracy: accuracy, weekAttemptCount: weekAttempts.length,
+    stuck: stuck
+  };
 }
 function renderDashboard(){
+  loadAllProgress();
   var html = PROFILES.map(function(p){
-    var s = kidsStreaks[p.id] || {current:0, longest:0};
+    var s = kidsStreaks[p.id] || {current: 0, longest: 0};
+    var subjectRows = p.subjects.map(function(subj){
+      var sum = subjectSummary(p.id, subj.id);
+      if(!sum) return '<div class="dash-subject"><strong>' + subj.label + '</strong><span class="muted">Coming soon</span></div>';
+      var accuracyText = sum.accuracy === null
+        ? 'No practice yet this week'
+        : sum.accuracy + '% correct this week (' + sum.weekAttemptCount + ' tries)';
+      var stuckText = sum.stuck.length
+        ? '<div class="dash-stuck">Could use more practice: ' + sum.stuck.join(', ') + '</div>'
+        : '';
+      return (
+        '<div class="dash-subject">' +
+          '<strong>' + subj.label + '</strong>' +
+          '<span>' + sum.masteredCount + '/' + sum.totalTopics + ' mastered &middot; on ' + sum.currentTopicTitle + '</span>' +
+          '<span class="muted">' + accuracyText + '</span>' +
+          stuckText +
+        '</div>'
+      );
+    }).join('');
     return (
-      '<div class="dash-card">'+
-        '<h3>'+p.name+' &middot; '+p.companionName+'</h3>'+
-        '<div class="stat">Current streak: '+s.current+' days</div>'+
-        '<div class="stat">Longest streak: '+s.longest+' days</div>'+
-        '<div class="stat">Subjects: '+p.subjectsLabel+'</div>'+
+      '<div class="dash-card">' +
+        '<h3>' + p.name + ' &middot; ' + p.companionName + '</h3>' +
+        '<div class="stat">Streak: ' + s.current + ' days (longest ' + (s.longest || 0) + ')</div>' +
+        subjectRows +
       '</div>'
     );
   }).join('');
