@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="#FFFBF3"/>
+
+  <!-- 2x2 tile mark, echoing the Andaluma logo motif -->
+  <rect x="96"  y="96"  width="150" height="150" rx="32" fill="#E04F28"/>
+  <rect x="266" y="96"  width="150" height="150" rx="32" fill="#FFC24B"/>
+  <rect x="96"  y="266" width="150" height="150" rx="32" fill="#6B3FA0"/>
+  <rect x="266" y="266" width="150" height="150" rx="32" fill="#E0409C"/>
+</svg>

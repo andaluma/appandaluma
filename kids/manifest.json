@@ -1,0 +1,17 @@
+{
+  "name": "Andaluma Kids",
+  "short_name": "Kids",
+  "start_url": "/kids/",
+  "display": "standalone",
+  "background_color": "#FFFBF3",
+  "theme_color": "#E04F28",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "/kids/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
