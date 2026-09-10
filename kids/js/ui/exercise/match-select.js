@@ -3,6 +3,10 @@
 // a letter, a word, a picture, or an equation), tap the matching
 // option among 3. Covers Maia's counting/recognition/letters/sight-
 // words and Luka's arithmetic/multiplication/reading-comprehension.
+//
+// Narration: Maia can't read the on-screen question yet, so every
+// prompt is also spoken aloud (auto-played, with a replay button) —
+// never the answer options, only the question itself.
 var MatchSelect = {
   _item: null,
 
@@ -12,8 +16,10 @@ var MatchSelect = {
       return '<button class="opt-btn" type="button" data-idx="' + idx + '" onclick="MatchSelect.tap(' + idx + ')">' +
         MatchSelect._optionLabel(opt) + '</button>';
     }).join('');
+    setTimeout(function(){ Speech.say(MatchSelect._speakText(item.prompt)); }, 350);
     return (
       MatchSelect._promptHtml(item.prompt) +
+      '<button class="replay-btn" type="button" onclick="Speech.say(MatchSelect._speakText(MatchSelect._item.prompt))">&#128266; Hear it again</button>' +
       '<p class="exercise-prompt">' + MatchSelect._question(item.prompt) + '</p>' +
       '<div class="opt-row" id="opt-row">' + opts + '</div>' +
       '<p class="exercise-feedback" id="exercise-feedback"></p>'
@@ -48,6 +54,20 @@ var MatchSelect = {
     if(prompt.kind === 'question') return 'Tap the answer';
     if(prompt.kind === 'numeral' && MatchSelect._item.options[0].kind === 'stars') return 'Which shows this many?';
     return 'Tap the match';
+  },
+  // The spoken version — a full sentence, and for numeral/letter kinds
+  // it says the prompt's own value, since that value is the question
+  // itself here, never an answer option.
+  _speakText: function(prompt){
+    if(prompt.kind === 'stars') return 'How many? Count the stars.';
+    if(prompt.kind === 'numeral' && MatchSelect._item.options[0].kind === 'stars') return 'Which one shows the number ' + prompt.value + '?';
+    if(prompt.kind === 'numeral') return 'Find the number ' + prompt.value + '.';
+    if(prompt.kind === 'equation') return 'What is ' + Speech.clean(prompt.value) + '?';
+    if(prompt.kind === 'letter') return 'Find the letter ' + prompt.value + '.';
+    if(prompt.kind === 'picture') return 'Which word matches the picture?';
+    if(prompt.kind === 'word') return 'Find the matching word.';
+    if(prompt.kind === 'question') return Speech.clean(prompt.value);
+    return 'Tap the match.';
   },
   _optionLabel: function(opt){
     if(opt.kind === 'picture') return ExerciseUI.icon(opt.value);

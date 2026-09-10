@@ -54,14 +54,8 @@ var SpellTiles = {
   },
 
   replay: function(){
-    try{
-      if('speechSynthesis' in window){
-        var item = SpellTiles._item;
-        var u = new SpeechSynthesisUtterance(item.words ? item.words.join(' ') : item.prompt.word);
-        u.rate = 0.85;
-        window.speechSynthesis.speak(u);
-      }
-    }catch(ex){ /* TTS unavailable — the image prompt still carries the exercise */ }
+    var item = SpellTiles._item;
+    Speech.say(item.words ? item.words.join(' ') : item.prompt.word);
   },
 
   tapLetter: function(idx){

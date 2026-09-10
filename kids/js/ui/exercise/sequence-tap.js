@@ -1,7 +1,8 @@
 // ── EXERCISE TYPE: sequence-tap ──────────────────────────────
 // Tap items in the correct order. Covers Maia's number ordering and
 // Luka's jumbled-sentence ordering — same interaction, numeral tiles
-// vs. word tiles.
+// vs. word tiles. Narrated on entry (never reveals the answer, just
+// the instruction) for anyone who can't read "Tap them in order" yet.
 var SequenceTap = {
   _item: null,
   _picked: [],
@@ -11,7 +12,13 @@ var SequenceTap = {
     SequenceTap._item = item;
     SequenceTap._picked = [];
     SequenceTap._used = {};
+    setTimeout(function(){ Speech.say(SequenceTap._speakText()); }, 350);
     return SequenceTap._html();
+  },
+
+  _speakText: function(){
+    var isNumbers = typeof SequenceTap._item.items[0] === 'number';
+    return isNumbers ? 'Tap them in order, smallest to biggest.' : 'Put them in order.';
   },
 
   _html: function(){
@@ -26,6 +33,7 @@ var SequenceTap = {
         (used ? 'disabled' : 'onclick="SequenceTap.tapBank(' + idx + ')"') + '>' + val + '</button>';
     }).join('');
     return (
+      '<button class="replay-btn" type="button" onclick="Speech.say(SequenceTap._speakText())">&#128266; Hear it again</button>' +
       '<p class="exercise-prompt">Tap them in order</p>' +
       '<div class="seq-slots">' + slots + '</div>' +
       '<div class="seq-bank">' + bank + '</div>' +

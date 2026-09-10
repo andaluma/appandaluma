@@ -58,3 +58,55 @@ ExerciseUI.renderers = {
   'sequence-tap': SequenceTap,
   'spell-tiles': SpellTiles
 };
+
+// ── SPEECH ────────────────────────────────────────────────────
+// Shared narration for anyone who can't read the prompt yet (Maia,
+// mainly, but any exercise can use it). Speaks the question, never the
+// answer options. Browser TTS voice quality/gender varies by device —
+// this just prefers a voice that sounds like it belongs to a woman when
+// one is available, matching what was asked for; it can't guarantee one
+// on every tablet.
+var Speech = {
+  _voice: null,
+  _pickVoice: function(){
+    if(Speech._voice) return Speech._voice;
+    if(!('speechSynthesis' in window)) return null;
+    var voices = window.speechSynthesis.getVoices() || [];
+    if(!voices.length) return null;
+    var femaleHints = ['female','samantha','victoria','karen','moira','tessa','fiona','zira','susan','allison','ava','serena','kate','joanna','salli','kimberly'];
+    var en = voices.filter(function(v){ return /^en/i.test(v.lang); });
+    var pool = en.length ? en : voices;
+    var pick = null;
+    for(var i = 0; i < pool.length; i++){
+      var n = pool[i].name.toLowerCase();
+      if(femaleHints.some(function(h){ return n.indexOf(h) >= 0; })){ pick = pool[i]; break; }
+    }
+    Speech._voice = pick || pool[0];
+    return Speech._voice;
+  },
+  say: function(text){
+    try{
+      if(!('speechSynthesis' in window) || !text) return;
+      var u = new SpeechSynthesisUtterance(text);
+      var v = Speech._pickVoice();
+      if(v) u.voice = v;
+      u.rate = 0.88;
+      u.pitch = 1.05;
+      window.speechSynthesis.cancel(); // don't stack overlapping utterances
+      window.speechSynthesis.speak(u);
+    }catch(ex){ /* TTS unavailable — the visuals still carry the exercise */ }
+  },
+  // Turns display strings with HTML entities (equation prompts use
+  // &times;/&minus; for the visible × and −) into speakable text.
+  clean: function(s){
+    return String(s)
+      .replace(/&times;/g, ' times ')
+      .replace(/&minus;/g, ' minus ')
+      .replace(/&ndash;/g, '-')
+      .replace(/&rsquo;/g, "'")
+      .replace(/<[^>]+>/g, '');
+  }
+};
+if('speechSynthesis' in window){
+  window.speechSynthesis.onvoiceschanged = function(){ Speech._voice = null; };
+}

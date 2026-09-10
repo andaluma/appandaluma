@@ -204,7 +204,11 @@ button{font-family:inherit;cursor:pointer}
   border-radius:999px;padding:5px 12px;margin:6px 0 10px;
 }
 #exercise-companion{margin:2px 0;}
-.star-cluster{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:320px;margin:10px 0 6px;min-height:96px;align-items:center;}
+.star-cluster{
+  display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;
+  max-width:320px;min-width:180px;min-height:96px;margin:10px auto 6px;
+  background:#fff;border:2px solid var(--line);border-radius:22px;padding:14px 20px;
+}
 .exercise-prompt{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px;margin:6px 0 18px;}
 .opt-row{display:flex;gap:16px;}
 .opt-btn{
@@ -246,11 +250,15 @@ button{font-family:inherit;cursor:pointer}
 /* ── EXERCISE PROMPTS (match-select variants) ── */
 .prompt-big-text{
   font-family:'Baloo 2',sans-serif;font-weight:800;font-size:44px;color:var(--ink);
-  margin:14px 0 6px;min-height:56px;display:flex;align-items:center;justify-content:center;
+  margin:10px auto 6px;min-width:120px;min-height:56px;display:flex;align-items:center;justify-content:center;
+  background:#fff;border:2px solid var(--line);border-radius:22px;padding:10px 28px;
 }
 .prompt-letter{font-size:56px;}
 .prompt-word{font-size:30px;}
-.prompt-picture{margin:10px 0 6px;min-height:56px;display:flex;align-items:center;justify-content:center;}
+.prompt-picture{
+  margin:10px auto 6px;min-width:120px;min-height:56px;display:flex;align-items:center;justify-content:center;
+  background:#fff;border:2px solid var(--line);border-radius:22px;padding:10px 28px;
+}
 .prompt-question-text{
   font-family:'Baloo 2',sans-serif;font-weight:700;font-size:20px;color:var(--ink);
   max-width:36ch;margin:8px auto 6px;line-height:1.4;
