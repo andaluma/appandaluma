@@ -94,9 +94,24 @@ Adding new content is a content-file change, not an engine change.
 ## Status
 
 Phases 0–8 (foundation → engine → both children's full curricula → real
-parent dashboard → sound/motion/touch-targets → deploy) are done and on
-`main`. The one thing intentionally left open: **illustration quality**.
-Comet, Stella, and the exercise icon set are hand-authored inline SVG —
-functional, not polished — and the plan calls for André and Daniela's own
-sign-off on whether that's good enough or needs real illustration work.
+parent dashboard → sound/motion/touch-targets → deploy) are done and live
+at `kids.andaluma.com`. The one thing intentionally left open:
+**illustration quality**. Comet, Stella, and the exercise icon set are
+hand-authored inline SVG — functional, not polished — and the plan calls
+for André and Daniela's own sign-off on whether that's good enough or
+needs real illustration work.
+
+**Real-use feedback, applied**: first hands-on test with Maia (5, can't
+read yet) found prompts like "How many?" / "Which shows this many?" were
+opaque to her, and the star cluster to count didn't read as visually
+distinct from the page. Fixed by adding spoken narration (a shared
+`Speech` utility in `exercise.js` — speaks the question, never the answer
+options, best-effort female voice from whatever the device offers) wired
+into `match-select` and `sequence-tap`, plus visually framing every
+prompt (stars/numeral/picture) in its own bordered card, matching the
+answer buttons' visual language. If more real-use issues surface, this is
+the pattern to follow: fix the actual interaction, verify with a
+synthetic browser test (mock `speechSynthesis.speak` to assert what gets
+said, since there's no audio in a headless test), then update this file.
+
 Nothing else is a known gap as of this writing.
