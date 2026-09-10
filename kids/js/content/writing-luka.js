@@ -43,10 +43,10 @@ CONTENT.luka.writing = [
     exercises: [
       spellExercise('fox', 'fox', ['t', 's']),
       spellExercise('star', 'star', ['m', 'k']),
-      spellExercise('zoom', null, ['r', 'p']),
-      spellExercise('comet', null, ['l', 's']),
-      spellExercise('speed', null, ['a', 'k']),
-      spellExercise('space', null, ['t', 'r']),
+      spellExercise('zoom', 'zoom', ['r', 'p']),
+      spellExercise('comet', 'comet', ['l', 's']),
+      spellExercise('skate', 'skate', ['r', 'o']),
+      spellExercise('planet', 'planet', ['r']),
       spellExercise('rocket', 'rocket', ['s', 'n']),
       spellExercise('medal', 'medal', ['s', 'r'])
     ]
