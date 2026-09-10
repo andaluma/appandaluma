@@ -1,2 +1,6 @@
 https://finance.andaluma.com/  /finance  302
-https://kids.andaluma.com/  /kids/  302
+
+# kids.andaluma.com does NOT work this way — Cloudflare Pages' _redirects
+# only matches by path, not hostname, so a host-prefixed rule like the one
+# that used to be here is silently ignored. It's served by its own
+# dedicated Cloudflare Pages project instead. See kids/CLAUDE.md.
