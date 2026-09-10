@@ -194,7 +194,7 @@ function selectProfile(id){
   if(kidsDB){
     kidsDB.ref('kids_sessions/'+id+'/'+kToday()).update({
       started: firebase.database.ServerValue.TIMESTAMP
-    });
+    }).catch(function(err){ console.error('kids_sessions write failed:', err); });
   }
   showHome(id);
 }
@@ -294,7 +294,8 @@ function persistProgress(topicId, progress){
   kidsProgress[p.id][currentSubjectId] = kidsProgress[p.id][currentSubjectId] || {};
   kidsProgress[p.id][currentSubjectId][topicId] = progress;
   if(kidsDB){
-    kidsDB.ref('kids_progress/' + p.id + '/' + currentSubjectId + '/' + topicId).set(progress);
+    kidsDB.ref('kids_progress/' + p.id + '/' + currentSubjectId + '/' + topicId).set(progress)
+      .catch(function(err){ console.error('kids_progress write failed:', err); });
   }
 }
 // Due-for-review topics in this subject, one sampled exercise each —
@@ -370,6 +371,13 @@ function finishExercise(correct){
   currentSessionStats.total++;
   if(correct) currentSessionStats.correct++;
 
+  // Credit today's streak the moment any exercise is answered — not
+  // only when a full session finishes. A child who does a few exercises
+  // and then taps "Stop" partway through still showed up today; the old
+  // code only credited a streak on endSession(), which meant that very
+  // normal usage pattern never counted.
+  updateStreak(currentProfileId);
+
   var justMastered = false;
   if(item.isReview){
     var reviewProgress = currentProgressRecordFor(item.topicId);
@@ -417,14 +425,16 @@ function updateStreak(profileId){
   var newCurrent = (prev.lastActiveDate === kDateOffset(-1)) ? (prev.current || 0) + 1 : 1;
   var updated = {current: newCurrent, longest: Math.max(prev.longest || 0, newCurrent), lastActiveDate: today};
   kidsStreaks[profileId] = updated;
-  if(kidsDB) kidsDB.ref('kids_streaks/' + profileId).set(updated);
+  if(kidsDB){
+    kidsDB.ref('kids_streaks/' + profileId).set(updated)
+      .catch(function(err){ console.error('kids_streaks write failed:', err); });
+  }
   renderPicker(); // reflect immediately, don't wait on a DB round-trip
   // home-screen is hidden during a session — closeSessionComplete()
   // calls renderHomeStreak() once it's shown again.
 }
 function endSession(mastered){
   var p = findProfile(currentProfileId);
-  updateStreak(currentProfileId);
   if(mastered) Sound.mastered();
   document.getElementById('exercise-screen').hidden = true;
   document.getElementById('complete-companion').innerHTML = companionSvg(p.companionId, 130);
