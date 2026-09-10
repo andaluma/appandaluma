@@ -126,4 +126,20 @@ that were genuinely too abstract to draw (`speed`, `space`) were swapped
 for equally on-theme, concrete words (`skate`, `planet`) rather than
 forcing a mismatched picture onto them.
 
+**Third round of real-use feedback**: streak stayed at 0 despite Luka doing
+real exercises. Root cause: `updateStreak()` was only ever called from
+`endSession()` — which only runs when a session ends by mastery or by the
+queue running out — so a child who practices for a bit and then taps
+"Stop" (completely normal usage) never got credited at all, even though
+they showed up and did the work. Fixed by moving the `updateStreak()` call
+into `finishExercise()`, which fires after every single answered exercise
+regardless of how the session ends. Verified with a synthetic test:
+answer one exercise, hit Stop immediately, streak still correctly shows
+`{current:1, longest:1, ...}`. Also added `.catch()` error logging to all
+three Firebase RTDB writes (`kids_progress`, `kids_streaks`,
+`kids_sessions`) — if progress/streaks ever silently fail to save again in
+a way this fix doesn't explain (e.g. an RTDB security-rules rejection),
+it'll now show up as a `PERMISSION_DENIED`-style error in the browser
+console instead of failing silently.
+
 Nothing else is a known gap as of this writing.
