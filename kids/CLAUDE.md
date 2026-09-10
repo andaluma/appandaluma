@@ -114,4 +114,16 @@ the pattern to follow: fix the actual interaction, verify with a
 synthetic browser test (mock `speechSynthesis.speak` to assert what gets
 said, since there's no audio in a headless test), then update this file.
 
+**Second round of real-use feedback**: Luka got stuck on "space" in Spell
+It — it had no picture, only audio, and the audio alone wasn't enough to
+go on. Audit found 4 of 8 words in that topic were audio-only with no
+visual fallback at all. Rule going forward: **every `spell-tiles`
+exercise should carry both an image and audio**, never audio alone —
+audio can fail for reasons nothing in the code controls (quiet device,
+unclear TTS voice, a word that's hard to place from sound). Two of the
+four got new icons (`zoom`, `comet` in `exercise.js`'s icon set); the two
+that were genuinely too abstract to draw (`speed`, `space`) were swapped
+for equally on-theme, concrete words (`skate`, `planet`) rather than
+forcing a mismatched picture onto them.
+
 Nothing else is a known gap as of this writing.
