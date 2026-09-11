@@ -189,4 +189,24 @@ future option content (text, icon, or dot cluster) centers reliably
 instead of by accident. Verified with screenshots at 1/2/3 dots and at
 10/11/12 dots (two-row wrap case) — both centered correctly.
 
+**Sixth round of real-use feedback**: Luka's narration came out sounding
+like "a mix between Spanish, English, and something we don't understand."
+Root cause, in `Speech._pickVoice()` (`exercise.js`): when the device has
+no English TTS voice installed at all, the code fell back to picking from
+*every* installed voice regardless of language — so on a Chromebook set
+up for a Spanish-speaking household with only Spanish voices available,
+it would silently hand English question text to a Spanish voice engine,
+which mangles the pronunciation into exactly that garbled, half-language
+result. Fixed two ways: (1) `_pickVoice()` now returns null instead of
+falling back to a non-English voice when none is installed — no voice
+substitution across languages, ever; (2) `say()` now always sets
+`u.lang = 'en-US'` on the utterance itself regardless of whether a
+specific voice object was found, so the browser's own TTS engine knows
+the text is English even with no matching voice selected. Also bumped
+`pitch` (1.05 → 1.15) and `rate` (0.88 → 0.95) per a request for a
+"happier" voice — brighter pitch, a touch less draggy without losing
+clarity. Verified with two mocked-voices-list scenarios: Spanish-only (no
+voice forced, `lang` still `en-US`) and mixed-with-English (the English
+voice is correctly chosen over the Spanish ones ahead of it in the list).
+
 Nothing else is a known gap as of this writing.

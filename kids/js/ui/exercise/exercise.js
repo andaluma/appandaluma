@@ -83,10 +83,14 @@ ExerciseUI.renderers = {
 // ── SPEECH ────────────────────────────────────────────────────
 // Shared narration for anyone who can't read the prompt yet (Maia,
 // mainly, but any exercise can use it). Speaks the question, never the
-// answer options. Browser TTS voice quality/gender varies by device —
-// this just prefers a voice that sounds like it belongs to a woman when
-// one is available, matching what was asked for; it can't guarantee one
-// on every tablet.
+// answer options, always in English regardless of what other language
+// voices the device happens to have installed — the curriculum text is
+// English, and a mismatched voice reads it in the wrong language's
+// phonetics (garbled, half-Spanish-sounding, on a device set up for a
+// Spanish-speaking household with no English TTS voice installed). This
+// just prefers a voice that sounds like it belongs to a woman when one
+// is available and upbeat, matching what was asked for; it can't
+// guarantee one on every device.
 var Speech = {
   _voice: null,
   _pickVoice: function(){
@@ -94,25 +98,29 @@ var Speech = {
     if(!('speechSynthesis' in window)) return null;
     var voices = window.speechSynthesis.getVoices() || [];
     if(!voices.length) return null;
-    var femaleHints = ['female','samantha','victoria','karen','moira','tessa','fiona','zira','susan','allison','ava','serena','kate','joanna','salli','kimberly'];
     var en = voices.filter(function(v){ return /^en/i.test(v.lang); });
-    var pool = en.length ? en : voices;
+    // No English voice installed at all — leave it unset rather than
+    // substituting a Spanish (or other) voice to read English text with.
+    // u.lang on the utterance still tells the browser what to attempt.
+    if(!en.length) return null;
+    var femaleHints = ['female','samantha','victoria','karen','moira','tessa','fiona','zira','susan','allison','ava','serena','kate','joanna','salli','kimberly'];
     var pick = null;
-    for(var i = 0; i < pool.length; i++){
-      var n = pool[i].name.toLowerCase();
-      if(femaleHints.some(function(h){ return n.indexOf(h) >= 0; })){ pick = pool[i]; break; }
+    for(var i = 0; i < en.length; i++){
+      var n = en[i].name.toLowerCase();
+      if(femaleHints.some(function(h){ return n.indexOf(h) >= 0; })){ pick = en[i]; break; }
     }
-    Speech._voice = pick || pool[0];
+    Speech._voice = pick || en[0];
     return Speech._voice;
   },
   say: function(text){
     try{
       if(!('speechSynthesis' in window) || !text) return;
       var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
       var v = Speech._pickVoice();
       if(v) u.voice = v;
-      u.rate = 0.88;
-      u.pitch = 1.05;
+      u.rate = 0.95;
+      u.pitch = 1.15; // a bit brighter/happier than a flat, neutral reading
       window.speechSynthesis.cancel(); // don't stack overlapping utterances
       window.speechSynthesis.speak(u);
     }catch(ex){ /* TTS unavailable — the visuals still carry the exercise */ }
