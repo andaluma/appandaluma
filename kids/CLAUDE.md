@@ -209,4 +209,45 @@ clarity. Verified with two mocked-voices-list scenarios: Spanish-only (no
 voice forced, `lang` still `en-US`) and mixed-with-English (the English
 voice is correctly chosen over the Spanish ones ahead of it in the list).
 
+**Seventh round of real-use feedback**: the letter-to-picture exercise
+spoke "Find the letter D" while the actual task was "find the picture
+whose name starts with D" — a real mismatch, since there's no letter D
+anywhere on screen to tap in that exercise, only pictures. Root cause:
+`letterExercise` (letter-to-letter matching) and `pictureMatchExercise`
+(letter-to-picture) both use `prompt.kind === 'letter'`, so
+`_speakText`/`_question` in `match-select.js` treated them identically.
+Fixed by also checking `options[0].kind` (the same pattern already used
+to disambiguate the numeral/stars case) — when the options are pictures,
+it now says "Which picture starts with the letter D?" instead.
+
+Same message also flagged (a) the `dog` icon as unrecognizable ("not sure
+what the middle is" — it was a single-tone purple blob with no muzzle or
+ears distinct from the head) and (b) asked for clearer images generally.
+Auditing the full icon set turned up a worse, compounding version of the
+same problem: `reading-luka.js`'s "what runs fast in the story?"
+comprehension exercise puts **fox, dog, and cat** together as the three
+options in one question — and fox/cat were both plain orange circles,
+functionally indistinguishable from each other at a glance. Redesigned
+`dog` (warm brown, floppy ears, a visible pale muzzle+nose) and `cat`
+(gray, pointy ears, whiskers) so all three read as different animals
+side by side; also fixed `unicorn` (was near-white-on-white, invisible
+against the card background — given a pale lavender fill and a visible
+stroke), `zoom` (three bare lines read as a hamburger-menu icon, not
+"fast" — added an arrowhead to make it an unambiguous motion streak),
+and `skate` (a boot-on-a-blade shape that read as an unrecognizable blob
+at icon size — replaced with a plain skateboard-deck-and-two-wheels
+silhouette). Verified by rendering the full icon set plus the three
+specific flagged exercises (D→dog, the dog/crown/star sight-word set,
+and the fox/dog/cat trio) and confirming everything reads clearly at
+actual in-app size.
+
+Also fixed, spotted while testing the above: sight-word answer buttons
+(`opt.kind === 'word'`, e.g. "crown", "rainbow") were forced into the
+same fixed 76×76px square used for single digits/letters, so the word
+text overflowed past the button's own border and visually ran into the
+next button ("crown" and "star" appearing to merge into one word). Added
+an `.opt-btn-word` modifier (auto width, smaller font, padding) applied
+whenever an option's kind is `word`, so text-based options size to their
+content instead of overflowing a box built for something much shorter.
+
 Nothing else is a known gap as of this writing.
