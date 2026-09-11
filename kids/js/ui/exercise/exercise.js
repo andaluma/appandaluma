@@ -60,7 +60,11 @@ var ExerciseUI = {
       // A simple side-view skateboard silhouette (deck + two wheels) —
       // the previous boot-on-a-blade version read as an unrecognizable
       // blob at icon size.
-      skate: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M3 12c0-1.5 1-2.5 2.5-2.5h13c1.5 0 2.5 1 2.5 2.5s-1 2.5-2.5 2.5h-13C4 14.5 3 13.5 3 12Z" fill="#3A1F5C"/><circle cx="7" cy="16.5" r="2" fill="#4FB8E0"/><circle cx="17" cy="16.5" r="2" fill="#4FB8E0"/></svg>',
+      // A bare deck-and-wheels bar (the previous version) still read as
+      // ambiguous at icon size ("not very clear what it is" — real
+      // feedback). A boot-shaped upper is the part that actually signals
+      // "skate" the way the skateboard-bar version didn't.
+      skate: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M5 15V8c0-1.7 1.3-3 3-3h4l7 5v5Z" fill="#4FB8E0"/><path d="M3 15h17a2 2 0 0 1 2 2 1 1 0 0 1-1 1H3a2 2 0 0 1-2-2 1 1 0 0 1 2-1Z" fill="#3A1F5C"/><circle cx="7" cy="20" r="1.8" fill="#3A1F5C"/><circle cx="17" cy="20" r="1.8" fill="#3A1F5C"/></svg>',
       planet: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5.5" fill="#8B5FBF"/><ellipse cx="12" cy="12" rx="10" ry="3" fill="none" stroke="#FFB627" stroke-width="1.8" transform="rotate(-18 12 12)"/></svg>'
     };
     return icons[key] || '';
@@ -115,13 +119,21 @@ var Speech = {
     // substituting a Spanish (or other) voice to read English text with.
     // u.lang on the utterance still tells the browser what to attempt.
     if(!en.length) return null;
+    // A device can have more than one voice tagged "en" — a proper
+    // network voice (Google's) alongside a low-quality local/offline
+    // engine that's still technically English but reads with an accent
+    // bleeding in from the OS's own language. Prefer the named engine
+    // when there's a choice, since picking whichever "en" voice happens
+    // to come first in the list isn't reliable across devices.
+    var google = en.filter(function(v){ return /google/i.test(v.name); });
+    var pool = google.length ? google : en;
     var femaleHints = ['female','samantha','victoria','karen','moira','tessa','fiona','zira','susan','allison','ava','serena','kate','joanna','salli','kimberly'];
     var pick = null;
-    for(var i = 0; i < en.length; i++){
-      var n = en[i].name.toLowerCase();
-      if(femaleHints.some(function(h){ return n.indexOf(h) >= 0; })){ pick = en[i]; break; }
+    for(var i = 0; i < pool.length; i++){
+      var n = pool[i].name.toLowerCase();
+      if(femaleHints.some(function(h){ return n.indexOf(h) >= 0; })){ pick = pool[i]; break; }
     }
-    Speech._voice = pick || en[0];
+    Speech._voice = pick || pool[0];
     return Speech._voice;
   },
   say: function(text){

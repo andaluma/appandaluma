@@ -11,6 +11,17 @@ for reasons that already cost real debugging time once.
 rules, phase-by-phase history). This file is the fast-reference; that link
 is the "why."
 
+## How André wants replies
+
+Explicit standing instruction: keep chat replies short. Only write back
+when there's something he actually needs to read — a decision only he
+can make, or information only he can get (e.g. "what does
+`speechSynthesis.getVoices()` show on that Chromebook?"). Otherwise fix
+it, verify it, log it here, and say so in one line. Silence/brevity means
+"handled" — he will not read a long report, and said so directly. Don't
+restate what was already fixed in past tense at length; this file is the
+paper trail, not the chat.
+
 ## Deployment — read this first
 
 `kids.andaluma.com` is **not** part of the same deployment as
@@ -285,5 +296,21 @@ disappear the instant the word is fully spelled and scored, so there's
 no way to reopen an already-submitted answer. Verified end-to-end: tap
 r-o-k (wrong, skips c), erase the k, tile reappears usable in the bank,
 finish spelling c-k-e-t correctly, get "Got it!".
+
+**Ninth round**: two more targeted fixes from the same feedback message.
+(1) `skate` icon was still unclear even after the first redesign (a bare
+deck+wheels bar) — replaced with a boot-shaped upper over the same
+wheels, since the boot silhouette is the part that actually reads as
+"skate," not the deck. (2) Luka's narration is still coming out with
+Spanish-accented pronunciation on his Chromebook even after the
+English-only voice fix — `_pickVoice()` now prefers a voice whose name
+contains "Google" among the installed English ones (network TTS voices
+are reliably well-pronounced; a device can have more than one voice
+tagged "en" and the first one in the list isn't necessarily the good
+one). If this is still wrong after this fix, it means that device's only
+installed English voice is a low-quality local engine, and no
+JS-side fix can improve pronunciation quality that doesn't exist on the
+device — the next step would be checking that Chromebook's OS-level
+language/voice settings, which only André can do.
 
 Nothing else is a known gap as of this writing.
