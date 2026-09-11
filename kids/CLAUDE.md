@@ -172,4 +172,21 @@ overnight" with nothing in the console to point at why. If that ever
 recurs, check the browser console for a `kids_progress read failed` /
 `PERMISSION_DENIED`-shaped error before assuming it's a repeat of this.
 
+**Fifth round of real-use feedback**: the mini dot-clusters shown as
+option content in "which shows this many?" recognition exercises weren't
+centered inside their buttons — a count of 1, 2, or 3 dots sat packed
+toward the top-left instead of in the middle. Cause: `.opt-stars` used
+CSS Grid with a fixed `repeat(5, 1fr)` template — grid auto-placement
+fills cells from the top-left corner, so anything short of 5 (or not an
+exact multiple of the row width) leaves empty trailing cells and looks
+off-center; `justify-content` on a grid centers unused *track* space, not
+content, so it did nothing here. Switched `.opt-stars` to flexbox with
+wrap + `justify-content`/`align-content: center`, which centers every row
+and the whole block regardless of dot count. Also made `.opt-btn` itself
+an explicit `display:flex; align-items:center; justify-content:center`
+rather than relying on the browser's default button centering, so any
+future option content (text, icon, or dot cluster) centers reliably
+instead of by accident. Verified with screenshots at 1/2/3 dots and at
+10/11/12 dots (two-row wrap case) — both centered correctly.
+
 Nothing else is a known gap as of this writing.
