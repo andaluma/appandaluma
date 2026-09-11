@@ -280,6 +280,11 @@ button{font-family:inherit;cursor:pointer}
   display:flex;align-items:center;justify-content:center;
   font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;background:#fff;
 }
+/* The most recently filled slot doubles as an undo target — tapping it
+   removes that letter and gives the tile back to the bank, since a
+   spelling mistake had no way to be corrected before the whole word
+   filled up. */
+.seq-slot-erasable{border-style:solid;border-color:var(--coral);cursor:pointer;}
 .seq-bank{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:420px;}
 .seq-tile{
   min-width:52px;height:52px;padding:0 12px;border-radius:12px;border:2px solid var(--line);background:#fff;
@@ -290,6 +295,7 @@ button{font-family:inherit;cursor:pointer}
   border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:12px 18px;min-height:44px;
   font-size:13px;font-weight:700;color:var(--muted);margin-bottom:10px;
 }
+.erase-btn{color:var(--coral);border-color:var(--coral);margin-top:6px;}
 
 /* ── MATCH-SELECT: star-dot option grid (recognition direction) ── */
 /* flex, not a fixed-column grid — a grid packs dots from the top-left

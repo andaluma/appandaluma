@@ -271,4 +271,19 @@ aren't words. If sight words still feel like too big a jump after this,
 the next lever is easier/shorter words in `letters-sight-words` itself,
 not another bridging topic — this one topic is meant to be the full gap.
 
+**Eighth round of real-use feedback**: no way to correct a mistake in
+Spell It — once a wrong letter was tapped there was no undo, only
+finishing the word (right or wrong) or Stop-ing the whole exercise.
+Fixed in `spell-tiles.js`: the most recently tapped slot is now itself
+tappable to undo (outlined in coral to signal that), plus an explicit
+"⌫ Erase last letter" button for discoverability. Required switching
+`_picked` from a plain string to `_pickedIndices` (bank indices in tap
+order) — undo has to know exactly which physical tile a letter came from
+to give the right one back, and a plain character string can't
+disambiguate that when a word repeats a letter. Both undo affordances
+disappear the instant the word is fully spelled and scored, so there's
+no way to reopen an already-submitted answer. Verified end-to-end: tap
+r-o-k (wrong, skips c), erase the k, tile reappears usable in the bank,
+finish spelling c-k-e-t correctly, get "Got it!".
+
 Nothing else is a known gap as of this writing.
