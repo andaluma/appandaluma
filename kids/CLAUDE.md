@@ -337,4 +337,21 @@ paths: a stuck read shows the loading text and never fabricates an empty
 skill tree, and a real (delayed) snapshot correctly replaces it with the
 loaded map and mastery badges.
 
+**Eleventh round**: right call from André — the zoom-icon problem wasn't
+a drawing problem, it was a word-choice problem. "Zoom" is an
+action/adverb, not a thing; no icon was ever going to make it click,
+the same way an illustrated early-reader wouldn't try to draw "fast," only
+the fox that's running fast. Replaced it with "moon" in `writing-luka.js`
+and deleted the now-unused `zoom` icon entirely rather than leave dead
+code. Documented the actual rule in that file for future word additions:
+**Spell It words must be single, concrete, literally-drawable objects**
+— the same standard illustrated phonics/early-reader material uses for
+its picture vocabulary. Action/description words (fast, speed, run,
+glows) are still fine in the sentence-level topics (`sentence-ordering`,
+`phrase-writing`), since those are narrated as a whole phrase and never
+need a standalone picture per word — only `spellExercise()` pairs a word
+with one fixed image. Audited the rest of the existing Spell It list
+against this rule (fox, star, comet, skate, planet, rocket, medal) —
+all concrete, drawable nouns, no other changes needed.
+
 Nothing else is a known gap as of this writing.

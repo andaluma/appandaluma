@@ -3,6 +3,17 @@
 // jumbled 3-word phrase -> write a short phrase from letter tiles.
 // The third topic reuses spell-tiles' multi-word support (item.words)
 // rather than a new exercise type — see spell-tiles.js.
+//
+// Spell It word rule: every word here must be a single, concrete,
+// literally-drawable object — the same rule real early-reader/phonics
+// materials follow for their illustrated vocabulary (a picture book
+// doesn't try to illustrate "zoom" or "fast," only the things doing the
+// zooming). "zoom" broke this rule (an action/adverb, not a thing) and
+// was the one word in this list no icon could ever make clear — swapped
+// for "moon". Action/description words like "fast", "speed", "run",
+// "glows" are fine in the sentence-level topics below, where they're
+// part of a whole narrated phrase rather than needing their own
+// standalone picture.
 var CONTENT = window.CONTENT || {};
 CONTENT.luka = CONTENT.luka || {};
 
@@ -43,7 +54,7 @@ CONTENT.luka.writing = [
     exercises: [
       spellExercise('fox', 'fox', ['t', 's']),
       spellExercise('star', 'star', ['m', 'k']),
-      spellExercise('zoom', 'zoom', ['r', 'p']),
+      spellExercise('moon', 'moon', ['t', 's']),
       spellExercise('comet', 'comet', ['l', 's']),
       spellExercise('skate', 'skate', ['r', 'o']),
       spellExercise('planet', 'planet', ['r']),

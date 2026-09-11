@@ -53,13 +53,6 @@ var ExerciseUI = {
       rocket: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 2c3 2 4.5 6 4 10H8c-.5-4 1-8 4-10Z" fill="#FF6B35"/><rect x="9.5" y="10" width="5" height="6" fill="#F4EAFB"/><path d="M8 12l-3 4 4-1Z" fill="#6B3FA0"/><path d="M16 12l3 4-4-1Z" fill="#6B3FA0"/><path d="M10.5 18l1.5 4 1.5-4Z" fill="#C4E538"/></svg>',
       fox: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M4 8l3 5-4 1Z" fill="#FF6B35"/><path d="M20 8l-3 5 4 1Z" fill="#FF6B35"/><path d="M12 5c4 0 7 3.5 7 8 0 4-3 6.5-7 6.5S5 17 5 13c0-4.5 3-8 7-8Z" fill="#FF6B35"/><path d="M12 12c2 0 3.5 1.4 3.5 3.5 0 1.8-1.5 3-3.5 3s-3.5-1.2-3.5-3C8.5 13.4 10 12 12 12Z" fill="#F4EAFB"/><circle cx="9.5" cy="12" r="0.9" fill="#3A1F5C"/><circle cx="14.5" cy="12" r="0.9" fill="#3A1F5C"/></svg>',
       medal: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M9 3l3 6 3-6" stroke="#E0409C" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="15" r="6" fill="#FFB627"/><circle cx="12" cy="15" r="3.4" fill="#FFF3D6"/></svg>',
-      // "Zoom" is pure motion, hardest thing here to draw as a static
-      // picture. Lines alone (even with an arrowhead) still just look
-      // like lines. Using the classic cartoon "speed lines trailing a
-      // moving ball" convention instead — a recognizable object plus
-      // motion streaks reads as "fast" far more clearly than lines on
-      // their own.
-      zoom: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="12" r="3.2" fill="#FF6B35"/><g stroke="#FF6B35" stroke-width="2.2" stroke-linecap="round"><path d="M1 8.5h7M1 12h9M1 15.5h6"/></g></svg>',
       comet: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M4 20c4-2 6-6 8-8" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" opacity=".5"/><circle cx="15" cy="9" r="4" fill="#6B3FA0"/><circle cx="15" cy="9" r="1.6" fill="#C4E538"/></svg>',
       // A simple side-view skateboard silhouette (deck + two wheels) —
       // the previous boot-on-a-blade version read as an unrecognizable
