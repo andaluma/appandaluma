@@ -235,15 +235,27 @@ function selectSubjectTab(subjectId){
     return;
   }
 
-  if(kidsDB && !(kidsProgress[p.id] && kidsProgress[p.id][subjectId])){
+  // A fresh page load (e.g. after the browser's own back button, not
+  // just this app's in-page nav) starts kidsProgress empty and has to
+  // wait on Firebase before it knows what's actually been mastered. An
+  // empty map and a not-yet-loaded map render identically otherwise —
+  // on a slow connection that looks exactly like "progress was lost,"
+  // when it's only still loading. alreadyLoaded distinguishes the two.
+  var alreadyLoaded = !!(kidsProgress[p.id] && kidsProgress[p.id][subjectId]);
+  if(kidsDB && !alreadyLoaded){
     kidsDB.ref('kids_progress/' + p.id + '/' + subjectId).on('value', function(snap){
       kidsProgress[p.id] = kidsProgress[p.id] || {};
       kidsProgress[p.id][subjectId] = snap.val() || {};
       if(currentProfileId === p.id && currentSubjectId === subjectId) renderMap();
     }, function(err){ console.error('kids_progress read failed for ' + p.id + '/' + subjectId + ':', err); });
   }
-  body += '<div id="map-container">' + mapHtml(topics, p) + '</div>';
+  var showLoading = kidsDB && !alreadyLoaded;
+  body += '<div id="map-container">' + (showLoading ? mapLoadingHtml(p) : mapHtml(topics, p)) + '</div>';
   document.getElementById('home-body').innerHTML = body;
+}
+
+function mapLoadingHtml(p){
+  return '<div class="coming-soon">Loading ' + p.name + '&rsquo;s progress&hellip;</div>';
 }
 
 function mapHtml(topics, p){

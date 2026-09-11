@@ -313,4 +313,28 @@ JS-side fix can improve pronunciation quality that doesn't exist on the
 device — the next step would be checking that Chromebook's OS-level
 language/voice settings, which only André can do.
 
+**Tenth round**: `zoom` icon redesigned again — three plain lines (even
+with an arrowhead added last round) still just read as lines, not
+"fast." Switched to the classic cartoon convention instead: a solid ball
+with speed-line trails behind it.
+
+Also addressed the recurring "progress resets after going back"
+complaint with an actual behavior fix, not just more logging. On a fresh
+page load (e.g. the browser's own back button, not this app's in-page
+nav), `kidsProgress` starts empty and has to wait on a Firebase read
+before it reflects what's actually mastered — and an empty map and a
+not-yet-loaded map rendered identically. On a slow connection that looks
+exactly like "the progress is gone," when it's only still loading.
+`selectSubjectTab` now renders a "Loading &lt;name&gt;'s progress…"
+placeholder instead of the (necessarily empty) skill map until the first
+real Firebase snapshot for that profile+subject arrives, then swaps in
+the real map. This also makes the two real possibilities distinguishable
+for the first time: if the map now loads correctly after a brief
+placeholder, it really was just this race; if it stays stuck on
+"Loading…" indefinitely, that's a genuine Firebase read failure (rules
+or connectivity) worth checking the browser console for. Verified both
+paths: a stuck read shows the loading text and never fabricates an empty
+skill tree, and a real (delayed) snapshot correctly replaces it with the
+loaded map and mastery badges.
+
 Nothing else is a known gap as of this writing.
