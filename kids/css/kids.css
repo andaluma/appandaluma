@@ -209,6 +209,7 @@ button{font-family:inherit;cursor:pointer}
   max-width:320px;min-width:180px;min-height:96px;margin:10px auto 6px;
   background:#fff;border:2px solid var(--line);border-radius:22px;padding:14px 20px;
 }
+.star-cluster-empty{border-style:dashed;background:var(--app-bg);}
 .exercise-prompt{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:18px;margin:6px 0 18px;}
 .opt-row{display:flex;gap:16px;}
 .opt-btn{

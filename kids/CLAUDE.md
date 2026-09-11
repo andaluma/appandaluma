@@ -142,4 +142,34 @@ a way this fix doesn't explain (e.g. an RTDB security-rules rejection),
 it'll now show up as a `PERMISSION_DENIED`-style error in the browser
 console instead of failing silently.
 
+**Fourth round of real-use feedback**: two issues from the same message.
+(1) A "how many stars" prompt whose answer is 0 rendered as a blank white
+box — indistinguishable from something failing to load. Fixed with
+`ExerciseUI.starGhost`, a dashed outline star shown only for the
+zero-stars case (`match-select.js`'s `_promptHtml`) — a numeral or text
+"0"/"empty" couldn't be used instead since 0 is itself one of the tappable
+answer options and would give it away. (2) Luka had noticed the correct
+answer kept landing in the same screen position — true, because content
+authors `options` arrays in whatever order was convenient
+(`pictureMatchExercise`/`sightWordExercise` in `letters-maia.js` always put
+the answer at index 0), and nothing ever reordered them before render.
+Fixed generically at the engine layer, not per content file:
+`ExerciseUI.shuffle()` (Fisher-Yates on a copy) is now called on
+`item.options` in `match-select.js`, `item.items` in `sequence-tap.js`,
+and `item.letterBank` in `spell-tiles.js`, every time that exercise is
+rendered — so position is re-randomized on every viewing, for every
+exercise type, without touching any content file. Verified with a
+synthetic test: rendering the same fixed-position content item 30 times
+in a row put the correct answer in all three slots, not always the same
+one.
+
+Also added error callbacks (the 3rd argument to Firebase's `.on('value',
+...)`) to every progress/streak read listener in `kids.js`, mirroring the
+`.catch()` already on the writes — a parent asked whether a day's
+progress had actually been saved, and reads failing silently on a
+security-rules rejection would look exactly like "forgot everything
+overnight" with nothing in the console to point at why. If that ever
+recurs, check the browser console for a `kids_progress read failed` /
+`PERMISSION_DENIED`-shaped error before assuming it's a repeat of this.
+
 Nothing else is a known gap as of this writing.

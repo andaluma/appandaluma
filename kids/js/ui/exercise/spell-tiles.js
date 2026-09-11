@@ -11,6 +11,7 @@ var SpellTiles = {
 
   render: function(item){
     SpellTiles._item = item;
+    item.letterBank = ExerciseUI.shuffle(item.letterBank);
     SpellTiles._picked = '';
     SpellTiles._used = {};
     if(item.prompt.kind !== 'image') setTimeout(SpellTiles.replay, 300);

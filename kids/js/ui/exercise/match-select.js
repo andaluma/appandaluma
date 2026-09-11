@@ -12,6 +12,7 @@ var MatchSelect = {
 
   render: function(item){
     MatchSelect._item = item;
+    item.options = ExerciseUI.shuffle(item.options);
     var opts = item.options.map(function(opt, idx){
       return '<button class="opt-btn" type="button" data-idx="' + idx + '" onclick="MatchSelect.tap(' + idx + ')">' +
         MatchSelect._optionLabel(opt) + '</button>';
@@ -28,6 +29,9 @@ var MatchSelect = {
 
   _promptHtml: function(prompt){
     if(prompt.kind === 'stars'){
+      if(prompt.value === 0){
+        return '<div class="star-cluster star-cluster-empty" aria-hidden="true">' + ExerciseUI.starGhost + '</div>';
+      }
       var stars = '';
       for(var i = 0; i < prompt.value; i++) stars += ExerciseUI.star;
       return '<div class="star-cluster" aria-hidden="true">' + stars + '</div>';

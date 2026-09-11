@@ -157,11 +157,11 @@ function kidsInit(){
       kidsDB.ref('kids_streaks/'+p.id).on('value', function(snap){
         kidsStreaks[p.id] = snap.val() || {current:0, longest:0, lastActiveDate:null};
         renderPicker();
-      });
+      }, function(err){ console.error('kids_streaks read failed for ' + p.id + ':', err); });
       kidsDB.ref('kids_sessions/'+p.id+'/'+kToday()).on('value', function(snap){
         kidsDoneToday[p.id] = !!snap.val();
         renderPicker();
-      });
+      }, function(err){ console.error('kids_sessions read failed for ' + p.id + ':', err); });
     });
   }catch(ex){ /* offline/blocked — picker still works, just no live streaks */ }
 }
@@ -240,7 +240,7 @@ function selectSubjectTab(subjectId){
       kidsProgress[p.id] = kidsProgress[p.id] || {};
       kidsProgress[p.id][subjectId] = snap.val() || {};
       if(currentProfileId === p.id && currentSubjectId === subjectId) renderMap();
-    });
+    }, function(err){ console.error('kids_progress read failed for ' + p.id + '/' + subjectId + ':', err); });
   }
   body += '<div id="map-container">' + mapHtml(topics, p) + '</div>';
   document.getElementById('home-body').innerHTML = body;
@@ -475,7 +475,7 @@ function loadAllProgress(){
         kidsProgress[p.id] = kidsProgress[p.id] || {};
         kidsProgress[p.id][s.id] = snap.val() || {};
         if(document.getElementById('parent-dashboard').style.display !== 'none') renderDashboard();
-      });
+      }, function(err){ console.error('kids_progress read failed for ' + p.id + '/' + s.id + ':', err); });
     });
   });
 }

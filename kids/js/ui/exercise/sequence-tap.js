@@ -10,6 +10,7 @@ var SequenceTap = {
 
   render: function(item){
     SequenceTap._item = item;
+    item.items = ExerciseUI.shuffle(item.items);
     SequenceTap._picked = [];
     SequenceTap._used = {};
     setTimeout(function(){ Speech.say(SequenceTap._speakText()); }, 350);

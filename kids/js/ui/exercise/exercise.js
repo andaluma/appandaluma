@@ -7,6 +7,23 @@
 // scheduling, session pacing), unchanged regardless of type.
 var ExerciseUI = {
   star: '<svg width="30" height="30" viewBox="0 0 24 24" fill="#FFC24B"><path d="M12 2l2.9 6.6L22 9.6l-5 4.9L18.4 22 12 18.3 5.6 22 7 14.5l-5-4.9 7.1-1z"/></svg>',
+  // Outline-only "ghost" star for the zero-stars prompt — a blank box
+  // reads as broken/loading, not "the answer is zero," especially since
+  // 0 is itself one of the numeral options a kid could tap.
+  starGhost: '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#8C7F68" stroke-width="1.5" stroke-dasharray="3 2" opacity=".55"><path d="M12 2l2.9 6.6L22 9.6l-5 4.9L18.4 22 12 18.3 5.6 22 7 14.5l-5-4.9 7.1-1z"/></svg>',
+
+  // Fisher-Yates on a copy — used to randomize option/tile order at
+  // render time so the correct answer never sits in the same spot
+  // exercise after exercise (content authors it in a fixed order; a
+  // kid can and will memorize screen position instead of the concept).
+  shuffle: function(arr){
+    var out = arr.slice();
+    for(var i = out.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = out[i]; out[i] = out[j]; out[j] = t;
+    }
+    return out;
+  },
 
   // Small built-in icon set for the "picture" prompt/option kind —
   // enough to cover Maia's letter-to-picture and sight-word exercises.
