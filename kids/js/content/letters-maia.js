@@ -33,6 +33,19 @@ function sightWordExercise(icon, word, distractorWords){
     answer: word
   };
 }
+// Bridge between "letter to picture" and full sight-word reading: given
+// a picture, tap the letter its name starts with. Same first-sound
+// pairing as pictureMatchExercise, just reversed — more letter practice
+// before asking her to recognize a whole written word.
+function letterStartExercise(icon, letter, distractorLetters){
+  var opts = [letter].concat(distractorLetters).map(function(l){ return {value: l, kind: 'letter'}; });
+  return {
+    type: 'match-select',
+    prompt: {kind: 'picture', value: icon},
+    options: opts,
+    answer: letter
+  };
+}
 
 CONTENT.maia.letters = [
   {
@@ -64,7 +77,21 @@ CONTENT.maia.letters = [
     ]
   },
   {
-    id: 'letters-sight-words', title: 'Sight Words', icon: '&#9733;', prerequisiteId: 'letters-to-picture',
+    id: 'letters-starting-sound', title: 'Starts With', icon: '&#128269;', prerequisiteId: 'letters-to-picture',
+    masteryRule: {type: 'streak', n: 5},
+    exercises: [
+      letterStartExercise('crown', 'C', ['O', 'G']),
+      letterStartExercise('rainbow', 'R', ['P', 'B']),
+      letterStartExercise('sun', 'S', ['Z', 'X']),
+      letterStartExercise('heart', 'H', ['N', 'M']),
+      letterStartExercise('wand', 'W', ['V', 'U']),
+      letterStartExercise('dog', 'D', ['B', 'P']),
+      letterStartExercise('moon', 'M', ['N', 'W']),
+      letterStartExercise('balloon', 'B', ['D', 'P'])
+    ]
+  },
+  {
+    id: 'letters-sight-words', title: 'Sight Words', icon: '&#9733;', prerequisiteId: 'letters-starting-sound',
     masteryRule: {type: 'accuracy', minAttempts: 10, threshold: 0.8},
     exercises: [
       sightWordExercise('crown', 'crown', ['star', 'dog']),

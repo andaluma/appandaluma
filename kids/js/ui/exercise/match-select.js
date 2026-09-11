@@ -55,20 +55,21 @@ var MatchSelect = {
   _question: function(prompt){
     if(prompt.kind === 'stars') return 'How many?';
     if(prompt.kind === 'equation') return 'What&rsquo;s the answer?';
-    if(prompt.kind === 'picture') return 'Which one?';
-    if(prompt.kind === 'question') return 'Tap the answer';
     if(prompt.kind === 'numeral' && MatchSelect._item.options[0].kind === 'stars') return 'Which shows this many?';
     if(prompt.kind === 'letter' && MatchSelect._item.options[0].kind === 'picture') return 'Which one starts with this letter?';
+    if(prompt.kind === 'picture' && MatchSelect._item.options[0].kind === 'letter') return 'Which letter does it start with?';
+    if(prompt.kind === 'picture') return 'Which one?';
+    if(prompt.kind === 'question') return 'Tap the answer';
     return 'Tap the match';
   },
   // The spoken version — a full sentence, and for numeral/letter kinds
   // it says the prompt's own value, since that value is the question
-  // itself here, never an answer option. The letter prompt covers two
-  // different tasks that share the same prompt.kind — matching the same
-  // letter (options are letters) vs. finding which picture's name starts
-  // with that letter (options are pictures) — and needs different
-  // wording for each, or "find the letter d" is nonsense when there's no
-  // letter d anywhere on screen to tap.
+  // itself here, never an answer option. The letter and picture prompts
+  // each cover two different tasks that share the same prompt.kind —
+  // matching the same letter vs. finding which picture starts with it,
+  // and (here) finding which picture matches a whole word vs. which
+  // letter it starts with — and need different wording for each, or
+  // "find the letter d" is nonsense when there's no letter d on screen.
   _speakText: function(prompt){
     if(prompt.kind === 'stars') return 'How many? Count the stars.';
     if(prompt.kind === 'numeral' && MatchSelect._item.options[0].kind === 'stars') return 'Which one shows the number ' + prompt.value + '?';
@@ -76,6 +77,7 @@ var MatchSelect = {
     if(prompt.kind === 'equation') return 'What is ' + Speech.clean(prompt.value) + '?';
     if(prompt.kind === 'letter' && MatchSelect._item.options[0].kind === 'picture') return 'Which picture starts with the letter ' + prompt.value + '?';
     if(prompt.kind === 'letter') return 'Find the letter ' + prompt.value + '.';
+    if(prompt.kind === 'picture' && MatchSelect._item.options[0].kind === 'letter') return 'Which letter does this start with?';
     if(prompt.kind === 'picture') return 'Which word matches the picture?';
     if(prompt.kind === 'word') return 'Find the matching word.';
     if(prompt.kind === 'question') return Speech.clean(prompt.value);

@@ -250,4 +250,25 @@ an `.opt-btn-word` modifier (auto width, smaller font, padding) applied
 whenever an option's kind is `word`, so text-based options size to their
 content instead of overflowing a box built for something much shorter.
 
+**Curriculum change, requested directly rather than found through
+testing**: full sight-word reading was "one tiny step too far" straight
+after letter-to-picture matching — Maia needed more letter practice in
+between. Added a new bridging topic, `letters-starting-sound` ("Starts
+With") in `letters-maia.js`, between `letters-to-picture` and
+`letters-sight-words` in the prerequisite chain: given a picture, tap the
+letter its name starts with — the same first-sound pairing as
+`pictureMatchExercise`, just reversed (picture → letter instead of
+letter → picture), so it's still letter-level recognition, not whole-word
+reading. Implemented as `letterStartExercise()`, a `match-select` with
+`prompt: {kind:'picture', ...}` and letter-kind options — no engine or
+mastery-gating changes needed, `Mastery.statusFor` already gates purely
+by `prerequisiteId`. Needed one more disambiguation in `match-select.js`
+(`_question`/`_speakText`): a `picture` prompt now also checks whether
+its options are letters or words, same pattern as the two `letter`-
+prompt cases fixed earlier, so it asks "Which letter does it start
+with?" instead of "Which word matches the picture?" when the options
+aren't words. If sight words still feel like too big a jump after this,
+the next lever is easier/shorter words in `letters-sight-words` itself,
+not another bridging topic — this one topic is meant to be the full gap.
+
 Nothing else is a known gap as of this writing.
