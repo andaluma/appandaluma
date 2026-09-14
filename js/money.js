@@ -309,7 +309,7 @@ function openAddExpense(){
     tripId: MS.activeTripId||'', preTrip:false,
     checkIn: MS.moneyDate||'', checkOut:'',
     spreadRange:false, dateEnd:'',
-    schoolStart: MS.moneyDate||'', schoolEnd:'',
+    schoolStart: MS.moneyDate||'', schoolEnd:'', schoolOneOff:false,
     _firstOpen: true,   // focus the amount field only on first open, not on chip redraws
   };
   drawAddExpense();
@@ -376,6 +376,16 @@ function drawAddExpense(){
           '</div>';
       }
       if(m.category==='School'){
+        var oneOffToggle = '<label class="sdcheck"><input type="checkbox" '+(m.schoolOneOff?'checked':'')+
+          ' onchange="emst.schoolOneOff=this.checked;drawAddExpense()"> One-off purchase (books, supplies — no date range)</label>';
+        if(m.schoolOneOff){
+          // Same simple, optional date field every other category gets —
+          // school materials aren't a recurring fee, so there's no range to spread.
+          return '<div class="fg">'+oneOffToggle+
+            '<label class="flbl" style="margin-top:10px">Date <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">(optional)</span></label>'+
+            '<input type="date" class="fdate" value="'+e(m.date)+'" onchange="emst.date=this.value">'+
+            '</div>';
+        }
         var sd = schoolDays(m.schoolStart, m.schoolEnd);
         var perSchoolNote = '';
         if(sd.length>0 && parseFloat(m.amount)>0){
@@ -393,7 +403,8 @@ function drawAddExpense(){
             sd.length+' school day'+(sd.length===1?'':'s')+perSchoolNote+
             '</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Weekdays only, Mon to Fri. Weekends are skipped.</div>';
         }
-        return '<div class="fg"><label class="flbl">First school day</label>'+
+        return '<div class="fg">'+oneOffToggle+'</div>'+
+          '<div class="fg" style="margin-top:10px"><label class="flbl">First school day</label>'+
           '<input type="date" class="fdate" value="'+e(m.schoolStart||'')+'" onchange="emst.schoolStart=this.value;drawAddExpense()"></div>'+
           '<div class="fg"><label class="flbl">Last school day (inclusive)</label>'+
           '<input type="date" class="fdate" value="'+e(m.schoolEnd||'')+'" min="'+e(m.schoolStart||'')+'" onchange="emst.schoolEnd=this.value;drawAddExpense()">'+
@@ -474,7 +485,7 @@ function submitExpense(){
     });
     return;
   }
-  if(emst.category==='School' && !emst.preTrip){
+  if(emst.category==='School' && !emst.preTrip && !emst.schoolOneOff){
     if(!emst.schoolStart || !emst.schoolEnd){ alert('Enter the first and last school day.'); return; }
     if(emst.schoolEnd < emst.schoolStart){ alert('Last school day must be on or after the first.'); return; }
     var sdays = schoolDays(emst.schoolStart, emst.schoolEnd);
